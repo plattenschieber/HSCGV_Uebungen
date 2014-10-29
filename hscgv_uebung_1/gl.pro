@@ -14,6 +14,12 @@ OTHER_FILES += \
     freestyle.fsh
 
 unix:LIBS *= -lGLEW
+
+macx {
+LIBS *= -lGLEW -L/usr/local/Cellar/glew/1.11.0/lib
+INCLUDEPATH *= /usr/local/Cellar/glew/1.11.0/include
+}
+
 win32 {
 # adapt to your needs
 GLEWDIR = c:/glew
