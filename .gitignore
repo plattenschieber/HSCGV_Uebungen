@@ -1,0 +1,6 @@
+doc/
+Makefile
+gl.App/
+*.o
+hscgv_uebung_1/ui_ApplicationWindow.h
+hscgv_uebung_1/ui_UserParameterDialog.h
