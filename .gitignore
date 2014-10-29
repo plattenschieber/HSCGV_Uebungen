@@ -4,3 +4,7 @@ gl.App/
 *.o
 hscgv_uebung_1/ui_ApplicationWindow.h
 hscgv_uebung_1/ui_UserParameterDialog.h
+hscgv_uebung_1/moc_ApplicationWindow.cpp
+hscgv_uebung_1/moc_GLFrame.cpp
+hscgv_uebung_1/moc_Model.cpp
+hscgv_uebung_1/moc_UserParameterDialog.cpp
