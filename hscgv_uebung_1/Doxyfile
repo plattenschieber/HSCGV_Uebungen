@@ -1,0 +1,22 @@
+# *************** Programmierpraktikum Computergrafik *****************
+# Aufgabe 1 - "Ui, OpenGL!"
+#
+# File: Doxyfile
+
+PROJECT_NAME = "Aufgabe 1: Ui, OpenGL!"
+#PROJECT_NUMBER = "$Id"
+DISTRIBUTE_GROUP_DOC   = YES
+SUBGROUPING   = YES
+OUTPUT_DIRECTORY = doc
+OUTPUT_LANGUAGE = English
+WARNINGS = YES
+EXTRACT_ALL = YES
+EXTRACT_STATIC = YES
+EXTRACT_PRIVATE = YES
+CLASS_DIAGRAMS = YES
+INPUT = .
+FILE_PATTERNS = [A-Z]*.h [A-Z]*.cpp main.cpp
+
+GENERATE_HTML = YES
+GENERATE_LATEX = NO
+#GENERATE_MAN = YES
