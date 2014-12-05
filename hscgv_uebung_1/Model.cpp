@@ -142,15 +142,35 @@ void Model::computeVertexArrayData()
 {
     release();
 
-    /* TODO
-     * iterate over all faces and
-     ** store the number of vertices for each face
-     ** for each vertex in each face
-     *** store its coordinates
-     *** store the normalised vertex normals
-     *** store its index
-     *** store the face normals
+    int iFace = 0, iVerts = 0;
+    //! iterate over all faces
+    for(std::vector<Face>::iterator it = m_face.begin();
+            it != m_face.end();
+            ++it)
+    {
+        const Face &f = *it;
+        //! store number of vertices for each face
+        m_primitiveSizeArray[iFace++] = f.nverts;
 
+        //! for each vertex in each face
+        for(int i=0; i<f.nverts; ++i)
+        {
+            //! store the coordinates of this vertex
+            m_vertexArray[3*iVerts+0] = m_vert[f.verts[i]].x;
+            m_vertexArray[3*iVerts+1] = m_vert[f.verts[i]].y;
+            m_vertexArray[3*iVerts+2] = m_vert[f.verts[i]].z;
+
+            //! store the normalised? vertex normals (which are the same as the normals
+            //! of the face they are belonging to) and face normals
+            //! [we don't use smoothness here]
+            m_vertexNormalArray[3*iVerts+0] = m_faceNormalArray[3*iVerts+0] = f.nx;
+            m_vertexNormalArray[3*iVerts+1] = m_faceNormalArray[3*iVerts+1] = f.ny;
+            m_vertexNormalArray[3*iVerts+2] = m_faceNormalArray[3*iVerts+2] = f.nz;
+
+            //!  store its index
+            m_vertexIndexArray[iVerts] = f.verts[i];
+        }
+    }
      * iterate again over all faces and
      ** store a pointer to the first vertex in the array of vertex indices
      ** store the offset of the first vertex into the array of vertex indices
