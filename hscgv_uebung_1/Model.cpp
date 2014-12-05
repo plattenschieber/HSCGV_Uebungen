@@ -154,26 +154,29 @@ void Model::computeVertexArrayData()
     {
         const Face &f = *it;
         //! store number of vertices for each face
-        m_primitiveSizeArray[iFace++] = f.nverts;
+        m_primitiveSizeArray.push_back(f.nverts);
 
         //! for each vertex in each face
         for(int i=0; i<f.nverts; ++i)
         {
             //! store the coordinates of this vertex
-            m_vertexArray[3*iVerts+0] = m_vert[f.verts[i]].x;
-            m_vertexArray[3*iVerts+1] = m_vert[f.verts[i]].y;
-            m_vertexArray[3*iVerts+2] = m_vert[f.verts[i]].z;
+            m_vertexArray.push_back(m_vert[f.verts[i]].x);
+            m_vertexArray.push_back(m_vert[f.verts[i]].y);
+            m_vertexArray.push_back(m_vert[f.verts[i]].z);
 
             //! store the normalised? vertex normals (which are the same as the normals
-            //! of the face they are belonging to) and face normals
-            //! [we don't use smoothness here]
-            m_vertexNormalArray[3*iVerts+0] = m_faceNormalArray[3*iVerts+0] = f.nx;
-            m_vertexNormalArray[3*iVerts+1] = m_faceNormalArray[3*iVerts+1] = f.ny;
-            m_vertexNormalArray[3*iVerts+2] = m_faceNormalArray[3*iVerts+2] = f.nz;
+            //! of the face they are belonging to) [we don't use smoothness here]
+            m_vertexNormalArray.push_back(f.nx);
+            m_vertexNormalArray.push_back(f.ny);
+            m_vertexNormalArray.push_back(f.nz);
 
             //!  store its index
-            m_vertexIndexArray[iVerts] = f.verts[i];
+            m_vertexIndexArray.push_back(3*iVerts);
         }
+        //! store the face normals
+        m_faceNormalArray.push_back(f.nx);
+        m_faceNormalArray.push_back(f.ny);
+        m_faceNormalArray.push_back(f.nz);
     }
      * iterate again over all faces and
      ** store a pointer to the first vertex in the array of vertex indices
