@@ -178,13 +178,20 @@ void Model::computeVertexArrayData()
         m_faceNormalArray.push_back(f.ny);
         m_faceNormalArray.push_back(f.nz);
     }
-     * iterate again over all faces and
-     ** store a pointer to the first vertex in the array of vertex indices
-     ** store the offset of the first vertex into the array of vertex indices
 
-     you can use the predefined data containers from the Model class
-     */
-
+    int currentIndex = 0;
+    //! iterate again over all faces
+    for(std::vector<Face>::iterator it = m_face.begin();
+            it != m_face.end();
+            ++it)
+    {
+        const Face &f = *it;
+        //! store a pointer to the first vertex in the array of vertex indices
+        m_vertexIndexArray.push_back(m_vertexIndexArray[currentIndex]);
+        //! store the offset of the first vertex into the array of vertex indices
+        //m_primitiveOffsetArray.push_back(currentIndex);
+        currentIndex += f.nverts;
+    }
 }
 
 // buffer data for VBO GL mode
