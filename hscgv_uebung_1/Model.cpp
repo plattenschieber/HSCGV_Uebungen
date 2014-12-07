@@ -146,7 +146,7 @@ void Model::computeVertexArrayData()
 {
     release();
 
-    int iFace = 0, iVerts = 0;
+    int iVerts = 0;
     //! iterate over all faces
     for(std::vector<Face>::iterator it = m_face.begin();
             it != m_face.end();
