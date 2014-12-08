@@ -116,12 +116,16 @@ void Model::drawImmediate(bool smooth)
 // draw model using vertex arrays
 void Model::drawArray(bool smooth)
 {
-    /* TODO
-      * transfer data using gl...Pointer
-      * enable vertex and normal arrays
-      * call glMultiDrawElements
-      * disable vertex and normal arrays
-      */
+    //! enble and specify pointers to vertex arrays
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    //! the last argument needs special treatment
+    glNormalPointer(GL_FLOAT, 0, &m_vertexNormalArray[0]);
+    glVertexPointer(3, GL_FLOAT, 0, &m_vertexArray[0]);
+    glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
+                        &m_vertexIndexStartArray[0], m_face.size());
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
 }
 
 // draw model using vertex buffer objects (VBOs)
@@ -142,22 +146,52 @@ void Model::computeVertexArrayData()
 {
     release();
 
-    /* TODO
-     * iterate over all faces and
-     ** store the number of vertices for each face
-     ** for each vertex in each face
-     *** store its coordinates
-     *** store the normalised vertex normals
-     *** store its index
-     *** store the face normals
+    int iVerts = 0;
+    //! iterate over all faces
+    for(std::vector<Face>::iterator it = m_face.begin();
+            it != m_face.end();
+            ++it)
+    {
+        const Face &f = *it;
+        //! store number of vertices for each face
+        m_primitiveSizeArray.push_back(f.nverts);
 
-     * iterate again over all faces and
-     ** store a pointer to the first vertex in the array of vertex indices
-     ** store the offset of the first vertex into the array of vertex indices
+        //! for each vertex in each face
+        for(int i=0; i<f.nverts; ++i)
+        {
+            //! store the coordinates of this vertex
+            m_vertexArray.push_back(m_vert[f.verts[i]].x);
+            m_vertexArray.push_back(m_vert[f.verts[i]].y);
+            m_vertexArray.push_back(m_vert[f.verts[i]].z);
 
-     you can use the predefined data containers from the Model class
-     */
+            //! store the normalised? vertex normals (which are the same as the normals
+            //! of the face they are belonging to) [we don't use smoothness here]
+            m_vertexNormalArray.push_back(f.nx);
+            m_vertexNormalArray.push_back(f.ny);
+            m_vertexNormalArray.push_back(f.nz);
 
+            //!  store its index
+            m_vertexIndexArray.push_back(iVerts++);
+        }
+        //! store the face normals
+        m_faceNormalArray.push_back(f.nx);
+        m_faceNormalArray.push_back(f.ny);
+        m_faceNormalArray.push_back(f.nz);
+    }
+
+    int currentIndex = 0;
+    //! iterate again over all faces
+    for(std::vector<Face>::iterator it = m_face.begin();
+            it != m_face.end();
+            ++it)
+    {
+        const Face &f = *it;
+        //! store a pointer to the first vertex in the array of vertex indices
+        m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentIndex]);
+        //! store the offset of the first vertex into the array of vertex indices
+        //m_primitiveOffsetArray.push_back(currentIndex);
+        currentIndex += f.nverts;
+    }
 }
 
 // buffer data for VBO GL mode

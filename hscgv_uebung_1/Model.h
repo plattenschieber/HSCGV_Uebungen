@@ -120,7 +120,7 @@ protected:
         //! face normals
         std::vector<GLfloat> m_faceNormalArray;
         //! vertex indices
-        std::vector<GLint> m_vertexIndexArray;
+        std::vector<GLuint> m_vertexIndexArray;
         //! sizes of primitives (polygons)
         std::vector<GLint> m_primitiveSizeArray;
         //! array of pointers into m_vertexIndexArray to first index of each primitive (vertex array rendering)
