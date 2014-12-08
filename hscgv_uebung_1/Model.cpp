@@ -170,8 +170,8 @@ void Model::computeVertexArrayData()
             m_vertexNormalArray.push_back(f.ny);
             m_vertexNormalArray.push_back(f.nz);
 
-            //!  store its index FEHLeR
-            m_vertexIndexArray.push_back(iVerts);
+            //!  store its index
+            m_vertexIndexArray.push_back(iVerts++);
         }
         //! store the face normals
         m_faceNormalArray.push_back(f.nx);
