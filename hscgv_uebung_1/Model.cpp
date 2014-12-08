@@ -139,6 +139,12 @@ void Model::drawVBO(bool smooth)
       * unbind all buffers
       * disable vertex arrays
       */
+    GLuint vertexBuffer, normalBuffer, elementBuffer;
+    //! Generate new buffer objects and store the generated IDs
+    glGenBuffers(1, &vertexBuffer);
+    glGenBuffers(1, &normalBuffer);
+    glGenBuffers(1, &elementBuffer);
+
 }
 
 // generate data used for vertex array and vertex buffer object GL modes
