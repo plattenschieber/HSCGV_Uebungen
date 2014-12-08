@@ -145,6 +145,11 @@ void Model::drawVBO(bool smooth)
     glGenBuffers(1, &normalBuffer);
     glGenBuffers(1, &elementBuffer);
 
+    //! Bind the buffer objects for vertex, normal and indices data
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+
 }
 
 // generate data used for vertex array and vertex buffer object GL modes
