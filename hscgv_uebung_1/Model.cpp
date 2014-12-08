@@ -187,7 +187,7 @@ void Model::computeVertexArrayData()
     {
         const Face &f = *it;
         //! store a pointer to the first vertex in the array of vertex indices
-        m_vertexIndexArray.push_back(m_vertexIndexArray[currentIndex]);
+        m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentIndex]);
         //! store the offset of the first vertex into the array of vertex indices
         //m_primitiveOffsetArray.push_back(currentIndex);
         currentIndex += f.nverts;
