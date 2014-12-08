@@ -150,6 +150,11 @@ void Model::drawVBO(bool smooth)
     glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
 
+    //! Copy data to the buffer objects
+    glBufferData(GL_ARRAY_BUFFER, m_vertexArray.size()*sizeof(GLfloat), &m_vertexArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_vertexNormalArray.size()*sizeof(GLfloat), &m_vertexNormalArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_primitiveOffsetArray.size()*sizeof(GLuint), &m_primitiveOffsetArray[0], GL_STATIC_DRAW);
+
 }
 
 // generate data used for vertex array and vertex buffer object GL modes
