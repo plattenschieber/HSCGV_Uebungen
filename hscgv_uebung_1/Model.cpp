@@ -139,21 +139,8 @@ void Model::drawVBO(bool smooth)
       * unbind all buffers
       * disable vertex arrays
       */
-    GLuint vertexBuffer, normalBuffer, elementBuffer;
-    //! Generate new buffer objects and store the generated IDs
-    glGenBuffers(1, &vertexBuffer);
-    glGenBuffers(1, &normalBuffer);
-    glGenBuffers(1, &elementBuffer);
 
-    //! Bind the buffer objects for vertex, normal and indices data
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
 
-    //! Copy data to the buffer objects
-    glBufferData(GL_ARRAY_BUFFER, m_vertexArray.size()*sizeof(GLfloat), &m_vertexArray[0], GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, m_vertexNormalArray.size()*sizeof(GLfloat), &m_vertexNormalArray[0], GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_primitiveOffsetArray.size()*sizeof(GLuint), &m_primitiveOffsetArray[0], GL_STATIC_DRAW);
 
 }
 
@@ -219,6 +206,22 @@ void Model::bufferArrayData()
       * buffer appropriate data
       * bind 0 to the target
       */
+
+    GLuint vertexBuffer, normalBuffer, elementBuffer;
+    //! Generate new buffer objects and store the generated IDs
+    glGenBuffers(1, &vertexBuffer);
+    glGenBuffers(1, &normalBuffer);
+    glGenBuffers(1, &elementBuffer);
+
+    //! Bind the buffer objects for vertex, normal and indices data
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+
+    //! Copy data to the buffer objects
+    glBufferData(GL_ARRAY_BUFFER, m_vertexArray.size()*sizeof(GLfloat), &m_vertexArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, m_vertexNormalArray.size()*sizeof(GLfloat), &m_vertexNormalArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_primitiveOffsetArray.size()*sizeof(GLuint), &m_primitiveOffsetArray[0], GL_STATIC_DRAW);
 }
 
 void Model::release()
