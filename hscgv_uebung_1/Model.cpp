@@ -211,9 +211,10 @@ void Model::bufferArrayData()
     glGenBuffers(4, m_bo);
 
     //! Bind the buffer objects for vertex, normal and indices data
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX]);
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX_NORMAL]);
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_FACE_NORMAL]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
 
     //! Copy data to the buffer objects
     glBufferData(GL_ARRAY_BUFFER, m_vertexArray.size()*sizeof(GLfloat), &m_vertexArray[0], GL_STATIC_DRAW);
