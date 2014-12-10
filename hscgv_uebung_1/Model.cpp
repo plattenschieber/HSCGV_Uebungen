@@ -211,15 +211,20 @@ void Model::bufferArrayData()
     glGenBuffers(4, m_bo);
 
     //! bind the buffer objects for vertex, normal and indices data
+    //! vertices
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX]);
+    glBufferData(GL_ARRAY_BUFFER, m_vertexArray.size()*sizeof(GLfloat), &m_vertexArray[0], GL_STATIC_DRAW);
+
+    //! vertex and face Normals
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX_NORMAL]);
+    glBufferData(GL_ARRAY_BUFFER, m_vertexNormalArray.size()*sizeof(GLfloat), &m_vertexNormalArray[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_FACE_NORMAL]);
+    glBufferData(GL_ARRAY_BUFFER, m_faceNormalArray.size()*sizeof(GLfloat), &m_faceNormalArray[0], GL_STATIC_DRAW);
+
+    //! offsets into vertices
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_primitiveOffsetArray.size()*sizeof(GLuint), &m_primitiveOffsetArray[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
 
-    //! Copy data to the buffer objects
-    glBufferData(GL_ARRAY_BUFFER, m_vertexArray.size()*sizeof(GLfloat), &m_vertexArray[0], GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, m_vertexNormalArray.size()*sizeof(GLfloat), &m_vertexNormalArray[0], GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_primitiveOffsetArray.size()*sizeof(GLuint), &m_primitiveOffsetArray[0], GL_STATIC_DRAW);
 }
 
 void Model::release()
