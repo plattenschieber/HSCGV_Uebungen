@@ -209,8 +209,8 @@ void Model::bufferArrayData()
 
     //! generate new buffer objects and store the generated IDs
     glGenBuffers(4, m_bo);
+    //! bind the buffer objects for vertex, normal and indices data and copy data to the BOs
 
-    //! bind the buffer objects for vertex, normal and indices data
     //! vertices
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, m_vertexArray.size()*sizeof(GLfloat), &m_vertexArray[0], GL_STATIC_DRAW);
