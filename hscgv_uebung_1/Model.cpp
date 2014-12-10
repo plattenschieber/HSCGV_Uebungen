@@ -208,7 +208,8 @@ void Model::bufferArrayData()
       */
 
     //! generate new buffer objects and store the generated IDs
-    glGenBuffers(4, m_bo);
+    glGenBuffers(NUM_BOS, m_bo);
+
     //! bind the buffer objects for vertex, normal and indices data and copy data to the BOs
 
     //! vertices
