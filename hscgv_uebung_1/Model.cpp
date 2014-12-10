@@ -207,10 +207,10 @@ void Model::bufferArrayData()
       * bind 0 to the target
       */
 
-    //! Generate new buffer objects and store the generated IDs
+    //! generate new buffer objects and store the generated IDs
     glGenBuffers(4, m_bo);
 
-    //! Bind the buffer objects for vertex, normal and indices data
+    //! bind the buffer objects for vertex, normal and indices data
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX]);
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX_NORMAL]);
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_FACE_NORMAL]);
