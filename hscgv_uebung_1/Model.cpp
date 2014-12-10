@@ -223,8 +223,8 @@ void Model::bufferArrayData()
     glBufferData(GL_ARRAY_BUFFER, m_faceNormalArray.size()*sizeof(GLfloat), &m_faceNormalArray[0], GL_STATIC_DRAW);
 
     //! offsets into vertices
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_primitiveOffsetArray.size()*sizeof(GLuint), &m_primitiveOffsetArray[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_primitiveOffsetArray.size()*sizeof(GLuint), &m_primitiveOffsetArray[0], GL_STATIC_DRAW);
 
 }
 
