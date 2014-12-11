@@ -140,8 +140,35 @@ void Model::drawVBO(bool smooth)
       * disable vertex arrays
       */
 
+    //!vertices
+    glBindBuffer(GL_ARRAY_BUFFER, &m_bo[BO_VERTEX]);
+    glVertexPointer(3, GL_FLOAT, 0, (void*)0);
+    //glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 0, (void*)0);
+    //glEnableVertexAttribArray(0);
 
+    //!Normals
+    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+    glNormalPointer(GL_FLOAT, 0, (void*)0 );
 
+    //! enable vertex and normal array like in drawArray
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+
+    //!Indices
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, &m_bo[BO_VERTEX_INDEX]);
+
+    //!Draw the mesh
+    glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+
+    //!Clean up
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+
+    //! the last argument needs special treatment
+    glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
+                        &m_vertexIndexStartArray[0], m_face.size());
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
 }
 
 // generate data used for vertex array and vertex buffer object GL modes
