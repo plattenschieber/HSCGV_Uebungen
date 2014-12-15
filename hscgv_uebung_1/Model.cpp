@@ -219,7 +219,7 @@ void Model::computeVertexArrayData()
         //! store a pointer to the first vertex in the array of vertex indices
         m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentIndex]);
         //! store the offset of the first vertex into the array of vertex indices
-        //m_primitiveOffsetArray.push_back(currentIndex);
+        m_primitiveOffsetArray.push_back((GLuint *)0 +currentIndex);
         currentIndex += f.nverts;
     }
 }
