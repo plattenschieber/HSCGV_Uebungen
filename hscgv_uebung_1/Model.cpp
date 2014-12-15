@@ -141,13 +141,13 @@ void Model::drawVBO(bool smooth)
       */
 
     //!vertices
-    glBindBuffer(GL_ARRAY_BUFFER, &m_bo[BO_VERTEX]);
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX]);
     glVertexPointer(3, GL_FLOAT, 0, (void*)0);
     //glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 0, (void*)0);
     //glEnableVertexAttribArray(0);
 
     //!Normals
-    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX_NORMAL]);
     glNormalPointer(GL_FLOAT, 0, (void*)0 );
 
     //! enable vertex and normal array like in drawArray
@@ -155,10 +155,10 @@ void Model::drawVBO(bool smooth)
     glEnableClientState(GL_NORMAL_ARRAY);
 
     //!Indices
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, &m_bo[BO_VERTEX_INDEX]);
 
     //!Draw the mesh
     glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
 
     //!Clean up
     glDisableVertexAttribArray(0);
