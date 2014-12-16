@@ -157,9 +157,6 @@ void Model::drawVBO(bool smooth)
     glEnableClientState(GL_NORMAL_ARRAY);
 
     //!Indices
-
-    //!Draw the mesh
-    glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
 
     //! the last argument needs special treatment
