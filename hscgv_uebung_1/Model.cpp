@@ -162,15 +162,15 @@ void Model::drawVBO(bool smooth)
     glDrawElements( GL_TRIANGLES, indices.size(), GL_UNSIGNED_SHORT, (void*)0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
 
-    //!Clean up
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-
     //! the last argument needs special treatment
     glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
                         &m_vertexIndexStartArray[0], m_face.size());
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
+
+    //!Clean up
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // generate data used for vertex array and vertex buffer object GL modes
