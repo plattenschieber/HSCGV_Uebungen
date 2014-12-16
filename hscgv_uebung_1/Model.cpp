@@ -164,7 +164,7 @@ void Model::drawVBO(bool smooth)
 
     //! the last argument needs special treatment
     glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
-                        &m_vertexIndexStartArray[0], m_face.size());
+                        &m_primitiveOffsetArray[0], m_face.size());
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
 
