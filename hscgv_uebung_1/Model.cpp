@@ -143,8 +143,6 @@ void Model::drawVBO(bool smooth)
     //!vertices
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX]);
     glVertexPointer(3, GL_FLOAT, 0, (void*)0);
-    //glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE, 0, (void*)0);
-    //glEnableVertexAttribArray(0);
 
     //!Normals
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX_NORMAL]);
