@@ -158,8 +158,15 @@ void Model::drawVBO(bool smooth)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
 
     //! the last argument needs special treatment
+#ifdef DEBUG
+    for (uint i=0; i<m_primitiveSizeArray.size(); i++){
+        if (m_primitiveSizeArray[i] > 0)
+            glDrawElements(GL_POLYGON, m_primitiveSizeArray[i], GL_UNSIGNED_INT, m_primitiveOffsetArray[i]);
+    }
+#else
     glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
                         &m_primitiveOffsetArray[0], m_face.size());
+#endif
 
     //!Clean up
     glDisableClientState(GL_VERTEX_ARRAY);
