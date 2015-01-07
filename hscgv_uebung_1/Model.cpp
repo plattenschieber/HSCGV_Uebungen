@@ -161,9 +161,9 @@ void Model::drawVBO(bool smooth)
     for (uint i=0; i<1; i++){
         glDrawElements(GL_POLYGON, 3, GL_UNSIGNED_INT, m_primitiveOffsetArray[i]);
     }
-#else
-    glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
-                        &m_primitiveOffsetArray[0], m_face.size());
+#elif 1
+    glMultiDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT,
+                        NULL, 0);
     CHECKGL;
 #endif
 
@@ -212,7 +212,7 @@ void Model::computeVertexArrayData()
         m_faceNormalArray.push_back(f.nz);
     }
 
-    int currentIndex = 0;
+    uint currentOffset = 0;
     //! iterate again over all faces
     for(std::vector<Face>::iterator it = m_face.begin();
             it != m_face.end();
@@ -222,8 +222,10 @@ void Model::computeVertexArrayData()
         //! store a pointer to the first vertex in the array of vertex indices
         m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentIndex]);
         //! store the offset of the first vertex into the array of vertex indices
-        m_primitiveOffsetArray.push_back((GLuint *)0 +currentIndex);
-        currentIndex += f.nverts;
+        m_primitiveOffsetArray.push_back(BUFFER_OFFSET(currentOffset));
+        m_primitiveOffsetArray.push_back(BUFFER_OFFSET(currentOffset+1));
+        m_primitiveOffsetArray.push_back(BUFFER_OFFSET(currentOffset+2));
+//        currentOffset += f.nverts;
     }
 }
 
