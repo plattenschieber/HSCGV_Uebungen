@@ -46,7 +46,6 @@ static bool checkGL(const char *label, int line)
 #define CHECKGL do { checkGL(__PRETTY_FUNCTION__, __LINE__); } while(0)
 #endif
 #endif
-#define BUFFER_OFFSET(offset) (static_cast<char*>(0) + (offset))
 
 
 Model::Model(QObject *parent)
@@ -222,10 +221,8 @@ void Model::computeVertexArrayData()
         //! store a pointer to the first vertex in the array of vertex indices
         m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentOffset]);
         //! store the offset of the first vertex into the array of vertex indices
-        m_primitiveOffsetArray.push_back(BUFFER_OFFSET(currentOffset));
-        m_primitiveOffsetArray.push_back(BUFFER_OFFSET(currentOffset+1));
-        m_primitiveOffsetArray.push_back(BUFFER_OFFSET(currentOffset+2));
-//        currentOffset += f.nverts;
+        m_primitiveOffsetArray.push_back(static_cast<GLuint *>(0) +currentOffset);
+        currentOffset += f.nverts;
     }
 }
 
