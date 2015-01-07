@@ -123,7 +123,7 @@ void Model::drawArray(bool smooth)
     glNormalPointer(GL_FLOAT, 0, &m_vertexNormalArray[0]);
     glVertexPointer(3, GL_FLOAT, 0, &m_vertexArray[0]);
     glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
-                        &m_vertexIndexStartArray[0], 3);
+                        &m_vertexIndexStartArray[0], m_face.size());
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
 }
