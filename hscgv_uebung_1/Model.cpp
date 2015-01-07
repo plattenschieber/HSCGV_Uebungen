@@ -162,8 +162,8 @@ void Model::drawVBO(bool smooth)
         glDrawElements(GL_POLYGON, 3, GL_UNSIGNED_INT, m_primitiveOffsetArray[i]);
     }
 #elif 1
-    glMultiDrawElements(GL_TRIANGLES, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
-                        NULL, 0);
+    glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
+                        &m_primitiveOffsetArray[0], m_face.size());
     CHECKGL;
 #endif
 
