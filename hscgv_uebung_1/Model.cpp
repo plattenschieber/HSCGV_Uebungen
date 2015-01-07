@@ -140,6 +140,32 @@ void Model::drawVBO(bool smooth)
       * unbind all buffers
       * disable vertex arrays
       */
+
+    //!vertices
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX]);
+    glVertexPointer(3, GL_FLOAT, 0, (void*)0);
+
+    //!Normals
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX_NORMAL]);
+    glNormalPointer(GL_FLOAT, 0, (void*)0 );
+
+    //! enable vertex and normal array like in drawArray
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+
+    //!Indices
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
+
+    //! the last argument needs special treatment
+    glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
+                        &m_primitiveOffsetArray[0], m_face.size());
+    CHECKGL;
+
+    //!Clean up
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 // generate data used for vertex array and vertex buffer object GL modes
@@ -180,7 +206,7 @@ void Model::computeVertexArrayData()
         m_faceNormalArray.push_back(f.nz);
     }
 
-    int currentIndex = 0;
+    uint currentOffset = 0;
     //! iterate again over all faces
     for(std::vector<Face>::iterator it = m_face.begin();
             it != m_face.end();
@@ -188,10 +214,10 @@ void Model::computeVertexArrayData()
     {
         const Face &f = *it;
         //! store a pointer to the first vertex in the array of vertex indices
-        m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentIndex]);
+        m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentOffset]);
         //! store the offset of the first vertex into the array of vertex indices
-        //m_primitiveOffsetArray.push_back(currentIndex);
-        currentIndex += f.nverts;
+        m_primitiveOffsetArray.push_back(static_cast<GLuint *>(0) +currentOffset);
+        currentOffset += f.nverts;
     }
 }
 
@@ -204,6 +230,30 @@ void Model::bufferArrayData()
       * buffer appropriate data
       * bind 0 to the target
       */
+
+    //! generate new buffer objects and store the generated IDs
+    glGenBuffers(NUM_BOS, m_bo);
+
+    //! bind the buffer objects for vertex, normal and indices data and copy data to the BOs
+
+    //! vertices
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX]);
+    glBufferData(GL_ARRAY_BUFFER, m_vertexArray.size()*sizeof(GLfloat), &m_vertexArray[0], GL_STATIC_DRAW);
+
+    //! vertex and face Normals
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX_NORMAL]);
+    glBufferData(GL_ARRAY_BUFFER, m_vertexNormalArray.size()*sizeof(GLfloat), &m_vertexNormalArray[0], GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_FACE_NORMAL]);
+    glBufferData(GL_ARRAY_BUFFER, m_faceNormalArray.size()*sizeof(GLfloat), &m_faceNormalArray[0], GL_STATIC_DRAW);
+
+    //! offsets into vertices
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_vertexIndexArray.size()*sizeof(GLuint), &m_vertexIndexArray[0], GL_STATIC_DRAW);
+
+    //! unbind the buffer objects
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }
 
 void Model::release()
