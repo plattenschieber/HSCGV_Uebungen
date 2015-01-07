@@ -46,6 +46,7 @@ static bool checkGL(const char *label, int line)
 #define CHECKGL do { checkGL(__PRETTY_FUNCTION__, __LINE__); } while(0)
 #endif
 #endif
+#define BUFFER_OFFSET(offset) (static_cast<char*>(0) + (offset))
 
 
 Model::Model(QObject *parent)
