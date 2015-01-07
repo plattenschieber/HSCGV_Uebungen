@@ -158,9 +158,8 @@ void Model::drawVBO(bool smooth)
 
     //! the last argument needs special treatment
 #ifdef DEBUG
-    for (uint i=0; i<m_primitiveSizeArray.size(); i++){
-        if (m_primitiveSizeArray[i] > 0)
-            glDrawElements(GL_POLYGON, m_primitiveSizeArray[i], GL_UNSIGNED_INT, m_primitiveOffsetArray[i]);
+    for (uint i=0; i<1; i++){
+        glDrawElements(GL_POLYGON, 3, GL_UNSIGNED_INT, m_primitiveOffsetArray[i]);
     }
 #else
     glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
