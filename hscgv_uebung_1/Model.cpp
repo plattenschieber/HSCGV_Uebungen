@@ -156,16 +156,9 @@ void Model::drawVBO(bool smooth)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
 
     //! the last argument needs special treatment
-#ifdef DEBUG
-    for (uint i=0; i<m_primitiveSizeArray.size(); i++){
-        if (m_primitiveSizeArray[i] > 0)
-            glDrawElements(GL_POLYGON, m_primitiveSizeArray[i], GL_UNSIGNED_INT, m_primitiveOffsetArray[i]);
-    }
-#else
     glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
                         &m_primitiveOffsetArray[0], m_face.size());
     CHECKGL;
-#endif
 
     //!Clean up
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -212,7 +205,7 @@ void Model::computeVertexArrayData()
         m_faceNormalArray.push_back(f.nz);
     }
 
-    int currentIndex = 0;
+    uint currentOffset = 0;
     //! iterate again over all faces
     for(std::vector<Face>::iterator it = m_face.begin();
             it != m_face.end();
@@ -220,10 +213,10 @@ void Model::computeVertexArrayData()
     {
         const Face &f = *it;
         //! store a pointer to the first vertex in the array of vertex indices
-        m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentIndex]);
+        m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentOffset]);
         //! store the offset of the first vertex into the array of vertex indices
-        m_primitiveOffsetArray.push_back((GLuint *)0 +currentIndex);
-        currentIndex += f.nverts;
+        m_primitiveOffsetArray.push_back(static_cast<GLuint *>(0) +currentOffset);
+        currentOffset += f.nverts;
     }
 }
 
@@ -254,7 +247,7 @@ void Model::bufferArrayData()
 
     //! offsets into vertices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_primitiveOffsetArray.size()*sizeof(GLuint), &m_primitiveOffsetArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_vertexIndexArray.size()*sizeof(GLuint), &m_vertexIndexArray[0], GL_STATIC_DRAW);
 
     //! unbind the buffer objects
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
