@@ -230,10 +230,18 @@ void Model::bufferArrayData()
     //! vertices
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX]);
     glBufferData(GL_ARRAY_BUFFER, m_vertexArray.size()*sizeof(GLfloat), &m_vertexArray[0], GL_STATIC_DRAW);
+    //! attach the active buffer to the active array
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    //! enable the vertex attribute
+    glEnableVertexAttribArray(0);
+
 
     //! vertex and face Normals
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_VERTEX_NORMAL]);
     glBufferData(GL_ARRAY_BUFFER, m_vertexNormalArray.size()*sizeof(GLfloat), &m_vertexNormalArray[0], GL_STATIC_DRAW);
+    //! attach the active buffer to the active array
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(2);
     glBindBuffer(GL_ARRAY_BUFFER, m_bo[BO_FACE_NORMAL]);
     glBufferData(GL_ARRAY_BUFFER, m_faceNormalArray.size()*sizeof(GLfloat), &m_faceNormalArray[0], GL_STATIC_DRAW);
 
