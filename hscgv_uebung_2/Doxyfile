@@ -1,0 +1,19 @@
+# *************** Programmierpraktikum Computergrafik *****************
+# Aufgabe 2 - "Der Greifer"
+#
+# File: doxygen.conf
+
+PROJECT_NAME = "Aufgabe 2: Der Greifer"
+#PROJECT_NUMBER = "$Id"
+OUTPUT_DIRECTORY = doc
+OUTPUT_LANGUAGE = English
+WARNINGS = YES
+EXTRACT_ALL = YES
+EXTRACT_PRIVATE = YES
+EXTRACT_STATIC = YES
+CLASS_DIAGRAMS = YES
+INPUT = .
+FILE_PATTERNS = *.h *.cpp
+GENERATE_HTML = YES
+GENERATE_LATEX = YES
+#GENERATE_MAN = YES
