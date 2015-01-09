@@ -132,6 +132,8 @@ protected:
         enum { BO_VERTEX=0, BO_VERTEX_NORMAL, BO_FACE_NORMAL, BO_VERTEX_INDEX, NUM_BOS };
         //! VBO ids
         GLuint m_bo[NUM_BOS];
+        //! VAO id
+        GLuint m_vao;
 };
 
 #endif

@@ -155,6 +155,8 @@ void Model::drawVBO(bool smooth)
     //!Indices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
 
+    glBindVertexArray(m_vao);
+
     //! the last argument needs special treatment
 #ifdef DEBUG
     for (uint i=0; i<m_primitiveSizeArray.size(); i++){
@@ -167,6 +169,7 @@ void Model::drawVBO(bool smooth)
     CHECKGL;
 #endif
 
+    glBindVertexArray(0);
     //!Clean up
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
@@ -237,6 +240,10 @@ void Model::bufferArrayData()
       * bind 0 to the target
       */
 
+    //! generate and bind new vertex attribute object to remember all used VBOs and memory layouts
+    glGenVertexArrays (1, &m_vao);
+    glBindVertexArray(m_vao);
+
     //! generate new buffer objects and store the generated IDs
     glGenBuffers(NUM_BOS, m_bo);
 
@@ -260,6 +267,7 @@ void Model::bufferArrayData()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    glBindVertexArray(0);
 }
 
 void Model::release()
