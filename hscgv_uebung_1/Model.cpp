@@ -124,6 +124,7 @@ void Model::drawArray(bool smooth)
     glVertexPointer(3, GL_FLOAT, 0, &m_vertexArray[0]);
     glMultiDrawElements(GL_POLYGON, &m_primitiveSizeArray[0], GL_UNSIGNED_INT,
                         &m_vertexIndexStartArray[0], m_face.size());
+    CHECKGL;
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
 }
@@ -193,7 +194,7 @@ void Model::computeVertexArrayData()
         m_faceNormalArray.push_back(f.nz);
     }
 
-    int currentIndex = 0;
+    uint currentOffset = 0;
     //! iterate again over all faces
     for(std::vector<Face>::iterator it = m_face.begin();
             it != m_face.end();
@@ -201,10 +202,10 @@ void Model::computeVertexArrayData()
     {
         const Face &f = *it;
         //! store a pointer to the first vertex in the array of vertex indices
-        m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentIndex]);
+        m_vertexIndexStartArray.push_back(&m_vertexIndexArray[currentOffset]);
         //! store the offset of the first vertex into the array of vertex indices
-        m_primitiveOffsetArray.push_back((GLuint *)0 +currentIndex);
-        currentIndex += f.nverts;
+        m_primitiveOffsetArray.push_back(static_cast<GLuint *>(0) +currentOffset);
+        currentOffset += f.nverts;
     }
 }
 
@@ -247,7 +248,7 @@ void Model::bufferArrayData()
 
     //! offsets into vertices
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_bo[BO_VERTEX_INDEX]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_primitiveOffsetArray.size()*sizeof(GLuint), &m_primitiveOffsetArray[0], GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_vertexIndexArray.size()*sizeof(GLuint), &m_vertexIndexArray[0], GL_STATIC_DRAW);
 
     //! unbind the buffer objects
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
