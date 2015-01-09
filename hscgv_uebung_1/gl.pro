@@ -16,8 +16,8 @@ OTHER_FILES += \
 unix:LIBS *= -lGLEW
 
 macx {
-LIBS *= -lGLEW -L/usr/local/Cellar/glew/1.11.0/lib
-INCLUDEPATH *= /usr/local/Cellar/glew/1.11.0/include
+LIBS *= -lGLEW -L/usr/local/opt/glew/lib
+INCLUDEPATH *= /usr/local/opt/glew/include
 }
 
 win32 {
