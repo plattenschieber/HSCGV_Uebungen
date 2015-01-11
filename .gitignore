@@ -10,6 +10,6 @@ hscgv_uebung_1/moc_GLFrame.cpp
 hscgv_uebung_1/moc_Model.cpp
 hscgv_uebung_1/moc_UserParameterDialog.cpp
 build-gl-Qt_4_8_6_local-Debug/
-hscgv_uebung_1/gl.pro.user
 *.autosave
 build/
+*.user
