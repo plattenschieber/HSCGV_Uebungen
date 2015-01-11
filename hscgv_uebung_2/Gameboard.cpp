@@ -16,6 +16,7 @@
 #include <Inventor/nodes/SoSeparator.h>
 #include <Inventor/nodes/SoSelection.h>
 #include <Inventor/nodes/SoCube.h>
+#include <Inventor/nodes/SoSphere.h>
 #include <Inventor/nodes/SoMaterial.h>
 #include <Inventor/nodes/SoTransform.h>
 #include <Inventor/nodes/SoCylinder.h>
@@ -130,6 +131,59 @@ Gameboard::initSceneGraph()
 
    // we want to keep the gameboard scene graph during all our life
    m_sceneGraph->ref();
+
+   // we need only four objects: a cube and a sphere for our board and their materials
+   SoSphere *sphere = new SoSphere;
+   SoCube *cube = new SoCube;
+   SoMaterial *cubeBlackMaterial = new SoMaterial;
+   SoMaterial *cubeWhiteMaterial = new SoMaterial;
+   SoMaterial *sphereMaterial = new SoMaterial;
+
+   // set sphere material to shiny silver
+   sphereMaterial->ambientColor.setValue(.2, .9, .2);
+   sphereMaterial->diffuseColor.setValue(.6, .6, .6);
+   sphereMaterial->specularColor.setValue(.5, .5, .5);
+   sphereMaterial->shininess = .5;
+
+   // set black and white cube material
+   cubeBlackMaterial->diffuseColor.setValue(0.,0.,0.);
+   cubeWhiteMaterial->diffuseColor.setValue(1.,1.,1.);
+
+   // create gamboard and tiles (spheres)
+   for (int i=0; i<7; i++) {
+       for (int j=0; j<7; j++) {
+           // each square needs a seperator and two transformer for cube and sphere
+           SoSeparator *currentSep = new SoSeparator;
+           SoTransform *cubeTransform = new SoTransform;
+           SoTransform *sphereTransform = new SoTransform;
+
+           if (m_squares[i*7+j] != INVALID_FIELD) {
+               // translate cube, resize sphere and place it over the cube (state machine)
+               cubeTransform->translation.setValue(j*2.0, .0, i*2.0);
+               sphereTransform->scaleFactor.setValue(.5,.5,.5);
+               sphereTransform->translation.setValue(.0,1.5,.0);
+
+               // paint all even squares white
+               if (((i*7+j)%2) == 1)
+                   currentSep->addChild(cubeWhiteMaterial);
+               else // and odd squares black
+                   currentSep->addChild(cubeBlackMaterial);
+
+               // add all nodes
+               currentSep->addChild(cubeTransform);
+               currentSep->addChild(cube);
+               currentSep->addChild(sphereMaterial);
+               currentSep->addChild(sphereTransform);
+               currentSep->addChild(sphere);
+
+               // and finally add our seperation node to the gameboard
+               m_sceneGraph->addChild(currentSep);
+           }
+       }
+   }
+
+   // remove the sphere of the middle square (24)
+   // TODO
 }
 
 
