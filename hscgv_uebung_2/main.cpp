@@ -58,7 +58,8 @@ main(int argc, char *argv[])
    viewer->show();
 
    // set the highlight render action (the selected box gets a wireframe around it, to indicate selection)
-   viewer->setGLRenderAction( new SoBoxHighlightRenderAction() );
+   SoBoxHighlightRenderAction *renderAct = new SoBoxHighlightRenderAction;
+   viewer->setGLRenderAction(renderAct);
 
    // request automatic redraw when selection changes
    viewer->redrawOnSelectionChange( (SoSelection *) board->getSceneGraph() );
@@ -67,5 +68,6 @@ main(int argc, char *argv[])
    SoQt::show(mainwin);
    SoQt::mainLoop();
 
+   delete renderAct;
    return 0;
 }
