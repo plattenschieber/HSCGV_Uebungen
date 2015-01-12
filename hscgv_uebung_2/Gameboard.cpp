@@ -394,7 +394,8 @@ Gameboard::getPositionOfPiece(int index)
    int posZ = index / 7;
    int posX = index - (7 * posZ);
    // the vector position is computed as in the initSceneGraph method
-   SbVec3f position(2.*posX, 1.5, 2.*posZ);
+   // (just with a slightly higher y-axis, since the grabber needs to touch the top of the sphere)
+   SbVec3f position(2.*posX, 2., 2.*posZ);
    return position;
 }
 
