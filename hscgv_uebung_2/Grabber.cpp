@@ -57,6 +57,9 @@ Grabber::Grabber()
 //**********************************************************
 Grabber::~Grabber()
 {
+   // unreferencing of the scenegraph
+   if (m_sceneGraph != NULL)
+      m_sceneGraph->unref();
 }
 
 
