@@ -390,9 +390,11 @@ Gameboard::evaluateRules()
 SbVec3f
 Gameboard::getPositionOfPiece(int index)
 {
-   SbVec3f position(0.0, 0.0, 0.0);
-
-   // compute the vector position of the upper face of the piece
+   // compute the coordinates of the squares from the given indices
+   int posZ = index / 7;
+   int posX = index - (7 * posZ);
+   // the vector position is computed as in the initSceneGraph method
+   SbVec3f position(2.*posX, 1.5, 2.*posZ);
    return position;
 }
 
