@@ -406,11 +406,22 @@ Gameboard::getPositionOfPiece(int index)
 SoNode *
 Gameboard::removePiece(int index)
 {
-   // 1. check if the square is occupied
-   // 2. remove the piece from the scenegraph
-   // 3. mark the square as empty
+   // this should never happen!
+   if (m_squares[index] == EMPTY_FIELD || m_squares[index] == INVALID_FIELD)
+       return NULL;
 
-   return NULL;
+   // get the geometry of the piece
+   else { //if (m_squares[index] == OCCUPIED_FIELD) {
+       SoSeparator *indexField = static_cast<SoSeparator *>(m_sceneGraph->getChild(index));
+       // the sphere lies inside the second group of a square
+       SoNode *removedSphere = indexField->getChild(1);
+       // remove geometry
+       indexField->removeChild(1);
+       // mark square as empty and return sphere
+       m_squares[index] = EMPTY_FIELD;
+       return removedSphere;
+   }
+
 }
 
 //**********************************************************
