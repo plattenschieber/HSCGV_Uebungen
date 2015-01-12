@@ -167,6 +167,9 @@ Gameboard::initSceneGraph()
 
            // create the field and tiles
            if (m_squares[i*7+j] != INVALID_FIELD) {
+               ///
+               /// CUBE
+               ///
                // setup the cube group
                currentSep->addChild(cubeGroup);
                // translate cube
@@ -180,6 +183,9 @@ Gameboard::initSceneGraph()
                cubeGroup->addChild(cubeTransform);
                cubeGroup->addChild(cube);
 
+               ///
+               /// SPHERE
+               ///
                // add sphere only in case it's not the middle square
                if (m_squares[i*7+j] == OCCUPIED_FIELD) {
                    // setup the sphere group
