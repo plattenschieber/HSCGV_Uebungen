@@ -157,6 +157,10 @@ Gameboard::initSceneGraph()
            SoTransform *cubeTransform = new SoTransform;
            SoTransform *sphereTransform = new SoTransform;
 
+           // add our seperation node to the gameboard
+           m_sceneGraph->addChild(currentSep);
+
+           // create the field and tiles
            if (m_squares[i*7+j] != INVALID_FIELD) {
                // translate cube, resize sphere and place it over the cube (state machine)
                cubeTransform->translation.setValue(j*2.0, .0, i*2.0);
@@ -178,9 +182,6 @@ Gameboard::initSceneGraph()
                    currentSep->addChild(sphereTransform);
                    currentSep->addChild(sphere);
                }
-
-               // and finally add our seperation node to the gameboard
-               m_sceneGraph->addChild(currentSep);
            }
        }
    }
