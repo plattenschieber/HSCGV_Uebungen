@@ -157,30 +157,39 @@ Gameboard::initSceneGraph()
            SoTransform *cubeTransform = new SoTransform;
            SoTransform *sphereTransform = new SoTransform;
 
-           // add our seperation node to the gameboard
+           // the cube and sphere are better hosted in a group
+           SoGroup *cubeGroup = new SoGroup;
+           SoGroup *sphereGroup = new SoGroup;
+
+           // add our seperation node to the gameboard - represents the square with the tile on it
+           // in the case of an invalid field it's just empty
            m_sceneGraph->addChild(currentSep);
 
            // create the field and tiles
            if (m_squares[i*7+j] != INVALID_FIELD) {
-               // translate cube, resize sphere and place it over the cube (state machine)
+               // setup the cube group
+               currentSep->addChild(cubeGroup);
+               // translate cube
                cubeTransform->translation.setValue(j*2.0, .0, i*2.0);
-               sphereTransform->scaleFactor.setValue(.5,.5,.5);
-               sphereTransform->translation.setValue(.0,1.5,.0);
-
                // paint all even squares white
                if (((i*7+j)%2) == 1)
-                   currentSep->addChild(cubeWhiteMaterial);
+                   cubeGroup->addChild(cubeWhiteMaterial);
                else // and odd squares black
-                   currentSep->addChild(cubeBlackMaterial);
-
+                   cubeGroup->addChild(cubeBlackMaterial);
                // add all nodes
-               currentSep->addChild(cubeTransform);
-               currentSep->addChild(cube);
+               cubeGroup->addChild(cubeTransform);
+               cubeGroup->addChild(cube);
+
                // add sphere only in case it's not the middle square
                if (m_squares[i*7+j] == OCCUPIED_FIELD) {
-                   currentSep->addChild(sphereMaterial);
-                   currentSep->addChild(sphereTransform);
-                   currentSep->addChild(sphere);
+                   // setup the sphere group
+                   currentSep->addChild(sphereGroup);
+                   // resize sphere and place it over the cube (state machine)
+                   sphereTransform->scaleFactor.setValue(.5,.5,.5);
+                   sphereTransform->translation.setValue(.0,1.5,.0);
+                   sphereGroup->addChild(sphereMaterial);
+                   sphereGroup->addChild(sphereTransform);
+                   sphereGroup->addChild(sphere);
                }
            }
        }
