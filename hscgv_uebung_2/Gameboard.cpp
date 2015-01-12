@@ -433,7 +433,16 @@ Gameboard::removePiece(int index)
 void
 Gameboard::insertPiece(int index, SoNode* piece)
 {
-   // 1. check if the square is empty
-   // 2. insert the piece into the scenegraph
-   // 3. mark the square as occupied
+   // this should never happen!
+   if (m_squares[index] == EMPTY_FIELD || m_squares[index] == INVALID_FIELD)
+       return;
+
+   // insert piece into scenegraph
+   else {
+       SoSeparator *indexField = static_cast<SoSeparator *>(m_sceneGraph->getChild(index));
+       indexField->insertChild(piece, 1);
+       // mark square as occupied
+       m_squares[index] = OCCUPIED_FIELD;
+       return;
+   }
 }
