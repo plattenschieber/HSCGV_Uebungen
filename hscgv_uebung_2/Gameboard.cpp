@@ -172,18 +172,18 @@ Gameboard::initSceneGraph()
                // add all nodes
                currentSep->addChild(cubeTransform);
                currentSep->addChild(cube);
-               currentSep->addChild(sphereMaterial);
-               currentSep->addChild(sphereTransform);
-               currentSep->addChild(sphere);
+               // add sphere only in case it's not the middle square
+               if (m_squares[i*7+j] != EMPTY_FIELD) {
+                   currentSep->addChild(sphereMaterial);
+                   currentSep->addChild(sphereTransform);
+                   currentSep->addChild(sphere);
+               }
 
                // and finally add our seperation node to the gameboard
                m_sceneGraph->addChild(currentSep);
            }
        }
    }
-
-   // remove the sphere of the middle square (24)
-   // TODO
 }
 
 
