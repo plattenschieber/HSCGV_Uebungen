@@ -133,6 +133,8 @@ Grabber::initSceneGraph()
 
 
    // ------------------- shoulder begin --------------------
+   SoSeparator *shoulder = new SoSeparator;
+   grabber->addChild(shoulder);
    // positions of all of the vertices
    static float shoulderVertices[12][3] =
    {
@@ -177,23 +179,23 @@ Grabber::initSceneGraph()
    // define colors for the faces
    SoMaterial *shoulderMaterials = new SoMaterial;
    shoulderMaterials->diffuseColor.setValues(0, 8, shoulderColors);
-   grabber->addChild(shoulderMaterials);
+   shoulder->addChild(shoulderMaterials);
    // bind defined material to faces
    SoMaterialBinding *shoulderMaterialBinding = new SoMaterialBinding;
    shoulderMaterialBinding->value = SoMaterialBinding::PER_FACE;
-   grabber->addChild(shoulderMaterialBinding);
+   shoulder->addChild(shoulderMaterialBinding);
    // define coordinates for vertices
    SoCoordinate3 *myCoords = new SoCoordinate3;
    myCoords->point.setValues(0, 12, shoulderVertices);
-   grabber->addChild(myCoords);
+   shoulder->addChild(myCoords);
    // scale shoulder
    SoTransform *shoulderScale = new SoTransform;
    shoulderScale->scaleFactor.setValue(.2,.2,.4);
-   grabber->addChild(shoulderScale);
+   shoulder->addChild(shoulderScale);
    // define the IndexedFaceSet, with indices into the vertices
    SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
    myFaceSet->coordIndex.setValues(0, 44, shoulderIndices);
-   grabber->addChild(myFaceSet);
+   shoulder->addChild(myFaceSet);
    // --------------------- shoulder end ---------------------
 
 
