@@ -174,16 +174,16 @@ Grabber::initSceneGraph()
    };
 
    // Define colors for the faces
-   SoMaterial *myMaterials = new SoMaterial;
-   myMaterials->diffuseColor.setValues(0, 8, shoulderColors);
-   grabber->addChild(myMaterials);
-   SoMaterialBinding *myMaterialBinding = new SoMaterialBinding;
-   myMaterialBinding->value = SoMaterialBinding::PER_FACE;
-   grabber->addChild(myMaterialBinding);
 
    // Define coordinates for vertices
 
    // Define coordinates for vertices
+   SoMaterial *shoulderMaterials = new SoMaterial;
+   shoulderMaterials->diffuseColor.setValues(0, 8, shoulderColors);
+   grabber->addChild(shoulderMaterials);
+   SoMaterialBinding *shoulderMaterialBinding = new SoMaterialBinding;
+   shoulderMaterialBinding->value = SoMaterialBinding::PER_FACE;
+   grabber->addChild(shoulderMaterialBinding);
    SoCoordinate3 *myCoords = new SoCoordinate3;
    myCoords->point.setValues(0, 12, shoulderVertices);
    grabber->addChild(myCoords);
