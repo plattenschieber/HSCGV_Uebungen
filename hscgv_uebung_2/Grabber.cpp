@@ -126,6 +126,11 @@ Grabber::initSceneGraph()
 {
    // Create the grabber
    SoSeparator *grabber = new SoSeparator;
+   // move the grabber to a nice place
+   SoTransform *transGrabber = new SoTransform;
+   transGrabber->translation.setValue(13.,13.,0.);
+   grabber->addChild(transGrabber);
+
 
    // positions of all of the vertices
    static float shoulderVertices[12][3] =
