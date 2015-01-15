@@ -173,7 +173,7 @@ Gameboard::initSceneGraph()
                // setup the cube group
                currentSep->addChild(cubeGroup);
                // translate cube
-               cubeTransform->translation.setValue(j*2.0, .0, i*2.0);
+               cubeTransform->translation.setValue(j*2.0, i*2.0, .0);
                // paint all even squares white
                if (((i*7+j)%2) == 1)
                    cubeGroup->addChild(cubeWhiteMaterial);
@@ -192,7 +192,7 @@ Gameboard::initSceneGraph()
                    currentSep->addChild(sphereGroup);
                    // resize sphere and place it over the cube (state machine)
                    sphereTransform->scaleFactor.setValue(.5,.5,.5);
-                   sphereTransform->translation.setValue(.0,1.5,.0);
+                   sphereTransform->translation.setValue(.0,.0,1.5);
                    sphereGroup->addChild(sphereMaterial);
                    sphereGroup->addChild(sphereTransform);
                    sphereGroup->addChild(sphere);
@@ -391,11 +391,11 @@ SbVec3f
 Gameboard::getPositionOfPiece(int index)
 {
    // compute the coordinates of the squares from the given indices
-   int posZ = index / 7;
-   int posX = index - (7 * posZ);
+   int posY = index / 7;
+   int posX = index - (7 * posY);
    // the vector position is computed as in the initSceneGraph method
    // (just with a slightly higher y-axis, since the grabber needs to touch the top of the sphere)
-   SbVec3f position(2.*posX, 2., 2.*posZ);
+   SbVec3f position(2.*posX, 2.*posY, 2.);
    return position;
 }
 
