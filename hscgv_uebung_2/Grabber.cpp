@@ -132,6 +132,7 @@ Grabber::initSceneGraph()
    grabber->addChild(transGrabber);
 
 
+   // ------------------- shoulder begin --------------------
    // positions of all of the vertices
    static float shoulderVertices[12][3] =
    {
@@ -193,6 +194,7 @@ Grabber::initSceneGraph()
    SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
    myFaceSet->coordIndex.setValues(0, 44, shoulderIndices);
    grabber->addChild(myFaceSet);
+   // --------------------- shoulder end ---------------------
 
 
    return grabber;
