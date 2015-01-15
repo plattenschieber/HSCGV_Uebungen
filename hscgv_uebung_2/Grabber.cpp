@@ -26,6 +26,7 @@
 #include <Inventor/sensors/SoIdleSensor.h>
 #include <Inventor/engines/SoCompose.h>
 #include <Inventor/engines/SoCalculator.h>
+#include <Inventor/nodes/SoMaterial.h>
 
 // own includes
 #include "Grabber.h"
@@ -114,9 +115,6 @@ Grabber::attachGameboard(Gameboard *gameboard)
    m_gameboard = gameboard;
 }
 
-
-
-
 //**********************************************************
 //* Grabber initSceneGraph
 //**********************************************************
@@ -128,6 +126,69 @@ Grabber::initSceneGraph()
 {
    // Create the grabber
    SoSeparator *grabber = new SoSeparator;
+
+   // positions of all of the vertices
+   static float shoulderVertices[12][3] =
+   {
+       { 8.0000,  0.0000,  0.0000},  // P1 - lower part of shoulder
+       { 4.0000,  7.0000,  0.0000},  // P2  |
+       {-4.0000,  7.0000,  0.0000},  // P3  |
+       {-8.0000,  0.0000,  0.0000},  // P4  |
+       {-4.0000, -7.0000,  0.0000},  // P5  |
+       { 4.0000, -7.0000,  0.0000},  // P6  |
+       { 8.0000,  0.0000,  4.0000},  // P7 - upper part of shoulder
+       { 4.0000,  7.0000,  4.0000},  // P8  |
+       {-4.0000,  7.0000,  4.0000},  // P9  |
+       {-8.0000,  0.0000,  4.0000},  // P10 |
+       {-4.0000, -7.0000,  4.0000},  // P11 |
+       { 4.0000, -7.0000,  4.0000},  // P12 |
+   };
+
+   // connectivity information:
+   // 2 faces with 6 vertices each (top and bottom faces)
+   // 6 faces with 4 vertices each (side faces)
+   // (plus the end-of-face indicator for each face)
+   static int shoulderIndices[44] =
+   {
+       1, 2, 3,  4,  5, SO_END_FACE_INDEX,    // bottom face
+       6, 7, 8, 9, 10, 11, SO_END_FACE_INDEX, // top face
+       0, 1,  7,  6, SO_END_FACE_INDEX,       // side faces
+       1, 2,  8,  7, SO_END_FACE_INDEX,       // |
+       2, 3,  9,  8, SO_END_FACE_INDEX,       // |
+       3, 4, 10,  9, SO_END_FACE_INDEX,       // |
+       4, 5, 11, 10, SO_END_FACE_INDEX,       // |
+       5, 0,  6, 11, SO_END_FACE_INDEX,       // |
+   };
+
+   // colors for the 8 faces
+   static float shoulderColors[8][3] =
+   {
+       {1.0,  .0,  0}, {1.0,  .0,  0},                 // upper and lower face colours
+       {1.0,  .0,  0}, {1.0,  .0,  0}, {1.0,  .0,  0}, // side face colours
+       {1.0,  .0,  0}, {1.0,  .0,  0}, {1.0,  .0,  0}, // |
+   };
+
+   // Define colors for the faces
+   SoMaterial *myMaterials = new SoMaterial;
+   myMaterials->diffuseColor.setValues(0, 8, shoulderColors);
+   grabber->addChild(myMaterials);
+   SoMaterialBinding *myMaterialBinding = new SoMaterialBinding;
+   myMaterialBinding->value = SoMaterialBinding::PER_FACE;
+   grabber->addChild(myMaterialBinding);
+
+   // Define coordinates for vertices
+
+   // Define coordinates for vertices
+   SoCoordinate3 *myCoords = new SoCoordinate3;
+   myCoords->point.setValues(0, 12, shoulderVertices);
+   grabber->addChild(myCoords);
+
+   // Define the IndexedFaceSet, with indices into
+   // the vertices:
+   SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
+   myFaceSet->coordIndex.setValues(0, 44, shoulderIndices);
+   grabber->addChild(myFaceSet);
+
 
    return grabber;
 }
