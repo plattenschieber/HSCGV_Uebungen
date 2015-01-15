@@ -199,6 +199,10 @@ Grabber::initSceneGraph()
    // --------------------- shoulder end ---------------------
 
 
+   //  ------------------- moving grabber --------------------
+   SoSeparator *movingGrabber = new SoSeparator;
+   grabber->addChild(movingGrabber);
+
    return grabber;
 }
 
