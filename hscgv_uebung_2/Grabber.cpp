@@ -149,8 +149,8 @@ static int shoulderIndices[44] =
     5, 0,  6, 11, SO_END_FACE_INDEX,       // |
 };
 
-// Colors for the 12 faces
-static float colors[12][3] =
+// colors for the 8 faces
+static float shoulderColors[8][3] =
 {
     {1.0,  .0,  0}, {1.0,  .0,  0},                 // upper and lower face colours
     {1.0,  .0,  0}, {1.0,  .0,  0}, {1.0,  .0,  0}, // side face colours
@@ -171,7 +171,7 @@ Grabber::initSceneGraph()
 
    // Define colors for the faces
    SoMaterial *myMaterials = new SoMaterial;
-   myMaterials->diffuseColor.setValues(0, 12, colors);
+   myMaterials->diffuseColor.setValues(0, 8, shoulderColors);
    grabber->addChild(myMaterials);
    SoMaterialBinding *myMaterialBinding = new SoMaterialBinding;
    myMaterialBinding->value = SoMaterialBinding::PER_FACE;
@@ -187,7 +187,7 @@ Grabber::initSceneGraph()
    // Define the IndexedFaceSet, with indices into
    // the vertices:
    SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
-   myFaceSet->coordIndex.setValues(0, 72, shoulderIndices);
+   myFaceSet->coordIndex.setValues(0, 44, shoulderIndices);
    grabber->addChild(myFaceSet);
 
 
