@@ -128,8 +128,8 @@ Grabber::initSceneGraph()
    SoSeparator *grabber = new SoSeparator;
    // move the grabber to a nice place
    SoTransform *transGrabber = new SoTransform;
-   transGrabber->translation.setValue(13.,13.,0.);
    grabber->addChild(transGrabber);
+   transGrabber->translation.setValue(12.,12.,0.);
 
 
    // ------------------- shoulder begin --------------------
