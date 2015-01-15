@@ -188,7 +188,7 @@ Grabber::initSceneGraph()
    grabber->addChild(myCoords);
    // scale shoulder
    SoTransform *shoulderScale = new SoTransform;
-   shoulderScale->scaleFactor.setValue(.2,.2,.2);
+   shoulderScale->scaleFactor.setValue(.2,.2,.4);
    grabber->addChild(shoulderScale);
    // define the IndexedFaceSet, with indices into the vertices
    SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
