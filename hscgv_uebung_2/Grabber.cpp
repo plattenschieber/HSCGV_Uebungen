@@ -185,17 +185,17 @@ Grabber::initSceneGraph()
    shoulderMaterialBinding->value = SoMaterialBinding::PER_FACE;
    shoulder->addChild(shoulderMaterialBinding);
    // define coordinates for vertices
-   SoCoordinate3 *myCoords = new SoCoordinate3;
-   myCoords->point.setValues(0, 12, shoulderVertices);
-   shoulder->addChild(myCoords);
+   SoCoordinate3 *shoulderCoords = new SoCoordinate3;
+   shoulderCoords->point.setValues(0, 12, shoulderVertices);
+   shoulder->addChild(shoulderCoords);
    // scale shoulder
    SoTransform *shoulderScale = new SoTransform;
    shoulderScale->scaleFactor.setValue(.2,.2,.4);
    shoulder->addChild(shoulderScale);
    // define the IndexedFaceSet, with indices into the vertices
-   SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
-   myFaceSet->coordIndex.setValues(0, 44, shoulderIndices);
-   shoulder->addChild(myFaceSet);
+   SoIndexedFaceSet *shoulderFaceSet = new SoIndexedFaceSet;
+   shoulderFaceSet->coordIndex.setValues(0, 44, shoulderIndices);
+   shoulder->addChild(shoulderFaceSet);
    // --------------------- shoulder end ---------------------
 
 
