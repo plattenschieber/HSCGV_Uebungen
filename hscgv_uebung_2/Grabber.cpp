@@ -118,7 +118,7 @@ Grabber::attachGameboard(Gameboard *gameboard)
 
 // Positions of all of the vertices:
 //
-static float vertexPositions[12][3] =
+static float shoulderVertices[12][3] =
 {
    { 0.0000,  1.2142,  0.7453},  // top
 
@@ -140,7 +140,7 @@ static float vertexPositions[12][3] =
 // Connectivity, information; 12 faces with 5 vertices each },
 // (plus the end-of-face indicator for each face):
 
-static int indices[72] =
+static int shoulderIndices[44] =
 {
    1,  2,  3,  4, 5, SO_END_FACE_INDEX, // top face
 
@@ -191,13 +191,13 @@ Grabber::initSceneGraph()
 
    // Define coordinates for vertices
    SoCoordinate3 *myCoords = new SoCoordinate3;
-   myCoords->point.setValues(0, 12, vertexPositions);
+   myCoords->point.setValues(0, 12, shoulderVertices);
    grabber->addChild(myCoords);
 
    // Define the IndexedFaceSet, with indices into
    // the vertices:
    SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
-   myFaceSet->coordIndex.setValues(0, 72, indices);
+   myFaceSet->coordIndex.setValues(0, 72, shoulderIndices);
    grabber->addChild(myFaceSet);
 
 
