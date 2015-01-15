@@ -203,6 +203,18 @@ Grabber::initSceneGraph()
    SoSeparator *movingGrabber = new SoSeparator;
    grabber->addChild(movingGrabber);
 
+   // build arm with relative position to shoulder and size
+   SoGroup *armGroup = new SoGroup;
+   movingGrabber->addChild(armGroup);
+   SoTransform *armTrafo = new SoTransform;
+   armTrafo->translation.setValue(.0,.0,4.0);
+   armTrafo->rotation.setValue(SbVec3f(0,0,0), 0);
+   armGroup->addChild(armTrafo);
+   SoCube *arm = new SoCube;
+   arm->width = arm->height = 1.5;
+   arm->depth = 5;
+   armGroup->addChild(arm);
+
    return grabber;
 }
 
