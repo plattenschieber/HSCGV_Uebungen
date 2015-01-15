@@ -173,27 +173,23 @@ Grabber::initSceneGraph()
        {1.0,  .0,  0}, {1.0,  .0,  0}, {1.0,  .0,  0}, // |
    };
 
-   // Define colors for the faces
-
-   // Define coordinates for vertices
-
-   // Define coordinates for vertices
+   // define colors for the faces
    SoMaterial *shoulderMaterials = new SoMaterial;
    shoulderMaterials->diffuseColor.setValues(0, 8, shoulderColors);
    grabber->addChild(shoulderMaterials);
+   // bind defined material to faces
    SoMaterialBinding *shoulderMaterialBinding = new SoMaterialBinding;
    shoulderMaterialBinding->value = SoMaterialBinding::PER_FACE;
    grabber->addChild(shoulderMaterialBinding);
+   // define coordinates for vertices
    SoCoordinate3 *myCoords = new SoCoordinate3;
    myCoords->point.setValues(0, 12, shoulderVertices);
    grabber->addChild(myCoords);
-
-   // Define the IndexedFaceSet, with indices into
-   // the vertices:
    // scale shoulder
    SoTransform *shoulderScale = new SoTransform;
    shoulderScale->scaleFactor.setValue(.2,.2,.2);
    grabber->addChild(shoulderScale);
+   // define the IndexedFaceSet, with indices into the vertices
    SoIndexedFaceSet *myFaceSet = new SoIndexedFaceSet;
    myFaceSet->coordIndex.setValues(0, 44, shoulderIndices);
    grabber->addChild(myFaceSet);
