@@ -116,8 +116,7 @@ Grabber::attachGameboard(Gameboard *gameboard)
 }
 
 
-// Positions of all of the vertices:
-//
+// positions of all of the vertices
 static float shoulderVertices[12][3] =
 {
     { 8.0000,  0.0000,  0.0000},  // P1 - lower part of shoulder
@@ -134,9 +133,10 @@ static float shoulderVertices[12][3] =
     { 4.0000, -7.0000,  4.0000},  // P12 |
 };
 
-// Connectivity, information; 12 faces with 5 vertices each },
-// (plus the end-of-face indicator for each face):
-
+// connectivity information:
+// 2 faces with 6 vertices each (top and bottom faces)
+// 6 faces with 4 vertices each (side faces)
+// (plus the end-of-face indicator for each face)
 static int shoulderIndices[44] =
 {
     1, 2, 3,  4,  5, SO_END_FACE_INDEX,    // bottom face
