@@ -208,7 +208,7 @@ Grabber::initSceneGraph()
    movingGrabber->addChild(armGroup);
    SoTransform *armTrafo = new SoTransform;
    armTrafo->translation.setValue(.0,.0,4.0);
-   armTrafo->rotation.setValue(SbVec3f(0,0,0), 0);
+   armTrafo->rotation.setValue(SbVec3f(0,0,1), 3*M_PI_4);
    armGroup->addChild(armTrafo);
    SoCube *arm = new SoCube;
    arm->width = arm->height = 1.5;
@@ -222,7 +222,7 @@ Grabber::initSceneGraph()
    // translate elbow to top of shoulder + its own half height (=radius)
    // [all heigths of any SoObjects are measured from their midpoints]
    elbowTrafo->translation.setValue(.0,.0,arm->depth.getValue()/2+.75);
-   elbowTrafo->rotation.setValue(SbVec3f(0,0,0), 0);
+   elbowTrafo->rotation.setValue(SbVec3f(0,1,0), M_PI_4);
    elbowGroup->addChild(elbowTrafo);
    SoCylinder *elbow = new SoCylinder;
    elbow->radius = 1.;
