@@ -295,7 +295,7 @@ Grabber::initSceneGraph()
    SoGroup *fingerGroup = new SoGroup;
    movingGrabber->addChild(fingerGroup);
    SoTransform *fingerTrafo = new SoTransform;
-   fingerTrafo->translation.setValue(.0,hand->height.getValue()/2a,.0);
+   fingerTrafo->translation.setValue(.0,hand->height.getValue()/2,.0);
    fingerTrafo->rotation.setValue(SbVec3f(0,0,0), 0);
    fingerGroup->addChild(fingerTrafo);
    SoCylinder *finger = new SoCylinder;
