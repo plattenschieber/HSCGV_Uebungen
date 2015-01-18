@@ -199,7 +199,7 @@ Grabber::initSceneGraph()
    // --------------------- shoulder end ---------------------
 
 
-   //  ------------------- moving grabber --------------------
+   //  ------------------- the moving part of the grabber --------------------
    SoSeparator *movingGrabber = new SoSeparator;
    grabber->addChild(movingGrabber);
 
@@ -215,6 +215,95 @@ Grabber::initSceneGraph()
    arm->depth = 5;
    armGroup->addChild(arm);
 
+   // build elbow
+   SoGroup *elbowGroup = new SoGroup;
+   movingGrabber->addChild(elbowGroup);
+   SoTransform *elbowTrafo = new SoTransform;
+   // translate elbow to top of shoulder + its own half height (=radius)
+   // [all heigths of any SoObjects are measured from their midpoints]
+   elbowTrafo->translation.setValue(.0,.0,arm->depth.getValue()/2+.75);
+   elbowTrafo->rotation.setValue(SbVec3f(0,0,0), 0);
+   elbowGroup->addChild(elbowTrafo);
+   SoCylinder *elbow = new SoCylinder;
+   elbow->radius = 1.;
+   elbow->height = 1.5;
+   elbowGroup->addChild(elbow);
+
+   // build forarm consisting of three parts
+   // firstly build a basic part rotated by 90 degrees around the z-axis
+   SoGroup *forearmGroup = new SoGroup;
+   movingGrabber->addChild(forearmGroup);
+   SoSeparator *forearm = new SoSeparator;
+   SoTransform *forearmTrafo = new SoTransform;
+   forearmTrafo->rotation.setValue(SbVec3f(0,0,1), M_PI/2.);
+   forearm->addChild(forearmTrafo);
+   SoCylinder *forearm1 = new SoCylinder;
+   forearm1->radius = .75;
+   forearm1->height = 3.3;
+   forearm->addChild(forearm1);
+   // then add this part three times in different scales
+   // part 1 -----------------
+   SoTransform *forearmTrafo1 = new SoTransform;
+   // move the forearm to the edge of the elbow
+   forearmTrafo1->translation.setValue(elbow->radius.getValue()+3.3/2.,.0,.0);
+   forearmGroup->addChild(forearmTrafo1);
+   forearmGroup->addChild(forearm);
+   // part 2 -----------------
+   SoTransform *forearmTrafo2 = new SoTransform;
+   // move the forearm to the end of the last part
+   forearmTrafo2->translation.setValue(3.3,.0,.0);
+   // each part of the forearm gets smaller
+   forearmTrafo2->scaleFactor.setValue(1.,.5,.5);
+   forearmGroup->addChild(forearmTrafo2);
+   forearmGroup->addChild(forearm);
+   // part 3 -----------------
+   SoTransform *forearmTrafo3 = new SoTransform;
+   // move the forearm to the end of the last part
+   forearmTrafo3->translation.setValue(3.3,.0,0.0);
+   // each part of the forearm gets smaller
+   forearmTrafo3->scaleFactor.setValue(1.,.5,.5);
+   forearmGroup->addChild(forearmTrafo3);
+   forearmGroup->addChild(forearm);
+
+   // build wrist
+   SoGroup *wristGroup = new SoGroup;
+   movingGrabber->addChild(wristGroup);
+   SoTransform *wristTrafo = new SoTransform;
+   wristTrafo->translation.setValue(3.3/2+.5,.0,0.0);
+   // here we need to scale back to 1 (revert the two .5 scales before)
+   wristTrafo->scaleFactor.setValue(1.,4.,4.);
+   wristTrafo->rotation.setValue(SbVec3f(0,0,0), 0);
+   wristGroup->addChild(wristTrafo);
+   SoSphere *wrist = new SoSphere;
+   wrist->radius = .5;
+   wristGroup->addChild(wrist);
+
+   // build hand
+   SoGroup *handGroup = new SoGroup;
+   movingGrabber->addChild(handGroup);
+   SoTransform *handTrafo = new SoTransform;
+   // go down in z-axis direction
+   handTrafo->translation.setValue(.0,.0,-2*wrist->radius.getValue());
+   handTrafo->rotation.setValue(SbVec3f(1,0,0), -M_PI_2);
+   handGroup->addChild(handTrafo);
+   SoCone *hand = new SoCone;
+   hand->bottomRadius = .5;
+   hand->height = 1.;
+   handGroup->addChild(hand);
+
+   // and last but not least, the finger
+   SoGroup *fingerGroup = new SoGroup;
+   movingGrabber->addChild(fingerGroup);
+   SoTransform *fingerTrafo = new SoTransform;
+   fingerTrafo->translation.setValue(.0,hand->height.getValue()/2a,.0);
+   fingerTrafo->rotation.setValue(SbVec3f(0,0,0), 0);
+   fingerGroup->addChild(fingerTrafo);
+   SoCylinder *finger = new SoCylinder;
+   finger->radius = .5;
+   finger->height = .25;
+   fingerGroup->addChild(finger);
+
+   // build remaining parts of grabber
    return grabber;
 }
 
