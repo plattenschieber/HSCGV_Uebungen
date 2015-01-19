@@ -42,6 +42,10 @@ mySelectionCB(void *userData, SoPath *selectionPath)
 
    SoSelection *mySceneGraph = static_cast<SoSelection *> (userData);
    int i = 0;
+   std::cout << "NumChildren: " << mySceneGraph->getNumChildren() << std::endl;
+   while (selectionPath->getNode(1) != mySceneGraph->getChild(i)) i++;
+   std::cout << "selectionPath length: " << selectionPath->getLength() << std::endl;
+   std::cout << "Ende i: " << i << std::endl;
 }
 
 
