@@ -34,23 +34,14 @@ mySelectionCB(void *userData, SoPath *selectionPath)
 {
    if (selectionPath->getTail()->
             isOfType(SoSphere::getClassTypeId())) {
-//      textMaterial->diffuseColor.setValue(reddish);
        std::cout << "Sphere" << std::endl;
    } else if (selectionPath->getTail()->
             isOfType(SoCube::getClassTypeId())) {
-//      sphereMaterial->diffuseColor.setValue(reddish);
        std::cout << "Cube" << std::endl;
    }
 
    SoSelection *mySceneGraph = static_cast<SoSelection *> (userData);
-   SoPath *currentPath;
    int i = 0;
-   std::cout << mySceneGraph->getNumChildren() << std::endl;
-//   do {
-//       currentPath = mySceneGraph->getPath(i);
-//       i++;
-
-//   }while (selectionPath != currentPath);
 }
 
 
