@@ -20,10 +20,38 @@
 #include <Inventor/nodes/SoMaterial.h>
 #include <Inventor/nodes/SoTransform.h>
 #include <Inventor/nodes/SoCylinder.h>
+#include <iostream>
 
 // own includes
 #include "Grabber.h"
 #include "Gameboard.h"
+
+// This routine is called when an object gets selected.
+// We determine which object was selected, and change
+// that object's material color.
+void
+mySelectionCB(void *userData, SoPath *selectionPath)
+{
+   if (selectionPath->getTail()->
+            isOfType(SoSphere::getClassTypeId())) {
+//      textMaterial->diffuseColor.setValue(reddish);
+       std::cout << "Sphere" << std::endl;
+   } else if (selectionPath->getTail()->
+            isOfType(SoCube::getClassTypeId())) {
+//      sphereMaterial->diffuseColor.setValue(reddish);
+       std::cout << "Cube" << std::endl;
+   }
+
+   SoSelection *mySceneGraph = static_cast<SoSelection *> (userData);
+   SoPath *currentPath;
+   int i = 0;
+   std::cout << mySceneGraph->getNumChildren() << std::endl;
+//   do {
+//       currentPath = mySceneGraph->getPath(i);
+//       i++;
+
+//   }while (selectionPath != currentPath);
+}
 
 
 //**********************************************************
@@ -131,6 +159,8 @@ Gameboard::initSceneGraph()
 
    // we want to keep the gameboard scene graph during all our life
    m_sceneGraph->ref();
+
+   m_sceneGraph->addSelectionCallback(mySelectionCB, m_sceneGraph);
 
    // we need only four objects: a cube and a sphere for our board and their materials
    SoSphere *sphere = new SoSphere;
