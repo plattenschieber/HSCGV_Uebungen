@@ -18,7 +18,7 @@
 #include <Inventor/Qt/SoQt.h>
 #include <Inventor/Qt/viewers/SoQtExaminerViewer.h>
 #include <Inventor/nodes/SoSeparator.h>
-#include <Inventor/actions/SoBoxHighlightRenderAction.h>
+#include <Inventor/actions/SoLineHighlightRenderAction.h>
 
 // own includes
 #include "Grabber.h"
@@ -50,7 +50,7 @@ main(int argc, char *argv[])
    grabber->attachGameboard(board);
    board->attachGrabber(grabber);
 
-   // initalize the viewer window  
+   // initalize the viewer window
    SoQtExaminerViewer *viewer = new SoQtExaminerViewer(mainwin);
    viewer->setSceneGraph(root);
    viewer->setBackgroundColor(SbColor(0.3, 0.3, 1.0));
@@ -58,7 +58,7 @@ main(int argc, char *argv[])
    viewer->show();
 
    // set the highlight render action (the selected box gets a wireframe around it, to indicate selection)
-   SoBoxHighlightRenderAction *renderAct = new SoBoxHighlightRenderAction;
+   SoLineHighlightRenderAction *renderAct = new SoLineHighlightRenderAction;
    viewer->setGLRenderAction(renderAct);
 
    // request automatic redraw when selection changes
