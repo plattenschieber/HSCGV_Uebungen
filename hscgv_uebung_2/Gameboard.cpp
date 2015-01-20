@@ -40,7 +40,8 @@ mySelectionCB(void *userData, SoPath *selectionPath)
        std::cout << "Cube" << std::endl;
    }
 
-   SoSelection *mySceneGraph = static_cast<SoSelection *> (userData);
+   Gameboard *myThis = static_cast<Gameboard *> (userData);
+   SoSelection *mySceneGraph = static_cast<SoSelection *> (myThis->getSceneGraph());
    int i = 0;
    std::cout << "NumChildren: " << mySceneGraph->getNumChildren() << std::endl;
    // the square (including tile and square) is the second node on the path
@@ -48,6 +49,7 @@ mySelectionCB(void *userData, SoPath *selectionPath)
    while (selectionPath->getNode(1) != mySceneGraph->getChild(i)) i++;
    std::cout << "selectionPath length: " << selectionPath->getLength() << std::endl;
    std::cout << "Ende i: " << i << std::endl;
+//   myThis->
 }
 
 
@@ -157,7 +159,7 @@ Gameboard::initSceneGraph()
    // we want to keep the gameboard scene graph during all our life
    m_sceneGraph->ref();
 
-   m_sceneGraph->addSelectionCallback(mySelectionCB, m_sceneGraph);
+   m_sceneGraph->addSelectionCallback(mySelectionCB, this);
 
    // we need only four objects: a cube and a sphere for our board and their materials
    SoSphere *sphere = new SoSphere;
