@@ -446,6 +446,7 @@ Gameboard::removePiece(int index)
        SoSeparator *indexField = static_cast<SoSeparator *>(m_sceneGraph->getChild(index));
        // the sphere lies inside the second group of a square
        SoNode *removedSphere = indexField->getChild(1);
+       removedSphere->ref();
        // remove geometry
        indexField->removeChild(1);
        // mark square as empty and return sphere
