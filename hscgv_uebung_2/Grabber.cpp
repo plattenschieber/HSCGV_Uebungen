@@ -98,6 +98,9 @@ Grabber::getPiece(SbVec3f position)
    // During the animation Gameboard::getPiece is called to
    // receive the piece's geometry and add it into our scenegraph
 
+    // get the piece from the gameboard and attach it to the grabber (beneath finger)
+    m_pickedUpTile->addChild(m_gameboard->getPiece());
+
    // remember to pick up a piece
    m_mode = GET_PIECE;
 }
