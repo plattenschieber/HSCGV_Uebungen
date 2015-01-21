@@ -303,6 +303,10 @@ Grabber::initSceneGraph()
    finger->height = .25;
    fingerGroup->addChild(finger);
 
+   // and lust but not leaster ;) - we need a place for the picked up tile
+   m_pickedUpTile = new SoGroup;
+   movingGrabber->addChild(m_pickedUpTile);
+
    // build remaining parts of grabber
    return grabber;
 }

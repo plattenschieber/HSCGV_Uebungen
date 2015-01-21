@@ -19,6 +19,7 @@ class SoTransform;
 class SoRotationXYZ;
 class SoMaterial;
 class SoSeparator;
+class SoGroup;
 class SoNode;
 class SoSensor;
 class SoCalculator;
@@ -135,6 +136,9 @@ class Grabber {
 
       //! a pointer to the gameboard
       Gameboard *m_gameboard;
+
+      //! a pointer to the placeholder group for picked up tiles
+      SoGroup *m_pickedUpTile;
 
       //! the current mode of the grabber
       /*! \anchor Grabber_m_mode
