@@ -30,7 +30,7 @@
 // We determine which object was selected, and change
 // that object's material color.
 void
-mySelectionCB(void *userData, SoPath *selectionPath)
+Gameboard::mySelectionCB(void *userData, SoPath *selectionPath)
 {
    if (selectionPath->getTail()->
             isOfType(SoSphere::getClassTypeId())) {
@@ -41,7 +41,7 @@ mySelectionCB(void *userData, SoPath *selectionPath)
    }
 
    Gameboard *myThis = static_cast<Gameboard *> (userData);
-   SoSelection *mySceneGraph = static_cast<SoSelection *> (myThis->getSceneGraph());
+   SoSelection *mySceneGraph = static_cast<SoSelection *> (myThis->m_sceneGraph);
    int i = 0;
    std::cout << "NumChildren: " << mySceneGraph->getNumChildren() << std::endl;
    // the square (including tile and square) is the second node on the path

@@ -99,6 +99,17 @@ class Gameboard {
       // PRIVATE MEMBER FUNCTIONS
       // ********************************************************************
 
+      //! the selection callback for the #m_sceneGraph
+      /*!\anchor Gameboard_mySelectionCB
+       * The static method mySelectionCB() handles all mouse interaction
+       * with the Gameboard. Here we find out wich tile was clicked and
+       * handle the action so that the grabber moves to the tile
+       * and grab it or not respecting the rules of the game.
+       * We can perform this action by receiving \b this as userData input.
+       */
+      static void mySelectionCB(void *, SoPath *);
+
+
       //! initalize the gameboard
       /*! \anchor initGameboard
        *  This function is internally called by the \b Gameboard's constructor \ref Constructor
