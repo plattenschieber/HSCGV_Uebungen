@@ -43,13 +43,9 @@ Gameboard::mySelectionCB(void *userData, SoPath *selectionPath)
    Gameboard *myThis = static_cast<Gameboard *> (userData);
    SoSelection *mySceneGraph = static_cast<SoSelection *> (myThis->m_sceneGraph);
    int i = 0;
-   std::cout << "NumChildren: " << mySceneGraph->getNumChildren() << std::endl;
    // the square (including tile and square) is the second node on the path
    // compare it to each child of the SoSelection root
    while (selectionPath->getNode(1) != mySceneGraph->getChild(i)) i++;
-   std::cout << "selectionPath length: " << selectionPath->getLength() << std::endl;
-   std::cout << "Ende i: " << i << std::endl;
-//   myThis->
 }
 
 
