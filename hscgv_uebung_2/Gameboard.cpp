@@ -32,7 +32,9 @@
 void
 Gameboard::mySelectionCB(void *userData, SoPath *selectionPath)
 {
+   // we need a pointer to our gameboard
    Gameboard *myGameboard = static_cast<Gameboard *> (userData);
+   // convinience, since we don't want to cast in each loop
    SoSelection *mySceneGraph = static_cast<SoSelection *> (myGameboard->m_sceneGraph);
    int index = 0;
    // the square (including tile and square) is the second node on the path
