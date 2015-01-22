@@ -1,6 +1,7 @@
 doc/
 Makefile
 gl.App/
+a2.app/
 *.o
 hscgv_uebung_1/ui_ApplicationWindow.h
 hscgv_uebung_1/ui_UserParameterDialog.h
@@ -9,6 +10,6 @@ hscgv_uebung_1/moc_GLFrame.cpp
 hscgv_uebung_1/moc_Model.cpp
 hscgv_uebung_1/moc_UserParameterDialog.cpp
 build-gl-Qt_4_8_6_local-Debug/
-hscgv_uebung_1/gl.pro.user
 *.autosave
 build/
+*.user
