@@ -32,14 +32,6 @@
 void
 Gameboard::mySelectionCB(void *userData, SoPath *selectionPath)
 {
-   if (selectionPath->getTail()->
-            isOfType(SoSphere::getClassTypeId())) {
-       std::cout << "Sphere" << std::endl;
-   } else if (selectionPath->getTail()->
-            isOfType(SoCube::getClassTypeId())) {
-       std::cout << "Cube" << std::endl;
-   }
-
    Gameboard *myThis = static_cast<Gameboard *> (userData);
    SoSelection *mySceneGraph = static_cast<SoSelection *> (myThis->m_sceneGraph);
    int i = 0;
