@@ -46,6 +46,7 @@ Grabber::Grabber()
 , m_mode(INACTIVE)
 {
    m_sceneGraph = initSceneGraph();
+   idleSensor = new SoIdleSensor;
 }
 
 
@@ -119,6 +120,21 @@ void
 Grabber::attachGameboard(Gameboard *gameboard)
 {
    m_gameboard = gameboard;
+}
+
+//**********************************************************
+//* Grabber idleSensor Callback
+//**********************************************************
+//* This routine is called whenever the CPU is idle.
+//* We determine the state of the grabber and
+//* let the grabber accordingly move or not
+//*
+//**********************************************************
+void
+Grabber::myIdleCB(void *userData, SoSensor *sensor)
+{
+
+
 }
 
 //**********************************************************

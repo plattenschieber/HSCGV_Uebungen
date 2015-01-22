@@ -94,6 +94,15 @@ class Grabber {
       // PRIVATE MEMBER FUNCTIONS
       // ********************************************************************
 
+      //! the callback function for the #Grabber's idle sensor
+      /*!\anchor Grabber_myIdleCB
+       * The static method myIdleCB() handles all movement of the grabber.
+       * Here we find out in which state the grabber is and calculate the
+       * final state and how much movement is left until then if appropriate.
+       * We then perform the requested action.
+       */
+      static void myIdleCB(void *, SoSensor *);
+
       //! This function builds the scene graph of the grabber and returns a
       //! pointer to it. It is the caller's responsibility to reference the
       //! scene graph (reference count of the returned node should be 0).
@@ -145,6 +154,9 @@ class Grabber {
        *  the mode variable determines what the grabber is currently doing
        @see \ref GrabberMode */
       int m_mode;
+
+      //! a pointer to our idle sensor
+      SoIdleSensor *idleSensor;
 };
 
 #endif
