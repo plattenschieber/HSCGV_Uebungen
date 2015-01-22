@@ -79,7 +79,7 @@ void
 Grabber::setPiece(SbVec3f position)
 {
    // Schedule the idle sensor for the animation!
-   // During the animation Gameboard::setPiece is called.
+   m_idleSensor->schedule();
 
    m_gameboard->setPiece(m_pickedUpTile->getChild(0));
    m_pickedUpTile->getChild(0)->unref();
@@ -100,6 +100,8 @@ void
 Grabber::getPiece(SbVec3f position)
 {
    // Schedule the idle sensor for the animation!
+   m_idleSensor->schedule();
+
    // During the animation Gameboard::getPiece is called to
    // receive the piece's geometry and add it into our scenegraph
 
