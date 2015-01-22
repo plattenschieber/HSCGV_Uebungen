@@ -26,9 +26,14 @@
 #include "Grabber.h"
 #include "Gameboard.h"
 
-// This routine is called when an object gets selected.
-// We determine which object was selected, and change
-// that object's material color.
+//**********************************************************
+//* Gameboard Selection Callback
+//**********************************************************
+//* This routine is called when an object gets selected.
+//* We determine which object was selected, and let the
+//* gamelogic handle everything else.
+//*
+//**********************************************************
 void
 Gameboard::mySelectionCB(void *userData, SoPath *selectionPath)
 {
