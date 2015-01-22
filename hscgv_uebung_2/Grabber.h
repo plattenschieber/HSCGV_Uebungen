@@ -155,6 +155,12 @@ class Grabber {
        @see \ref GrabberMode */
       int m_mode;
 
+      //! the current animation phase of the grabber
+      /*! \anchor Grabber_m_animationPhase
+       *  the mode variable determines what the grabber is currently doing
+       @see \ref GrabberMode */
+      int m_animationPhase;
+
       //! a pointer to our idle sensor
       SoIdleSensor *idleSensor;
 };
