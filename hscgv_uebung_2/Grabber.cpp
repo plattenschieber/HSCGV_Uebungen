@@ -80,6 +80,8 @@ Grabber::setPiece(SbVec3f position)
    // During the animation Gameboard::setPiece is called.
 
    m_gameboard->setPiece(m_pickedUpTile->getChild(0));
+   m_pickedUpTile->getChild(0)->unref();
+   m_pickedUpTile->removeChild(0);
    // remember to drop down a piece
    m_mode = SET_PIECE;
 }
