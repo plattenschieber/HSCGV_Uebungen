@@ -83,7 +83,7 @@ Grabber::setPiece(SbVec3f position)
    m_pickedUpTile->getChild(0)->unref();
    m_pickedUpTile->removeChild(0);
    // remember to drop down a piece
-   m_mode = SET_PIECE;
+//   m_mode = SET_PIECE;
 }
 
 //**********************************************************
@@ -105,7 +105,7 @@ Grabber::getPiece(SbVec3f position)
     m_pickedUpTile->addChild(m_gameboard->getPiece());
 
    // remember to pick up a piece
-   m_mode = GET_PIECE;
+//   m_mode = GET_PIECE;
 }
 
 //**********************************************************
