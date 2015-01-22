@@ -79,6 +79,9 @@ Grabber::setPiece(SbVec3f position)
    // Schedule the idle sensor for the animation!
    // During the animation Gameboard::setPiece is called.
 
+   m_gameboard->setPiece(m_pickedUpTile->getChild(0));
+   m_pickedUpTile->getChild(0)->unref();
+   m_pickedUpTile->removeChild(0);
    // remember to drop down a piece
    m_mode = SET_PIECE;
 }
@@ -97,6 +100,9 @@ Grabber::getPiece(SbVec3f position)
    // Schedule the idle sensor for the animation!
    // During the animation Gameboard::getPiece is called to
    // receive the piece's geometry and add it into our scenegraph
+
+    // get the piece from the gameboard and attach it to the grabber (beneath finger)
+    m_pickedUpTile->addChild(m_gameboard->getPiece());
 
    // remember to pick up a piece
    m_mode = GET_PIECE;
@@ -302,6 +308,10 @@ Grabber::initSceneGraph()
    finger->radius = .5;
    finger->height = .25;
    fingerGroup->addChild(finger);
+
+   // and lust but not leaster ;) - we need a place for the picked up tile
+   m_pickedUpTile = new SoGroup;
+   movingGrabber->addChild(m_pickedUpTile);
 
    // build remaining parts of grabber
    return grabber;

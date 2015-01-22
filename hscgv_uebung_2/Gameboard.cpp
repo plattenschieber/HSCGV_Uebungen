@@ -26,29 +26,28 @@
 #include "Grabber.h"
 #include "Gameboard.h"
 
-// This routine is called when an object gets selected.
-// We determine which object was selected, and change
-// that object's material color.
+//**********************************************************
+//* Gameboard Selection Callback
+//**********************************************************
+//* This routine is called when an object gets selected.
+//* We determine which object was selected, and let the
+//* gamelogic handle everything else.
+//*
+//**********************************************************
 void
 Gameboard::mySelectionCB(void *userData, SoPath *selectionPath)
 {
-   if (selectionPath->getTail()->
-            isOfType(SoSphere::getClassTypeId())) {
-       std::cout << "Sphere" << std::endl;
-   } else if (selectionPath->getTail()->
-            isOfType(SoCube::getClassTypeId())) {
-       std::cout << "Cube" << std::endl;
-   }
-
-   Gameboard *myThis = static_cast<Gameboard *> (userData);
-   SoSelection *mySceneGraph = static_cast<SoSelection *> (myThis->m_sceneGraph);
-   int i = 0;
+   // we need a pointer to our gameboard
+   Gameboard *myGameboard = static_cast<Gameboard *> (userData);
+   // convinience, since we don't want to cast in each loop
+   SoSelection *mySceneGraph = static_cast<SoSelection *> (myGameboard->m_sceneGraph);
+   int index = 0;
    // the square (including tile and square) is the second node on the path
    // compare it to each child of the SoSelection root
-   while (selectionPath->getNode(1) != mySceneGraph->getChild(i)) i++;
+   while (selectionPath->getNode(1) != mySceneGraph->getChild(index)) index++;
 
    // let the game logic check the state and handle all actions
-   myThis->selectPiece(i);
+   myGameboard->selectPiece(index);
 }
 
 
@@ -446,6 +445,8 @@ Gameboard::removePiece(int index)
        SoSeparator *indexField = static_cast<SoSeparator *>(m_sceneGraph->getChild(index));
        // the sphere lies inside the second group of a square
        SoNode *removedSphere = indexField->getChild(1);
+       // since we are going to remove the piece, we need to increment the reference counter
+       removedSphere->ref();
        // remove geometry
        indexField->removeChild(1);
        // mark square as empty and return sphere
@@ -465,12 +466,13 @@ void
 Gameboard::insertPiece(int index, SoNode* piece)
 {
    // this should never happen!
-   if (m_squares[index] == EMPTY_FIELD || m_squares[index] == INVALID_FIELD)
+   if (m_squares[index] == OCCUPIED_FIELD || m_squares[index] == INVALID_FIELD)
        return;
 
    // insert piece into scenegraph
    else {
        SoSeparator *indexField = static_cast<SoSeparator *>(m_sceneGraph->getChild(index));
+       // we hold our pieces just behind their accoirding squares
        indexField->insertChild(piece, 1);
        // mark square as occupied
        m_squares[index] = OCCUPIED_FIELD;
