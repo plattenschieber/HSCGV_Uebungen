@@ -79,6 +79,7 @@ Grabber::setPiece(SbVec3f position)
    // Schedule the idle sensor for the animation!
    // During the animation Gameboard::setPiece is called.
 
+   m_gameboard->setPiece(m_pickedUpTile->getChild(0));
    // remember to drop down a piece
    m_mode = SET_PIECE;
 }
