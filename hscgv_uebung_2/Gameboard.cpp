@@ -32,15 +32,15 @@
 void
 Gameboard::mySelectionCB(void *userData, SoPath *selectionPath)
 {
-   Gameboard *myThis = static_cast<Gameboard *> (userData);
-   SoSelection *mySceneGraph = static_cast<SoSelection *> (myThis->m_sceneGraph);
-   int i = 0;
+   Gameboard *myGameboard = static_cast<Gameboard *> (userData);
+   SoSelection *mySceneGraph = static_cast<SoSelection *> (myGameboard->m_sceneGraph);
+   int index = 0;
    // the square (including tile and square) is the second node on the path
    // compare it to each child of the SoSelection root
-   while (selectionPath->getNode(1) != mySceneGraph->getChild(i)) i++;
+   while (selectionPath->getNode(1) != mySceneGraph->getChild(index)) index++;
 
    // let the game logic check the state and handle all actions
-   myThis->selectPiece(i);
+   myGameboard->selectPiece(index);
 }
 
 
