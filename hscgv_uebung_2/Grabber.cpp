@@ -47,7 +47,7 @@ Grabber::Grabber()
 , m_animationPhase(NO_ANIMATION)
 {
    m_sceneGraph = initSceneGraph();
-   idleSensor = new SoIdleSensor;
+   m_idleSensor = new SoIdleSensor;
 }
 
 

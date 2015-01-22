@@ -162,7 +162,7 @@ class Grabber {
       int m_animationPhase;
 
       //! a pointer to our idle sensor
-      SoIdleSensor *idleSensor;
+      SoIdleSensor *m_idleSensor;
 };
 
 #endif
