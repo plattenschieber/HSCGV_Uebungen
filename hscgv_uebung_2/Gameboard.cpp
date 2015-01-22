@@ -467,7 +467,7 @@ void
 Gameboard::insertPiece(int index, SoNode* piece)
 {
    // this should never happen!
-   if (m_squares[index] == EMPTY_FIELD || m_squares[index] == INVALID_FIELD)
+   if (m_squares[index] == OCCUPIED_FIELD || m_squares[index] == INVALID_FIELD)
        return;
 
    // insert piece into scenegraph
