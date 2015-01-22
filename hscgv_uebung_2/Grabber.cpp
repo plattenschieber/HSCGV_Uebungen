@@ -138,6 +138,25 @@ Grabber::attachGameboard(Gameboard *gameboard)
 void
 Grabber::myIdleCB(void *userData, SoSensor *sensor)
 {
+    // we need a pointer to our grabber
+    Grabber *myGrabber = static_cast<Grabber *> (userData);
+
+    // handle different states
+    switch (myGrabber->m_mode) {
+        case GET_PIECE:
+            if (myGrabber->m_animationPhase == MOVE_GRABBER)
+                std::cout << "move it grabber, move it!" << std::endl;
+            else if (myGrabber->m_animationPhase == DOWN_GRABBER)
+                std::cout << "put it down grabber, put it down!" << std::endl;
+            else if (myGrabber->m_animationPhase == UP_GRABBER)
+                std::cout << "up again grabber, up again!" << std::endl;
+            break;
+        case SET_PIECE:
+            break;
+        default:
+            break;
+   }
+
 
 
 }
