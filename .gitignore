@@ -13,3 +13,5 @@ build-gl-Qt_4_8_6_local-Debug/
 *.autosave
 build/
 *.user
+hscgv_uebung_3/raytrace
+hscgv_uebung_3/input_yacc.*
