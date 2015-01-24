@@ -1,0 +1,121 @@
+#==============================================================================
+# Programmierpraktikum Computergrafik
+#------------------------------------------------------------------------------
+#                         Aufgabe 3: Lichtblick
+#------------------------------------------------------------------------------
+# Created by Peter Kipfer <kipfer@informatik.uni-erlangen.de>
+#==============================================================================
+
+#------------------------------------------------------------------------------
+# image parameters
+
+resolution      600    600		# image width and height in pixels 
+background	0.0	0.0	0.0	# background color black 
+
+#------------------------------------------------------------------------------
+# viewing parameters
+
+eyepoint     -100.0   150.0      150.0	# eye coordinates 
+lookat        -15.0    25.0      -40.0	# point the camera is looking at 
+fovy            55			# angle of view 
+aspect          1.0			# width-height ratio 
+up             0.0     1.0     0.0     # this vector points upwards 
+
+#------------------------------------------------------------------------------
+# global lighting
+
+ambience	0.0	0.0	0.0	# black 
+
+#------------------------------------------------------------------------------
+# geometry
+
+# all coordinate values are defined within a right-handed system
+
+# quadrics are implicitly defined by the following equation
+# Ax^2 + Bxy + Cxz + Dx + Ey^2 + Fyz + Gy + Hz^2 + Jz + K = 0
+
+# a sphere is a special quadric: 
+# A = E = H = 1.0 ; B = C = F = 0.0 ; D = -2X , G = -2Y , J = -2Z
+# K = X^2 + Y^2 + Z^2 - radius^2
+# with (X,Y,Z) being the midpoint of the sphere
+
+# the other way round, you get the sphere parameters from the implicit
+# quadrics formula by
+# X = -0.5 * D  ,  Y = -0.5 * G  ,  Z = -0.5 * J
+# radius = SQR( (D^2 + G^2 + J^2) / 4 - K )
+# if and only if this surface really is a sphere
+
+# polyon vertices must be ordered in such a way, that they are ordered
+# counterclockwise when looking at the polygon to give a 'outside'
+# surface 
+
+numsurfaces 5
+
+# geometry description 1 : sphere at (0,0,-400) with radius 100
+object quadric 1.0 0.0 0.0 0.0 1.0 0.0 0.0 1.0 800.0 150000.0
+
+# geometry description 2 : sphere at (200,50,-100) with radius 150
+object quadric 1.0 0.0 0.0 -400.0 1.0 0.0 -100.0 1.0 200.0 30000.0
+
+# geometry description 3 : sphere at (0,-1200,-500) with radius 1000
+object quadric 1.0 0.0 0.0 0.0 1.0 0.0 2400.0 1.0 1000.0 690000.0
+
+# geometry description 4 : sphere at (-100,25,-300) with radius 50
+object quadric 1.0 0.0 0.0 200.0 1.0 0.0 -50.0 1.0 600.0 98125.0
+
+# geometry description 5 : sphere at (0,100,-250) with radius 25
+object quadric 1.0 0.0 0.0 0.0 1.0 0.0 -200.0 1.0 500.0 71875.0
+
+#------------------------------------------------------------------------------
+# surface properties
+
+numproperties	3
+
+# property 1
+ambient  0.2    0.0     0.0	# soft reddish filter 
+diffuse	 0.7	0.7	0.7	# light silver-grey 
+specular 1.0	4
+mirror	 0.8
+
+# property 2
+ambient  0.0    0.2     0.0	# soft greenish filter 
+diffuse	 0.5	0.5	0.5	# mid silver-grey 
+specular 1.0	4
+mirror	 0.7
+
+# property 3
+ambient  0.0    0.0     0.2	# soft blueish filter 
+diffuse  0.1	0.6	0.1	# green 
+specular 1.0	4
+mirror	 0.2
+
+#------------------------------------------------------------------------------
+# lighting
+
+numlights	3
+
+# lightsource 1
+direction -0.1	 1.0	 0.1
+colour	   1.0	 0.5	 0.1
+
+# lightsource 2
+direction  0.1	 0.2	 1.0
+colour	   0.2	 0.2	 0.2
+
+# lightsource 3
+direction  1.0	 2.0	 3.0
+colour	   0.0	 0.5	 1.0
+
+#------------------------------------------------------------------------------
+# objects
+
+numobjects	5
+
+# lookup table 
+object	 1	 3
+object	 2	 1
+object	 3	 2
+object	 4	 3
+object	 5	 1
+
+#*** END OF FILE **************************************************************

@@ -1,0 +1,19 @@
+# *************** Programmierpraktikum Computergrafik *****************
+# Aufgabe 3 - Lichtblick
+#
+# File: Doxyfile
+
+PROJECT_NAME = "Aufgabe 3: Lichtblick"
+#PROJECT_NUMBER = "$Id"
+OUTPUT_DIRECTORY = doc
+OUTPUT_LANGUAGE = English
+WARNINGS = YES
+EXTRACT_ALL = YES
+EXTRACT_PRIVATE = YES
+EXTRACT_STATIC = YES
+CLASS_DIAGRAMS = YES
+INPUT = .
+FILE_PATTERNS = *.h *.cpp *.y
+GENERATE_HTML = YES
+GENERATE_LATEX = YES
+#GENERATE_MAN = YES
