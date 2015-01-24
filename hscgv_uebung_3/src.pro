@@ -1,6 +1,6 @@
 TARGET=         raytrace
 
-HEADERS=
+HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h param.h
 SOURCES=        geoobject.cpp geoquadric.cpp lightobject.cpp main.cpp ray.cpp
 win32:SOURCES*= xgetopt.cpp
 YACCSOURCES=    input.y
