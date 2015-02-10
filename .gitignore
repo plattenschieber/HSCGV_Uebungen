@@ -15,3 +15,4 @@ build/
 *.user
 hscgv_uebung_3/raytrace
 hscgv_uebung_3/input_yacc.*
+*.ppm
