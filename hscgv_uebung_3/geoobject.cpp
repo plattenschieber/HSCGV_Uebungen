@@ -8,6 +8,11 @@
 
 /* member access functions for GeoObjectProperties */
 
+Color GeoObjectProperties::ambient() const
+{
+   return Vec3d(m_ambient);
+}
+
 Vec3d
 GeoObjectProperties::reflectance() const
 {
@@ -20,6 +25,12 @@ GeoObjectProperties::specular() const
    return m_specular;
 }
 
+int
+GeoObjectProperties::specularExp() const
+{
+   return m_specularExp;
+}
+
 double
 GeoObjectProperties::mirror() const
 {
@@ -27,6 +38,15 @@ GeoObjectProperties::mirror() const
 }
 
 /* access functions for the properties of a GeoObject */
+
+Color GeoObject::ambient() const
+{
+    if (m_properties)
+        return m_properties->ambient();
+    else
+        std::cerr<<"WARNING: properties not set"<<std::endl;
+   return Vec3d(0.0);
+}
 
 Vec3d
 GeoObject::reflectance() const
@@ -43,6 +63,16 @@ GeoObject::specular() const
 {
    if (m_properties)
       return m_properties->specular();
+   else
+      std::cerr<<"WARNING: properties not set"<<std::endl;
+   return 0.0;
+}
+
+int
+GeoObject::specularExp() const
+{
+   if (m_properties)
+      return m_properties->specularExp();
    else
       std::cerr<<"WARNING: properties not set"<<std::endl;
    return 0.0;

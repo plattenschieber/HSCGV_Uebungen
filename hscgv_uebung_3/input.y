@@ -36,8 +36,10 @@ Scene                             g_scene;
 /* parser state storage */
 static Color currentColor = 0;
 static Vec3d currentDirection = 0;
+static Color currentAmbient = 0;
 static Vec3d currentReflectance = 0;
 static double currentSpecular = 0;
+static int currentSpecularExp = 0;
 static double currentMirror = 0;
 static std::vector<Vec3d> vertexList;
 
@@ -382,7 +384,7 @@ static int lookatSeen = 0;
   float floatval;
 }
 
-%type <intval> index
+%type <intval> index coeffVal
 %type <floatval> colourVal realVal angleVal zeroToOneVal
 
 %token <intval> INTEGER
@@ -745,16 +747,29 @@ properties
 
 /* one property comprises several color values */
 one_property
-  : diffuse specular mirror
+  : ambient diffuse specular mirror
     { 
       if ( propertyCounter < nproperties ) {
-	/* on to the next property */
-	g_propList.push_back(new GeoObjectProperties(currentReflectance,
-						   currentSpecular,
-						   currentMirror));
+        /* on to the next property */
+        g_propList.push_back(new GeoObjectProperties(currentAmbient,
+                                                     currentReflectance,
+                                                     currentSpecular,
+                                                     currentSpecularExp,
+                                                     currentMirror));
 	propertyCounter++;
       } else {
 	yywarn("too many properties specified (ignorning)");
+      }
+    }
+;
+
+/* parse the ambient coefficients */
+ambient
+  : AMBIENT zeroToOneVal zeroToOneVal zeroToOneVal
+    {
+      if ( propertyCounter < nproperties ) {
+        TOUT((stderr,"ambient %f %f %f\n", $2, $3, $4));
+        currentAmbient = Color($2, $3, $4);
       }
     }
 ;
@@ -772,11 +787,12 @@ diffuse
 
 /* parse the parameters for specular reflection */
 specular
-  : SPECULAR  zeroToOneVal
+  : SPECULAR  zeroToOneVal coeffVal
     {
       if ( propertyCounter < nproperties ) {
 	TOUT((stderr,"specular %f\n", $2));
-	currentSpecular = $2;
+        currentSpecular = $2;
+        currentSpecularExp = $3;
       }
     }
 ;
@@ -928,6 +944,17 @@ index : INTEGER
 }
 ;
     
+/* make sure each coeffVal is positive */
+coeffVal : INTEGER
+{
+  if ( $1 < 0 ) {
+    yyerror("index out of range (only 0 or more allowed)");
+  }
+
+  /* pass that value up the tree */
+  $$ = $1;
+}
+;
 %%
 
 /* -----------------------------------------------------------------------------
