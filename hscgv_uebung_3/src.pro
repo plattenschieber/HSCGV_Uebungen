@@ -18,3 +18,5 @@ CONFIG          -= app_bundle
 DEFINES         *= TRACE VERBOSE
 CONFIG          += debug
 CONFIG          -= release
+
+QMAKE_CXXFLAGS += -W -Wall -Wextra -pedantic
