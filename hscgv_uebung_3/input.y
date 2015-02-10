@@ -408,15 +408,14 @@ scene
   :
     {
       /* initialize scene parameters to default values */
-      g_scene.ambience = 0;
+      g_scene.ambience = Color(0.0, 0.0, 0.0);
       g_scene.picture.Xresolution = 300;
       g_scene.picture.Yresolution = 300;
-      g_scene.picture.background = 0;
+      g_scene.picture.background = Color(0.0, 0.0, 0.0);
       g_scene.view.fovy = 55;
       g_scene.view.aspect = 1.0;
       g_scene.view.up = Vec3d(0.0, 1.0, 0.0);
       g_scene.view.lookat = Vec3d(-15.0, 25.0, -40.0);
-      g_scene.view.eyepoint = Vec3d(1.0, 0.0, 0.0);
       g_scene.view.eyepoint = Vec3d(-100.0, 150.0, 150.0);
     }
     picture_parameters some_viewing_parameters global_lighting_parameters geometry
