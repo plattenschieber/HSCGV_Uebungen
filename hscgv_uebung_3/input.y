@@ -482,6 +482,7 @@ resolution
     { TOUT((stderr,"resolution %d %d\n", $2, $3));
       g_scene.picture.Xresolution = $2;
       g_scene.picture.Yresolution = $3;
+      resolutionSeen = 1;
     }
 ;
 
@@ -499,6 +500,7 @@ eyepoint
   : EYEPOINT realVal realVal realVal
     { TOUT((stderr,"eyepoint %f %f %f\n", $2, $3, $4));
       g_scene.view.eyepoint = Vec3d($2, $3, $4);
+      eyepointSeen = 1;
     }
 ;
 
@@ -508,6 +510,7 @@ lookat
   : LOOKAT realVal realVal realVal
     { TOUT((stderr,"lookat %f %f %f\n", $2, $3, $4)); 
       g_scene.view.lookat = Vec3d($2, $3, $4);
+      lookatSeen = 1;
     }
 ;
 
@@ -516,6 +519,7 @@ up
   : UP realVal realVal realVal
     { TOUT((stderr,"up %f %f %f\n", $2, $3, $4));
       g_scene.view.up = Vec3d($2, $3, $4);
+      upSeen = 1;
     }
 ;
 
@@ -524,6 +528,7 @@ fovy
   : FOVY angleVal
     { TOUT((stderr,"fovy %f\n", $2)); 
       g_scene.view.fovy = $2;
+      fovySeen = 1;
     }
 ;
 
@@ -532,6 +537,7 @@ aspect
   : ASPECT realVal
     { TOUT((stderr,"aspect %f\n", $2));
       g_scene.view.aspect = $2;
+      aspectSeen = 1;
     }
 ;
 
