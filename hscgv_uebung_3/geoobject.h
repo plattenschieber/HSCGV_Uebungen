@@ -26,7 +26,7 @@ class GeoObjectProperties
       // CONSTRUCTORS
       GeoObjectProperties() {};
       GeoObjectProperties(const Vec3d& a,const Vec3d& r, double s, int e, double m) {
-         m_ambient    = a;
+         m_ambient     = a;
          m_reflectance = r;
          m_specular    = s;
          m_specularExp = e;
