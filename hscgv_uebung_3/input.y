@@ -23,6 +23,7 @@
 #include "vector.h"
 #include "param.h"
 #include "geoquadric.h"
+#include "geopolygon.h"
 #include "lightobject.h"
 
 #include "input_yacc.h"
