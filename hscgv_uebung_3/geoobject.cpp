@@ -10,13 +10,13 @@
 
 Color GeoObjectProperties::ambient() const
 {
-   return Vec3d(m_ambient);
+   return m_ambient;
 }
 
 Vec3d
 GeoObjectProperties::reflectance() const
 {
-   return Vec3d(m_reflectance);
+   return m_reflectance;
 }
 
 double
