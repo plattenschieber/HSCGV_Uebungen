@@ -21,11 +21,8 @@ class GeoPolygon : public GeoObject
       // CONSTRUCTORS
       //! Construct trivial polygon.
       GeoPolygon();
-      /*! Construct polygon consisting of the points (x,y,z) satisfying
-        na x^2+ nb x y + nc x z + nd x + ne y^2 + nf y z + ng y + nh z^2 + nj z + nk = 0
-       */
-      GeoPolygon(double na, double nb, double nc, double nd, double ne,
-            double nf, double ng, double nh, double nj, double nk);
+      /*! Construct a polygonal surface consisting of a list of vertices and several connected polygons */
+      GeoPolygon(std::vector<Vec3d> vertices, std::vector<std::vector<int> > polygons);
       //! Delete a polygon.
       virtual ~GeoPolygon();
 
@@ -36,7 +33,8 @@ class GeoPolygon : public GeoObject
 
    private:
       //! parameters of the equation describing the polygon.
-      double m_a,m_b,m_c,m_d,m_e,m_f,m_g,m_h,m_j,m_k;
+      std::vector<Vec3d> m_vertices;
+      std::vector<std::vector<int> > m_polygons;
 };
 
 #endif // GEOPOLYGON_H
