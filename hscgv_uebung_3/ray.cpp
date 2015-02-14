@@ -146,10 +146,7 @@ Ray::shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &norma
    // specular part
    double spec = reflectedRay.direction() | light->direction();
    if (spec > 0.0) {
-      spec = spec * spec;
-      spec = spec * spec;
-      spec = spec * spec;
-      spec *= obj->specular();
+      spec = obj->specular() * pow(spec, obj->specularExp());
       reflectedColor += light->color() * spec;
    }
 
