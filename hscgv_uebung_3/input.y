@@ -648,12 +648,11 @@ vertex_section polygon_section
     }
 ;
 
-/* start a new list of vertices */
+/* this starts a new list of vertices: clear the old one */
 vertex_section
   : NUMVERTICES index 
     { TOUT((stderr,"numvertices %d\n", $2));
       nvertices = $2;
-      /* this starts a new list of vertices: clear the old one */
       TOUT((stderr,"Begin parsing the vertices. Clear old vertexList.\n"));
       vertexList.clear();
     }
@@ -681,15 +680,15 @@ one_vertex
     }
 ;
 
-/* produce a polygon object from the vertices specified above */
+/* this starts a new polygon surface: clear the old list */
 polygon_section
   : NUMPOLYGONS index 
     { TOUT((stderr,"numpolygons %d\n", $2)); 
       npolys = $2;
-      /* this starts a new polygon surface: clear the old list */
       polygonList.clear();
       polyCounter = 0;
     }
+
 /* completed parsing indices, do nothing! */
 polygons
     { TOUT((stderr,"Completed parsing all indices\n"));
@@ -702,24 +701,24 @@ polygons
   | one_polygon
 ;
 
-/* start parsing one polygon */
+/* clear the old polygon as a new one is started parsing */
 one_polygon
   : POLY index 
     { TOUT((stderr,"polygon %d ", $2));
       nindices = $2;
-      /* clear the old polygon as a new one is started */
       indexList.clear();
       indexCounter = 0;
     }
+
+/* add polygon to the list of polygons belonging to this surface */
 indices
     { TOUT((stderr,"Add the whole indexList to our polygons\n"));
-      /* add polygon to the list of polygons belonging to this surface */
       polygonList.push_back(indexList);
       polyCounter++;
     }
 ;
 
-/* read the indices into the vertex list that describe one polygon */
+/* read the indices into the indexList that describes one polygon */
 indices
   : indices index
     { TOUT((stderr," %d", $2));
