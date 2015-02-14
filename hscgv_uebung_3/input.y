@@ -43,6 +43,8 @@ static double currentSpecular = 0;
 static int currentSpecularExp = 0;
 static double currentMirror = 0;
 static std::vector<Vec3d> vertexList;
+static std::vector<int> indexList;
+static std::vector<std::vector<int> > polygonList;
 
 /*
  * table of the keywords that we use above
@@ -638,6 +640,10 @@ vertex_section polygon_section
     {
       if ( surfaceCounter < nsurfaces ) {
         surfaceCounter++;
+        /* we completed parsing an entire polygonal surface,
+           now we can create a geoObject out of the input */
+        g_objectList.push_back(new GeoPolygon(vertexList, polygonList));
+        TOUT((stderr,"We just added a new polygonal surface\n"));
       }
     }
 ;
@@ -648,10 +654,13 @@ vertex_section
     { TOUT((stderr,"numvertices %d\n", $2));
       nvertices = $2;
       /* this starts a new list of vertices: clear the old one */
+      TOUT((stderr,"Begin parsing the vertices. Clear old vertexList.\n"));
       vertexList.clear();
     }
+
+/* completed parsing vertices, do nothing! */
 vertices
-    { TOUT((stderr,"\n")); }
+    { TOUT((stderr,"Completed parsing all vertices.\n")); }
 ;
 
 /* vertices follow each other */
@@ -677,12 +686,13 @@ polygon_section
   : NUMPOLYGONS index 
     { TOUT((stderr,"numpolygons %d\n", $2)); 
       npolys = $2;
-      /* this starts a new polygon surface:
-       * clear the old list of polygons */
+      /* this starts a new polygon surface: clear the old list */
+      polygonList.clear();
       polyCounter = 0;
     }
+/* completed parsing indices, do nothing! */
 polygons
-    { TOUT((stderr,"\n"));
+    { TOUT((stderr,"Completed parsing all indices\n"));
     }
 ;
 
@@ -698,11 +708,13 @@ one_polygon
     { TOUT((stderr,"polygon %d ", $2));
       nindices = $2;
       /* clear the old polygon as a new one is started */
+      indexList.clear();
       indexCounter = 0;
     }
 indices
-    { TOUT((stderr,"\n")); 
+    { TOUT((stderr,"Add the whole indexList to our polygons\n"));
       /* add polygon to the list of polygons belonging to this surface */
+      polygonList.push_back(indexList);
       polyCounter++;
     }
 ;
@@ -716,7 +728,9 @@ indices
       } else if(indexCounter > nindices) {
         yywarn("too many vertices specified (ignoring)");
       } else {
-	/* add a vertex to a polygon */
+        /* add the first index ($2) of a new polygon in the polygon list (polygons.push_back())
+           of the current polygon surface structure (g_objectList.back()) */
+        indexList.push_back($2);
         indexCounter++;
       }
     }
@@ -727,7 +741,8 @@ indices
       } else if(indexCounter > nindices) {
         yywarn("too many vertices specified (ignoring)");
       } else {
-	/* add a vertex to a polygon */
+        /* add another index to the current polygon (there should be at least 3) */
+        indexList.push_back($1);
         indexCounter++;
       }
     }
