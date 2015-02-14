@@ -136,8 +136,10 @@ Ray::shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &norma
    Color reflectedColor = Color(0.0);
 
    // lambertian reflection model
+   // updated with ambient lightning as in:
+   // [GENERALISED AMBIENT REFLECTION MODELS FOR LAMBERTIAN AND PHONG SURFACES, Xiaozheng Zhang and Yongsheng Gao]
    if (ldot > 0.0)
-      reflectedColor += obj->reflectance() * (light->color() * ldot);
+      reflectedColor += obj->reflectance() * (light->color() * ldot) + obj->ambient() * g_scene.ambience;
 
    // specular part
    double spec = reflectedRay.direction() | light->direction();
