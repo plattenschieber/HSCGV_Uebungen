@@ -18,8 +18,6 @@ class Ray;
   such as its ambient and diffuse color, the parameters
   describing specular reflection and its ability to mirror light.
  */
-
-// TO BE COMMENTED
 class GeoObjectProperties
 {
    public:
@@ -53,8 +51,6 @@ class GeoObjectProperties
 /*! This class abstracts a general geometric object. This includes its
  *  its surface properties and the possibility to calculate intersection
  *  points with rays and surface normals */
-
-// TO BE COMMENTED
 class GeoObject
 {
    public:

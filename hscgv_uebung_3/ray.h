@@ -19,8 +19,6 @@
 /*! This type of object describes a ray, half a line starting
   at its origin, continuing in only one direction
  */
-
-// TO BE COMMENTED
 class Ray
 {
    public:

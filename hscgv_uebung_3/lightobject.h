@@ -15,8 +15,6 @@
 //! A light source
 /*! This class describes light sources positioned at infinity.
  */
-
-// TO BE COMMENTED
 class LightObject
 {
    public:
