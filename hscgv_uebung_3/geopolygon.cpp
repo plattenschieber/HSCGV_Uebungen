@@ -36,13 +36,17 @@ GeoPolygon::~GeoPolygon()
 Vec3d
 GeoPolygon::getNormal(const Vec3d &v) const
 {
-    Vec3d a, b, norm;
-    v.getEpsilon();
-//    a = p->points.at(2) - p->points.at(0);
-//    b = p->points.at(1) - p->points.at(0);
+}
+
+// Description:
+// Return the normal vector of a specific polygon
+Vec3d
+GeoPolygon::getNormal(const int nPoly) const
+{
+    Vec3d a = m_polygons.at(nPoly).at(2) - m_polygons.at(nPoly).at(0);
+    Vec3d b = m_polygons.at(nPoly).at(1) - m_polygons.at(nPoly).at(0);
     // vector product
-    norm = a^b;
-    return norm.getNormalized();
+    return (a^b).getNormalized();
 }
 
 // Description:

@@ -39,6 +39,9 @@ class GeoPolygon : public GeoObject
       //! This polygonal surface consists of several polygons
       /*! Each polygon is saved as a list of indices, pointing into \b m_vertices */
       std::vector<std::vector<int> > m_polygons;
+
+      //! This method returns the normal to nPoly-th polygon
+      Vec3d getNormal(const int nPoly) const;
 };
 
 #endif // GEOPOLYGON_H
