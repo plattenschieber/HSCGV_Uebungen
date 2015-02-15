@@ -51,6 +51,21 @@ GeoPolygon::getNormal(const int nPoly) const
 }
 
 // Description:
+// Copyright (c) 1970-2003, Wm. Randolph Franklin
+int
+GeoPolygon::pnpoly(int nvert, float *vertx, float *verty, float testx, float testy) const
+{
+    int i, j, c = 0;
+    for (i = 0, j = nvert-1; i < nvert; j = i++) {
+        if ( ((verty[i]>testy) != (verty[j]>testy)) &&
+             (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
+            c = !c;
+    }
+    return c;
+}
+
+
+// Description:
 // Compute intersection point on this surface
 // return distance to nearest intersection found or -1
 double
