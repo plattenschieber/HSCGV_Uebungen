@@ -46,6 +46,11 @@ class GeoPolygon : public GeoObject
 
       //! This method returns the normal to nPoly-th polygon
       Vec3d getNormal(const int nPoly) const;
+      //! This method returns the distance to the intersection with the nPoly-th polygon
+      /*! In case that no intersection is found with this polygon we return -1
+       *  otherwise the distance t
+       */
+      double intersect(const Ray &ray, const int nPoly) const;
 };
 
 #endif // GEOPOLYGON_H
