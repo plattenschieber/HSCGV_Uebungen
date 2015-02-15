@@ -166,7 +166,7 @@ main (int argc, char *argv[])
    // setup viewport, its origin is bottom left
 
    // setup camera coordsys
-   Vec3d eye_dir = (g_scene.view.eyepoint - g_scene.view.lookat).getNormalized();
+   Vec3d eye_dir = (g_scene.view.lookat - g_scene.view.eyepoint).getNormalized();
    Vec3d eye_right = (eye_dir^g_scene.view.up).getNormalized();
    Vec3d eye_up = eye_dir^eye_right;
 
