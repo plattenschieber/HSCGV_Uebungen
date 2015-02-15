@@ -165,18 +165,31 @@ main (int argc, char *argv[])
    // TODO take view parameters from file into account and remove hardcoded values
    // setup viewport, its origin is bottom left
 
+   // setup camera coordsys
+   Vec3d eye_dir = (g_scene.view.eyepoint - g_scene.view.lookat).getNormalized();
+   Vec3d eye_right = (eye_dir^g_scene.view.up).getNormalized();
+   Vec3d eye_up = eye_dir^eye_right;
 
-   // the bottom left of the virtual screen
-   Vec3d bottomLeft = g_scene.view.lookat - Vec3d(150., 150., 0.);
+    // calculatehe dimensions of the viewport using the scene's camera
+    float height = 2 * tan(M_PI/180 * .5 * g_scene.view.fovy);
+    float width = height * g_scene.view.aspect;
+
+    // compute delta steps in each direction
+    Vec3d deltaX = eye_right * (width / g_scene.picture.Xresolution);
+    Vec3d deltaY = eye_up * (height / g_scene.picture.Yresolution);
+
+    // this should be bottom left
+    Vec3d bottomLeft = g_scene.view.eyepoint + eye_dir - deltaX*g_scene.picture.Xresolution/2 - deltaY*g_scene.picture.Yresolution/2;
 
    // normal ray tracing: the color of the center of a pixel is computed
-   for (unsigned int sy=300 ; sy > 0 ; --sy) {
+   for (unsigned int sy=g_scene.picture.Yresolution ; sy > 0 ; --sy) {
 
       fprintf(stderr,"\rscanline %4d (%3d%%)",sy,(g_scene.picture.Yresolution-sy)*100/g_scene.picture.Yresolution);
 
-      for (unsigned int sx=0 ; sx < 300 ; ++sx) {
+      for (unsigned int sx=0 ; sx < g_scene.picture.Xresolution ; ++sx) {
          // the center of the pixel we are looking at right now
-         Vec3d point = bottomLeft + Vec3d(sx, sy, 0.);
+         Vec3d point = bottomLeft + deltaX*sx + deltaY*sy + deltaX/2 + deltaY/2;
+
          // the direction of our look
          Vec3d dir = point - g_scene.view.eyepoint;
 
