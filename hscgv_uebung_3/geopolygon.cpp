@@ -63,8 +63,24 @@ GeoPolygon::getNormal(const Vec3d &v) const
         // cordinate vector cvector = {0, 1, x2x} or {x0x, 1, 2},..
         int cVector[] = {0,2};
 
+        // fill vertx and verty
+        float *vertx; //= m_polygons.at(indexOuter)[cVector[0]];
+        float *verty; //= m_polygons.at(indexOuter)[cVector[0]];
+        for (unsigned i=0; i<m_polygons.at(indexOuter).size(); i++)
+        {
+              // fill them all
+            ;
+        }
+
+        // check if v lies in this projected polygon
+        if (pnpoly(m_polygons.at(indexOuter).size(), vertx, verty, v[cVector[0]], v[cVector[1]]))
+        {
+            return getNormal(indexOuter);
+        }
     }
 
+    // this should never happen!
+    return getNormal(0);
 }
 
 // Description:
