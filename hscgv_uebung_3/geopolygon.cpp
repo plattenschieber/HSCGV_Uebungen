@@ -81,7 +81,7 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
 
     if(nDir != 0.0)
     {
-        /*Determine where the intersection is */
+        // determine where the intersection is
         si = norm | origin;
         t = (d - si) / nDir;
         Vec3d point = origin + dir*t;
@@ -89,7 +89,7 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
         {
             unsigned length = p.size();
 
-            /* See if intersection is on polygon edge */
+            // see if intersection is on polygon edge
             for (unsigned i = 0; i < length - 1; i++)
             {
                 edge = p.at(i+1) - p.at(i);
@@ -101,7 +101,7 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
                 }
             }
 
-            /* check the last edge */
+            // check the last edge
             edge = p.at(length-1) - p.at(0);
             vp = point - p.at(0);
             dir = edge^vp;
@@ -110,7 +110,7 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
                 return -1.;
             }
 
-            /* see if intersection lies inside the intersection of all spanned planes */
+            // see if intersection lies inside the intersection of all spanned planes
             for (unsigned i = 1; i < length - 1; i++) {
                 edge = p.at(i+1) - p.at(i);
                 vp = point - p.at(i);
@@ -122,7 +122,7 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
 
             }
 
-            /* handle very first plane */
+            // handle very first plane
             edge = p.at(length-1) - p.at(0);
             vp = point - p.at(0);
             dir = p.at(1) - p.at(0);
@@ -131,7 +131,7 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
                 return -1.;
             }
 
-            /* and the last plane */
+            // and the last plane
             edge = p.at(0) - p.at(1);
             vp = point - p.at(1);
             dir = p.at(2) - p.at(1);
