@@ -56,9 +56,15 @@ GeoPolygon::getNormal(const int nPoly) const
 double
 GeoPolygon::intersect(const Ray &ray) const
 {
-   double t = -1.0;
-   ray.direction();
-   return (((Vec3d::getEpsilon() * 10.0) < t) ? t : -1.0);
+    double temp, lastTemp=DBL_MAX;
+    for (unsigned i=0; i<m_polygons.size(); i++)
+    {
+        temp = intersect(ray, i);
+        if (temp >= 0 && temp < lastTemp) lastTemp = temp;
+    }
+    return (lastTemp<DBL_MAX)?lastTemp:-1;
+}
+
 double
 GeoPolygon::intersect(const Ray &ray, const int nPoly) const
 {
