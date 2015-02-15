@@ -36,7 +36,35 @@ GeoPolygon::~GeoPolygon()
 Vec3d
 GeoPolygon::getNormal(const Vec3d &v) const
 {
-    //TODO
+    // find out where v lies
+    for (unsigned poly=0; poly<m_polygons.size(); poly++)
+    {
+        int indexOuter = -1;
+        double lastOuter = DBL_MAX;
+        // to use pnpoly appropriately we need to delete the coordinate
+        // with the smallest range due to numerical stability
+        for (unsigned i=0; i<3; i++)
+        {
+            int indexInner = -1;
+            double lastInner = DBL_MAX;
+            for (unsigned j=0; j<m_polygons.at(poly).size(); j++)
+            {
+                double tmp = m_polygons.at(poly)[i];
+                if(tmp<lastInner)
+                {
+                    lastInner = tmp;
+                    indexInner = j;
+                }
+
+            }
+            // compare if ... cordinate has smaller range
+        }
+        // get rid of ... cordinate
+        // cordinate vector cvector = {0, 1, x2x} or {x0x, 1, 2},..
+        int cVector[] = {0,2};
+
+    }
+
 }
 
 // Description:
