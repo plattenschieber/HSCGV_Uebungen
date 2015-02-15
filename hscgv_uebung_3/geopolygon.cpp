@@ -36,6 +36,7 @@ GeoPolygon::~GeoPolygon()
 Vec3d
 GeoPolygon::getNormal(const Vec3d &v) const
 {
+    //TODO
 }
 
 // Description:
