@@ -46,8 +46,8 @@ GeoPolygon::getNormal(const Vec3d &v) const
         // compare all x,y,z seperately
         for (unsigned i=0; i<3; i++)
         {
-            for (unsigned j=0; j<m_polygons.at(poly).size(); j++)
             double maxItem = -DBL_MAX, minItem = DBL_MAX;
+            for (unsigned j=0; j<m_polygons[poly].size(); j++)
             {
                 maxItem = MAX(maxItem, m_vertices[m_polygons[poly][j]][i]);
                 minItem = MIN(minItem, m_vertices[m_polygons[poly][j]][i]);
@@ -73,7 +73,7 @@ GeoPolygon::getNormal(const Vec3d &v) const
         }
 
         // check if v lies in this projected polygon
-        if (pnpoly(m_polygons.at(indexOuter).size(), vertx, verty, v[cVector[0]], v[cVector[1]]))
+        if (pnpoly(m_polygons[indexOuter].size(), vertx, verty, v[cVector[0]], v[cVector[1]]))
         {
             return getNormal(indexOuter);
         }
