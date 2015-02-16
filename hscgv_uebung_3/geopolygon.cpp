@@ -88,8 +88,8 @@ GeoPolygon::getNormal(const Vec3d &v) const
 Vec3d
 GeoPolygon::getNormal(const int nPoly) const
 {
-    Vec3d a = m_polygons.at(nPoly).at(2) - m_polygons.at(nPoly).at(0);
-    Vec3d b = m_polygons.at(nPoly).at(1) - m_polygons.at(nPoly).at(0);
+    Vec3d a = m_polygons[nPoly][2] - m_polygons[nPoly][0];
+    Vec3d b = m_polygons[nPoly][1] - m_polygons[nPoly][0];
     // vector product
     return (a^b).getNormalized();
 }
@@ -127,7 +127,7 @@ GeoPolygon::intersect(const Ray &ray) const
 double
 GeoPolygon::intersect(const Ray &ray, const int nPoly) const
 {
-    std::vector<int> p = m_polygons.at(nPoly);
+    std::vector<int> p = m_polygons[nPoly];
     Vec3d edge, vp;
     Vec3d origin = ray.origin();
     Vec3d dir = ray.direction();
@@ -135,7 +135,7 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
 
     Vec3d norm = getNormal(nPoly);
     double nDir = norm | dir;
-    double d = norm | p.at(0);
+    double d = norm | p[0];
 
 
     if(nDir != 0.0)
@@ -151,8 +151,8 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
             // see if intersection is on polygon edge
             for (unsigned i = 0; i < length - 1; i++)
             {
-                edge = p.at(i+1) - p.at(i);
-                vp = point - p.at(i);
+                edge = p[i+1] - p[i];
+                vp = point - p[i];
                 dir = edge^vp;
                 if((vp | dir) < 0)
                 {
@@ -161,8 +161,8 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
             }
 
             // check the last edge
-            edge = p.at(length-1) - p.at(0);
-            vp = point - p.at(0);
+            edge = p[length-1] - p[0];
+            vp = point - p[0];
             dir = edge^vp;
             if((vp | dir) < 0)
             {
@@ -171,9 +171,9 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
 
             // see if intersection lies inside the intersection of all spanned planes
             for (unsigned i = 1; i < length - 1; i++) {
-                edge = p.at(i+1) - p.at(i);
-                vp = point - p.at(i);
-                dir = p.at(i-1) - p.at(i);
+                edge = p[i+1] - p[i];
+                vp = point - p[i];
+                dir = p[i-1] - p[i];
                 if((vp | dir) < 0)
                 {
                     return -1.;
@@ -182,18 +182,18 @@ GeoPolygon::intersect(const Ray &ray, const int nPoly) const
             }
 
             // handle very first plane
-            edge = p.at(length-1) - p.at(0);
-            vp = point - p.at(0);
-            dir = p.at(1) - p.at(0);
+            edge = p[length-1] - p[0];
+            vp = point - p[0];
+            dir = p[1] - p[0];
             if((vp | dir) < 0)
             {
                 return -1.;
             }
 
             // and the last plane
-            edge = p.at(0) - p.at(1);
-            vp = point - p.at(1);
-            dir = p.at(2) - p.at(1);
+            edge = p[0] - p[1];
+            vp = point - p[1];
+            dir = p[2] - p[1];
             if((vp | dir) < 0)
             {
                 return -1.;
