@@ -91,7 +91,7 @@ GeoPolygon::getNormal(const int nPoly) const
 // Copyright (c) 1970-2003, Wm. Randolph Franklin
 // updated to allow arbitrary user defined coordinates (cVec) by Jeronim Morina
 int
-GeoPolygon::pnpoly(int nvert, int *cVec, int *indices, float testx, float testy) const
+GeoPolygon::pnpoly(int nvert, int *cVec, const int *indices, float testx, float testy) const
 {
     int i, j, c = 0;
     for (i = 0, j = nvert-1; i < nvert; j = i++) {
