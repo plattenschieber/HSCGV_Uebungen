@@ -66,9 +66,9 @@ GeoPolygon::getNormal(const Vec3d &v) const
             if (i != minRangeIndex) cVector[it++] = i;
 
         // check if v lies in this projected polygon
-        if (pnpoly(m_polygons[indexOuter].size(), m_polygons[poly], v[cVector[0]], v[cVector[1]]))
+        if (pnpoly(m_polygons[minRangeIndex].size(), cVector, &m_polygons[poly][0], v[cVector[0]], v[cVector[1]]))
         {
-            return getNormal(indexOuter);
+            return getNormal(minRangeIndex);
         }
     }
 
