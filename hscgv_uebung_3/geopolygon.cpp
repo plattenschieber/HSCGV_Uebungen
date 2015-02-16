@@ -66,7 +66,7 @@ GeoPolygon::getNormal(const Vec3d &v) const
             if (i != minRangeIndex) cVector[it++] = i;
 
         // check if v lies in this projected polygon
-        if (pnpoly(m_polygons[indexOuter].size(), vertx, verty, v[cVector[0]], v[cVector[1]]))
+        if (pnpoly(m_polygons[indexOuter].size(), m_polygons[poly], v[cVector[0]], v[cVector[1]]))
         {
             return getNormal(indexOuter);
         }
@@ -89,13 +89,14 @@ GeoPolygon::getNormal(const int nPoly) const
 
 // Description:
 // Copyright (c) 1970-2003, Wm. Randolph Franklin
+// updated to allow arbitrary user defined coordinates (cVec) by Jeronim Morina
 int
-GeoPolygon::pnpoly(int nvert, float *vertx, float *verty, float testx, float testy) const
+GeoPolygon::pnpoly(int nvert, int *cVec, int *indices, float testx, float testy) const
 {
     int i, j, c = 0;
     for (i = 0, j = nvert-1; i < nvert; j = i++) {
-        if ( ((verty[i]>testy) != (verty[j]>testy)) &&
-             (testx < (vertx[j]-vertx[i]) * (testy-verty[i]) / (verty[j]-verty[i]) + vertx[i]) )
+        if ( ((m_vertices[indices[i]][cVec[1]]>testy) != (m_vertices[indices[j]][cVec[1]]>testy)) &&
+             (testx < (m_vertices[indices[j]][cVec[0]]-m_vertices[indices[i]][cVec[0]])* (testy-m_vertices[indices[i]][cVec[1]]) / (m_vertices[indices[j]][cVec[1]]-m_vertices[indices[i]][cVec[1]]) + m_vertices[indices[i]][cVec[0]]) )
             c = !c;
     }
     return c;

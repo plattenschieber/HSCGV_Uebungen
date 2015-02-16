@@ -52,7 +52,7 @@ class GeoPolygon : public GeoObject
       double intersect(const Ray &ray, const int nPoly) const;
       //! PNPOLY - Point Inclusion in Polygon Test
       /*! Copyright (c) 1970-2003, Wm. Randolph Franklin */
-      int pnpoly(int nvert, float *vertx, float *verty, float testx, float testy) const;
+      int pnpoly(int nvert, int *cVec, int *indices, float testx, float testy) const;
 };
 
 #endif // GEOPOLYGON_H
