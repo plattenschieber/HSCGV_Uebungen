@@ -33,6 +33,7 @@
    "%s: -f <filename> [-h]\n\
 \n\
 \t-f filename     input/output filename\n\
+\t-a              antialiasing flag on\n\
 \t-h              this help message\n"
 
 //! how long can filenames get ?
@@ -109,12 +110,12 @@ int
 main (int argc, char *argv[])
 {
    int c;
-   bool haveFilename = false;
+   bool haveFilename = false, antialiasing = false;
    char filename[MAXNAMLEN - 5] = "";
    char outfilename[MAXNAMLEN - 5] = "";
 
    // parse command line
-   while ((c = getopt(argc, argv, "bd:f:m:sh")) != EOF) {
+   while ((c = getopt(argc, argv, "bd:f:m:sh:a")) != EOF) {
       switch (c) {
          case 'f':
             sprintf(filename,"%s",optarg);
@@ -123,6 +124,9 @@ main (int argc, char *argv[])
          case 'h':
             fprintf(stderr, USAGE, argv[0]);
             exit(0);
+         case 'a':
+            fprintf(stderr, "antialiasing is set\n");
+            break;
          default:
             fprintf(stderr, USAGE, argv[0]);
             exit(1);
