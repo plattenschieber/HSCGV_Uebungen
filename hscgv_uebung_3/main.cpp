@@ -126,6 +126,7 @@ main (int argc, char *argv[])
             exit(0);
          case 'a':
             fprintf(stderr, "antialiasing is set\n");
+            antialiasing = true;
             break;
          default:
             fprintf(stderr, USAGE, argv[0]);
@@ -202,6 +203,33 @@ main (int argc, char *argv[])
 
          // compute the color
          Color col = theRay.shade();
+
+         // in case we are using antialiasing, calculate the color of this pixel by averaging
+         if (antialiasing) {
+               // scale the midpoint color since we are going to use 5 points to average our color
+               col *= 0.2;
+
+               // besides taking shooting a ray through the midpoint 'o', we calculate
+               // the pixels color by shooting 4 more rays  through the points 'x'
+               // and averaging their values
+               //  -------
+               // | x   x |
+               // |   o   |
+               // | x   x |
+               //  --------
+               for(float dx = -1/4.; dx <= 1/4.; dx+=1/2.)
+               {
+                 for(float dy = -1/4.; dy <= 1/4.; dy+=1/2.)
+                 {
+                   Vec3d superSamplePoint = point + deltaX*dx + deltaY*dy;
+                   Vec3d superSampleDir = superSamplePoint - g_scene.view.eyepoint;
+
+                   // create ray from view.eyepoint to view.lookat
+                   Ray theRay(g_scene.view.eyepoint,superSampleDir.getNormalized(),0,g_objectList,g_lightList);
+                   col += theRay.shade()*0.2;//color, recursive_ray_trace(eye, ray, 0));
+                 }
+               }
+         }
 
          // clamp the computed color value to 0...maxColVal
          for (unsigned int cc=0; cc<3; cc++) {
