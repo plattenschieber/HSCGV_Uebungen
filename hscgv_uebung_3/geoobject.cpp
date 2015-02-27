@@ -68,7 +68,7 @@ GeoObject::specular() const
    return 0.0;
 }
 
-int
+double
 GeoObject::specularExp() const
 {
    if (m_properties)

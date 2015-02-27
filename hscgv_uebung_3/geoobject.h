@@ -64,7 +64,7 @@ class GeoObject
       virtual Color  ambient() const;
       virtual Vec3d  reflectance() const;
       virtual double specular() const;
-      virtual int    specularExp() const;
+      virtual double specularExp() const;
 
       virtual double mirror() const;
 

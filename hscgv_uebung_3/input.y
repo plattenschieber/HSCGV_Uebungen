@@ -40,7 +40,7 @@ static Vec3d currentDirection = 0;
 static Color currentAmbient = 0;
 static Vec3d currentReflectance = 0;
 static double currentSpecular = 0;
-static int currentSpecularExp = 0;
+static double currentSpecularExp = 0;
 static double currentMirror = 0;
 static std::vector<Vec3d> vertexList;
 static std::vector<int> indexList;
@@ -387,8 +387,8 @@ static int lookatSeen = 0;
   float floatval;
 }
 
-%type <intval> index coeffVal
-%type <floatval> colourVal realVal angleVal zeroToOneVal
+%type <intval> index
+%type <floatval> colourVal realVal angleVal zeroToOneVal coeffVal
 
 %token <intval> INTEGER
 %token <floatval> FLOAT
@@ -965,10 +965,10 @@ index : INTEGER
 ;
     
 /* make sure each coeffVal is positive */
-coeffVal : INTEGER
+coeffVal : FLOAT
 {
   if ( $1 < 0 ) {
-    yyerror("index out of range (only 0 or more allowed)");
+    yyerror("exponent out of range (only 0 or more allowed)");
   }
 
   /* pass that value up the tree */
