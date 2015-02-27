@@ -1,0 +1,184 @@
+#==============================================================================
+# Programmierpraktikum Computergrafik
+#------------------------------------------------------------------------------
+#                         Aufgabe 3: Lichtblick
+#------------------------------------------------------------------------------
+# Created by Peter Kipfer <kipfer@informatik.uni-erlangen.de>
+#==============================================================================
+
+#------------------------------------------------------------------------------
+# image parameters
+
+resolution      600     600
+background	0.0	0.0	0.9
+
+#------------------------------------------------------------------------------
+# viewing parameters
+
+eyepoint      150.0   150.0   160.0
+lookat          0.0     0.0    60.0
+fovy            45
+aspect          0.7
+up		0.1	-0.3	1.0
+
+#------------------------------------------------------------------------------
+# global lighting
+
+ambience	0.0   0.0     0.0
+
+#------------------------------------------------------------------------------
+# geometry
+
+numsurfaces 2
+
+object poly
+    numvertices 52
+	# Fusspunkte der vier Tischbeine
+	vertex	 35.	 35.	  0.
+	vertex	 20.	 35.	  0.
+	vertex	 20.	 30.	  0.
+	vertex	 30.	 30.	  0.
+	vertex	 30.	 20.	  0.
+	vertex	 35.	 20.	  0.
+	vertex	-35.	 35.	  0.
+	vertex	-35.	 20.	  0.
+	vertex	-30.	 20.	  0.
+	vertex	-30.	 30.	  0.
+	vertex	-20.	 30.	  0.
+	vertex	-20.	 35.	  0.
+	vertex	-35.	-35.	  0.
+	vertex	-20.	-35.	  0.
+	vertex	-20.	-30.	  0.
+	vertex	-30.	-30.	  0.
+	vertex	-30.	-20.	  0.
+	vertex	-35.	-20.	  0.
+	vertex	 35.	-35.	  0.
+	vertex	 35.	-20.	  0.
+	vertex	 30.	-20.	  0.
+	vertex	 30.	-30.	  0.
+	vertex	 20.	-30.	  0.
+	vertex	 20.	-35.	  0.
+
+	# untere 'Holmpunkte' (sorry, aber ich bin kein Tischler!)
+	vertex	 20.	 35.	 50.
+	vertex	 20.	 30.	 50.
+	vertex	 30.	 20.	 50.
+	vertex	 35.	 20.	 50.
+	vertex	-35.	 20.	 50.
+	vertex	-30.	 20.	 50.
+	vertex	-20.	 30.	 50.
+	vertex	-20.	 35.	 50.
+	vertex	-20.	-35.	 50.
+	vertex	-20.	-30.	 50.
+	vertex	-30.	-20.	 50.
+	vertex	-35.	-20.	 50.
+	vertex	 35.	-20.	 50.
+	vertex	 30.	-20.	 50.
+	vertex	 20.	-30.	 50.
+	vertex	 20.	-35.	 50.
+
+	# obere 'Holmpunkte'
+	vertex	 35.	 35.	 60.
+	vertex	 30.	 30.	 60.
+	vertex	-35.	 35.	 60.
+	vertex	-30.	 30.	 60.
+	vertex	-35.	-35.	 60.
+	vertex	-30.	-30.	 60.
+	vertex	 35.	-35.	 60.
+	vertex	 30.	-30.	 60.
+
+	# Tischplatte
+	vertex	 50.	 50.	 65.
+	vertex	-50.	 50.	 65.
+	vertex	-50.	-50.	 65.
+	vertex	 50.	-50.	 65.
+
+    numpolygons 30
+	# vier Fussflaechen
+	polygon	6	 6	 5	 4	 3	 2	 1
+	polygon	6	12	11	10	 9	 8	 7
+	polygon	6	18	17	16	15	14	13
+	polygon	6	24	23	22	21	20	19
+
+	# innere Tisch-Unterseite
+	polygon	4	48	46	44	42
+
+	# vier Holm-Unterseiten
+	polygon	4	26	31	32	25
+	polygon	4	30	35	36	29
+	polygon	4	34	39	40	33
+	polygon	4	38	27	28	37
+
+	# die vier abgeschraegten aeusseren Tisch-Unterseiten
+	polygon	4	43	50	49	41
+	polygon	4	45	51	50	43
+	polygon	4	47	52	51	45
+	polygon	4	41	49	52	47
+
+	# Tisch-Oberseite
+	polygon	4	49	50	51	52
+
+	# vier Tischbein-Aussenseiten
+	polygon	8	 1	 2	25	32	12	 7	43	41
+	polygon	8	 7	 8	29	36	18	13	45	43
+	polygon	8	13	14	33	40	24	19	47	45
+	polygon	8	19	20	37	28	 6	 1	41	47
+
+	# vier Tischbein-Innenseiten
+	polygon	8	44	10	11	31	26	 3	 4	42
+	polygon	8	46	16	17	35	30	 9	10	44
+	polygon	8	48	22	23	39	34	15	16	46
+	polygon	8	42	 4	 5	27	38	21	22	48
+
+	# acht (senkrechte) Tischbein-Kanten
+	polygon	4	 2	 3	26	25
+	polygon	4	11	12	32	31
+	polygon	4	 8	 9	30	29
+	polygon	4	17	18	36	35
+	polygon	4	14	15	34	33
+	polygon	4	23	24	40	39
+	polygon	4	20	21	38	37
+	polygon	4	 5	 6	28	27
+
+object	quadric	1.0 0.0 0.0 0.0 1.0 0.0 0.0 1.0 -200.0 9100.0
+
+#------------------------------------------------------------------------------
+# surface properties
+
+numproperties	1
+
+ambient  0.0    0.0     0.0
+diffuse  1.0	1.0	1.0
+specular 0.0	4
+mirror	 0.0
+
+#------------------------------------------------------------------------------
+# lighting
+
+numlights	4
+
+direction  0.9	 0.6	-0.9
+colour	   1.0	 0.0	 0.0
+
+direction  0.6	-0.9	-0.9
+colour	   0.0	 0.0	 1.0
+
+direction -0.9	-0.3	-0.9
+colour	   0.0	 1.0	 0.0
+
+direction  0.1	 0.1	 3.0
+colour	   0.3	 0.3	 0.0
+
+#------------------------------------------------------------------------------
+# objects
+
+numobjects	2
+
+object	 1	 1
+object	 2	 1
+
+# Local Variables: 
+# mode: shell-script
+# End: 
+
+#*** END OF FILE **************************************************************
