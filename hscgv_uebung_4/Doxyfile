@@ -1,0 +1,23 @@
+# *************** Programmierpraktikum Computergrafik *****************
+# Aufgabe 4 - "LBM"
+#
+# File: Doxyfile
+
+PROJECT_NAME = "Aufgabe 4: LBM"
+#PROJECT_NUMBER = "$Id"
+DISTRIBUTE_GROUP_DOC   = YES
+SUBGROUPING   = YES
+OUTPUT_DIRECTORY = doc
+OUTPUT_LANGUAGE = English
+WARNINGS = YES
+WARN_IF_UNDOCUMENTED = NO
+EXTRACT_ALL = YES
+EXTRACT_STATIC = YES
+EXTRACT_PRIVATE = YES
+CLASS_DIAGRAMS = YES
+INPUT = .
+FILE_PATTERNS = *.h [a-l]*.cpp main.cpp [n-p]*.cpp qosgviewer.cpp [r-z]*.cpp *.cu # avoid moc_* and qrc_*
+
+GENERATE_HTML = YES
+GENERATE_LATEX = NO
+#GENERATE_MAN = YES
