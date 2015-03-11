@@ -3,7 +3,7 @@
 
 // constants
 //! 0 = no periodic boundaries, 1 = periodic boundaries -- non-periodic is faster
-static const int eriodicBoundaries = 0;
+static const int PeriodicBoundaries = 0;
 //! dimensionaly of domain, has to be 3
 static const int D = 3;
 //! size of neighbourhood of a cell, has to be 19
