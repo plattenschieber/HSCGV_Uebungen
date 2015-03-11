@@ -52,7 +52,7 @@ __global__ collideCuda() {
     }
 
     // nothing to do for NoSlip cells
-    const int flag = m_flags[index(i,j,k)];
+    const int flag = d_flags[index(i,j,k)];
     if (flag == CellNoSlip)
         continue;
 
@@ -61,7 +61,7 @@ __global__ collideCuda() {
     float3 u;
     for(int l=0; l<Q; ++l)
     {
-        const float weight = m_cells[m_current][index(i,j,k,l)];
+        const float weight = d_cells[d_current][index(i,j,k,l)];
         density += weight;
         for(int c=0; c<D; ++c)
             u[c] += e[l][c] * weight;
@@ -70,7 +70,7 @@ __global__ collideCuda() {
     // override velocity for Velocity cells
     if (flag == CellVelocity)
     {
-        u = m_velocity[index(i,j,k)];
+        u = d_velocity[index(i,j,k)];
     }
 
     // collision
@@ -84,16 +84,16 @@ __global__ collideCuda() {
             uu += u[c] * u[c];
         }
         float feq = w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
-        m_cells[m_current][index(i,j,k,l)] =
-                m_omega * feq + (1.0-m_omega) * m_cells[m_current][index(i,j,k,l)];
+        d_cells[d_current][index(i,j,k,l)] =
+                d_omega * feq + (1.0-d_omega) * d_cells[d_current][index(i,j,k,l)];
     }
 }
 __global__ streamCuda() {
-    for(int k=1-PeriodicBoundaries; k<m_depth-1+PeriodicBoundaries; ++k)
+    for(int k=1-PeriodicBoundaries; k<d_depth-1+PeriodicBoundaries; ++k)
     {
-        for(int j=1-PeriodicBoundaries; j<m_height-1+PeriodicBoundaries; ++j)
+        for(int j=1-PeriodicBoundaries; j<d_height-1+PeriodicBoundaries; ++j)
         {
-            for(int i=1-PeriodicBoundaries; i<m_width-1+PeriodicBoundaries; ++i)
+            for(int i=1-PeriodicBoundaries; i<d_width-1+PeriodicBoundaries; ++i)
             {
                 for(int l=0; l<Q; ++l)
                 {
@@ -101,15 +101,15 @@ __global__ streamCuda() {
                     const int si = i+e[inv][0];
                     const int sj = j+e[inv][1];
                     const int sk = k+e[inv][2];
-                    if(m_flags[index(si,sj,sk)] == CellNoSlip)
+                    if(d_flags[index(si,sj,sk)] == CellNoSlip)
                     {
                         // reflect at NoSlip cell
-                        m_cells[m_current][index(i,j,k,l)] = m_cells[!m_current][index(i,j,k,inv)];
+                        d_cells[d_current][index(i,j,k,l)] = d_cells[!d_current][index(i,j,k,inv)];
                     }
                     else
                     {
                         // update from neighbours
-                        m_cells[m_current][index(i,j,k,l)] = m_cells[!m_current][index(si,sj,sk,l)];
+                        d_cells[d_current][index(i,j,k,l)] = d_cells[!d_current][index(si,sj,sk,l)];
                     }
                 }
             }
@@ -119,16 +119,16 @@ __global__ streamCuda() {
 
 __global__ analyzeCuda()
 {
-    for(int k=0; k<m_depth; ++k)
+    for(int k=0; k<d_depth; ++k)
     {
-        for(int j=0; j<m_height; ++j)
+        for(int j=0; j<d_height; ++j)
         {
-            for(int i=0; i<m_width; ++i)
+            for(int i=0; i<d_width; ++i)
             {
                 // compute density and velocity in cell
                 float density = 0.0;
                 float3 u;
-                if(m_flags[index(i,j,k)] == CellNoSlip)
+                if(d_flags[index(i,j,k)] == CellNoSlip)
                 {
                     density = 1.;
                 }
@@ -136,15 +136,15 @@ __global__ analyzeCuda()
                 {
                     for(int l=0; l<Q; ++l)
                     {
-                        const float weight = m_cells[m_current][index(i,j,k,l)];
+                        const float weight = d_cells[d_current][index(i,j,k,l)];
                         density += weight;
                         for(int c=0; c<D; ++c)
                             u[c] += e[l][c] * weight;
                     }
                 }
 
-                m_density[index(i,j,k)] = density;
-                m_u[index(i,j,k)] = u;
+                d_density[index(i,j,k)] = density;
+                d_u[index(i,j,k)] = u;
             }
         }
     }
@@ -153,34 +153,34 @@ __global__ analyzeCuda()
 __global__ minMaxCuda()
 {
     // reset minium and maximum values
-    m_minDensity = 1000.;
-    m_maxDensity = 0.;
-    m_maxVelocity2 = 0.;
+    d_minDensity = 1000.;
+    d_maxDensity = 0.;
+    d_maxVelocity2 = 0.;
 
-    for(int k=0; k<m_depth; ++k)
+    for(int k=0; k<d_depth; ++k)
     {
-        for(int j=0; j<m_height; ++j)
+        for(int j=0; j<d_height; ++j)
         {
-            for(int i=0; i<m_width; ++i)
+            for(int i=0; i<d_width; ++i)
             {
                 const size_t idx = index(i,j,k);
                 // nothing to do for NoSlip cells
-                const int flag = m_flags[idx];
+                const int flag = d_flags[idx];
                 if (flag == CellNoSlip)
                     continue;
 
                 // store min and max values - we don't care for race conditions
-                if(m_density[idx] < m_minDensity)
-                    m_minDensity = m_density[idx];
-                if(m_density[idx] > m_maxDensity)
-                    m_maxDensity = m_density[idx];
+                if(d_density[idx] < d_minDensity)
+                    d_minDensity = d_density[idx];
+                if(d_density[idx] > d_maxDensity)
+                    d_maxDensity = d_density[idx];
                 float v2 = 0.;
                 for(int c=0; c<D; ++c)
                 {
-                    v2 += m_u[idx][c] * m_u[idx][c];
+                    v2 += d_u[idx][c] * d_u[idx][c];
                 }
-                if(v2 > m_maxVelocity2)
-                    m_maxVelocity2 = v2;
+                if(v2 > d_maxVelocity2)
+                    d_maxVelocity2 = v2;
             }
         }
     }
