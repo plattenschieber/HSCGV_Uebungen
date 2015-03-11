@@ -48,7 +48,7 @@ size_t __device__ index(int i, int j, int k, int l) {
 #endif
 }
 
-__global__ collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
+__global__ void collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
     // get the current thread position
     int i = threadIdx.x;
     int j = threadIdx.y;
@@ -93,7 +93,7 @@ __global__ collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
                 d_omega * feq + (1.0-d_omega) * d_cellsCur[index(i,j,k,l)];
     }
 }
-__global__ streamCuda(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
+__global__ void streamCuda(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
     // get the current thread position
     int i = threadIdx.x;
     int j = threadIdx.y;
@@ -121,7 +121,7 @@ __global__ streamCuda(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
     }
 }
 
-__global__ analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, float3 *d_u, float3 *d_velocity) {
+__global__ void analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, float3 *d_u, float3 *d_velocity) {
     // get the current thread position
     int i = threadIdx.x;
     int j = threadIdx.y;
@@ -146,7 +146,6 @@ __global__ analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, float
     d_u[index(i,j,k)] = u;
 }
 
-__global__ minMaxCuda() {
     // get the current thread position
     int i = threadIdx.x;
     int j = threadIdx.y;
@@ -175,6 +174,7 @@ __global__ minMaxCuda() {
     if(v2 > d_maxVelocity2)
         d_maxVelocity2 = v2;
 }
+__global__ void minMaxCuda() { }
 
 //! we need some kind of initialization of our device
 void LBMD3Q19::intializeCuda() {
