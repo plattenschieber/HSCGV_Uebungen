@@ -8,6 +8,17 @@ static const int PeriodicBoundaries = 0;
 static const int D = 3;
 //! size of neighbourhood of a cell, has to be 19
 static const int Q = 19;
+//! cell types
+enum CellFlags
+{
+    //! a wet cell
+    CellFluid = 0,
+    //! a wall cell, flow bounces back
+    CellNoSlip,
+    //! fixed velocity cell
+    CellVelocity
+};
+
 
 // we can save constants on the GPU in an extra space with a lot faster access
 __constant__ float d_w[Q];
