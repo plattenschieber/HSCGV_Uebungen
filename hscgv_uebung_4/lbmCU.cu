@@ -12,6 +12,13 @@ int launchKernel () {
     return 0;
 }
 
+void cudaDevicesTest() {
+    // test how many devices we have
+    int devices;
+    cudaGetDeviceCount(&devices);
+    printf("We have %i device(s) on this machine\n", devices);
+}
+
 void cudaSquareTest() {
     // host variable for input
     float h_in[20];
