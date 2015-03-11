@@ -18,7 +18,8 @@ INCLUDEPATH *= $${OSGHOME}/include
 LIBS *= -L$${OSGHOME}/lib $${OSG_LIBS}
 
 CUDA_SOURCES += \
-    cudaTest.cu
+    cudaTest.cu \
+    lbm.cu
 
 SOURCES += main.cpp \
     applicationwindow.cpp \
