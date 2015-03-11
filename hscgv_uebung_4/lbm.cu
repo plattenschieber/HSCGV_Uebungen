@@ -9,8 +9,7 @@ static const int D = 3;
 //! size of neighbourhood of a cell, has to be 19
 static const int Q = 19;
 //! cell types
-enum CellFlags
-{
+enum CellFlags {
     //! a wet cell
     CellFluid = 0,
     //! a wall cell, flow bounces back
@@ -27,8 +26,7 @@ __constant__ int d_invDir[Q];
 
 size_t __device__ index(int i, int j, int k) {
 
-    if(PeriodicBoundaries)
-    {
+    if(PeriodicBoundaries) {
         i = (i+gridDim.x)%gridDim.x;
         j = (j+blockDim.x)%blockDim.x;
         k = (k+blockDim.y)%blockDim.y;
@@ -36,10 +34,8 @@ size_t __device__ index(int i, int j, int k) {
     return i + blockDim.x*(j + blockDim.y*size_t(k));
 }
 
-size_t __device__ index(int i, int j, int k, int l)
-{
-    if(PeriodicBoundaries)
-    {
+size_t __device__ index(int i, int j, int k, int l) {
+    if(PeriodicBoundaries) {
         i = (i+gridDim.x)%gridDim.x;
         j = (j+blockDim.x)%blockDim.x;
         k = (k+blockDim.y)%blockDim.y;
@@ -71,8 +67,7 @@ __global__ collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
     // compute density and velocity in cell
     float density = 0.0;
     float3 u = make_float3(0., 0., 0.,);
-    for(int l=0; l<Q; ++l)
-    {
+    for(int l=0; l<Q; ++l) {
         const float weight = d_cellsCur[index(i,j,k,l)];
         density += weight;
         for(int c=0; c<D; ++c)
@@ -80,18 +75,15 @@ __global__ collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
     }
 
     // override velocity for Velocity cells
-    if (flag == CellVelocity)
-    {
+    if (flag == CellVelocity) {
         u = d_velocity[index(i,j,k)];
     }
 
     // collision
-    for(int l=0; l<Q; ++l)
-    {
+    for(int l=0; l<Q; ++l) {
         float dot = 0.;
         float uu = 0.;
-        for(int c=0; c<D; ++c)
-        {
+        for(int c=0; c<D; ++c) {
             dot += d_e[l][c] * u[c];
             uu += u[c] * u[c];
         }
@@ -101,6 +93,7 @@ __global__ collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
     }
 }
 __global__ streamCuda(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
+    // get the current thread position
     int i = threadIdx.x;
     int j = threadIdx.y;
     int k = blockIdx.x;
@@ -111,19 +104,16 @@ __global__ streamCuda(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
             return;
     }
 
-    for(int l=0; l<Q; ++l)
-    {
+    for(int l=0; l<Q; ++l) {
         const int inv = d_invDir[l];
         const int si = i+d_e[inv][0];
         const int sj = j+d_e[inv][1];
         const int sk = k+d_e[inv][2];
-        if(d_flags[index(si,sj,sk)] == CellNoSlip)
-        {
+        if(d_flags[index(si,sj,sk)] == CellNoSlip) {
             // reflect at NoSlip cell
             d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(i,j,k,inv)];
         }
-        else
-        {
+        else {
             // update from neighbours
             d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(si,sj,sk,l)];
         }
