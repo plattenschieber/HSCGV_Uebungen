@@ -100,30 +100,31 @@ __global__ collideCuda(float *d_cellsCur) {
     }
 }
 __global__ streamCuda(float *d_cellsCur, float *d_cellsLast) {
-    for(int k=1-PeriodicBoundaries; k<d_depth-1+PeriodicBoundaries; ++k)
+    int i = threadIdx.x;
+    int j = threadIdx.y;
+    int k = blockIdx.x;
+
+    // in case we have no periodic boundaries, the threads on the edges don't have anything to do
+    if (!PeriodicBoundaries) {
+        if (i==0 || i==blockDim.x-1 || j==0 || j==blockDim.y-1 || k==0 || k==gridDim.x-1)
+            return;
+    }
+
+    for(int l=0; l<Q; ++l)
     {
-        for(int j=1-PeriodicBoundaries; j<d_height-1+PeriodicBoundaries; ++j)
+        const int inv = invDir[l];
+        const int si = i+e[inv][0];
+        const int sj = j+e[inv][1];
+        const int sk = k+e[inv][2];
+        if(d_flags[index(si,sj,sk)] == CellNoSlip)
         {
-            for(int i=1-PeriodicBoundaries; i<d_width-1+PeriodicBoundaries; ++i)
-            {
-                for(int l=0; l<Q; ++l)
-                {
-                    const int inv = invDir[l];
-                    const int si = i+e[inv][0];
-                    const int sj = j+e[inv][1];
-                    const int sk = k+e[inv][2];
-                    if(d_flags[index(si,sj,sk)] == CellNoSlip)
-                    {
-                        // reflect at NoSlip cell
-                        d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(i,j,k,inv)];
-                    }
-                    else
-                    {
-                        // update from neighbours
-                        d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(si,sj,sk,l)];
-                    }
-                }
-            }
+            // reflect at NoSlip cell
+            d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(i,j,k,inv)];
+        }
+        else
+        {
+            // update from neighbours
+            d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(si,sj,sk,l)];
         }
     }
 }
