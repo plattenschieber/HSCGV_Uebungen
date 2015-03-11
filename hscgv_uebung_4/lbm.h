@@ -269,7 +269,7 @@ class LBMD3Q19
         //! compute densities and velocities with CUDA
         void analyzeCuda();
         //! compute minimum and maximum density and velocity with CUDA
-        void minMaxCpu();
+        void minMaxCuda();
 };
 
 #endif
