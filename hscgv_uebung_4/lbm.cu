@@ -15,6 +15,15 @@ __constant__ int d_e[Q][D];
 __constant__ int d_invDir[Q];
 
 __global__ collideCuda() {
+    int i = threadIdx.x;
+    int j = threadIdx.y;
+    int k = blockIdx.x;
+
+    // in case we have no periodic boundaries, the threads on the edges don't have anything to do
+    if (!PeriodicBoundaries) {
+        if (i==0 || i==blockDim.x-1 || j==0 || j==blockDim.y-1 || k==0 || k==gridDim.x-1)
+            return;
+    }
     for(int k=1-PeriodicBoundaries; k<m_depth-1+PeriodicBoundaries; ++k)
     {
         for(int j=1-PeriodicBoundaries; j<m_height-1+PeriodicBoundaries; ++j)
