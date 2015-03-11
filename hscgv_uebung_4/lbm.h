@@ -245,6 +245,19 @@ class LBMD3Q19
 
         // ------ CUDA
 
+        // we need a CUDA pendant for every allocated datatype
+        //! cell types
+        char *d_flags;
+        //! prescribed velocity for Velocity cells
+        float3 *d_velocity;
+        //! simulated velocity
+        float3 *d_u;
+        //! simulated density
+        float *d_density;
+        //! two arrays of distributions that are updated alternating, each indexed by 4 coordinates
+        float *d_cells[2];
+
+        // function pendants in CUDA
         //! we need some kind of initialization of our device
         void intializeCuda();
 
