@@ -192,7 +192,7 @@ void LBMD3Q19::intializeCuda() {
 
     // use cpyToSymbol for known sizes (LEGACY CODE - WORKS ONLY WITH CUDA <= 5.5)
     cudaMemcpyToSymbol(d_w, w.w, sizeof(float)*Q);
-    cudaMemcpyToSymbol(d_e, e, sizeof(int3)*Q);
+    cudaMemcpyToSymbol(d_e, e, sizeof(int)*D*Q);
     cudaMemcpyToSymbol(d_invDir, invDir, sizeof(int)*Q);
     cudaMemcpyToSymbol(d_omega, &m_omega, sizeof(float));
 
