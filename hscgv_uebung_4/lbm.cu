@@ -183,20 +183,20 @@ void LBMD3Q19::intializeCuda() {
 
 //! collide implementation with CUDA
 void LBMD3Q19::collideCuda() {
-    collideCuda<<<dim3(m_width,m_height),dim3(m_depth)>>();
+    collideCuda<<<dim3(m_width),dim3(m_height,m_depth)>>();
 }
 
 //! streaming with CUDA
 void LBMD3Q19::streamCuda() {
-    streamCude<<<dim3(m_width,m_height),dim3(m_depth)>>();
+    streamCude<<<dim3(m_width),dim3(m_height,m_depth)>>>();
 }
 
 //! compute densities and velocities with CUDA
 void LBMD3Q19::analyzeCuda() {
-    analyzeCuda<<<dim3(m_width,m_height),dim3(m_depth)>>();
+    analyzeCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>();
 }
 
 //! compute minimum and maximum density and velocity with CUDA
 void LBMD3Q19::minMaxCuda() {
-    minMaxCuda<<<dim3(m_width,m_height),dim3(m_depth)>>();
+    minMaxCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>();
 }
