@@ -94,7 +94,7 @@ __global__ collideCuda(float *d_cellsCur) {
             dot += e[l][c] * u[c];
             uu += u[c] * u[c];
         }
-        float feq = w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
+        float feq = d_w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
         d_cellsCur[index(i,j,k,l)] =
                 d_omega * feq + (1.0-d_omega) * d_cellsCur[index(i,j,k,l)];
     }
