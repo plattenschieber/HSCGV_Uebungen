@@ -57,11 +57,11 @@ __global__ collideCuda() {
         continue;
 
     // compute density and velocity in cell
-    Scalar density = 0.0;
-    Vector u;
+    float density = 0.0;
+    float3 u;
     for(int l=0; l<Q; ++l)
     {
-        const Scalar weight = m_cells[m_current][index(i,j,k,l)];
+        const float weight = m_cells[m_current][index(i,j,k,l)];
         density += weight;
         for(int c=0; c<D; ++c)
             u[c] += e[l][c] * weight;
@@ -76,14 +76,14 @@ __global__ collideCuda() {
     // collision
     for(int l=0; l<Q; ++l)
     {
-        Scalar dot = 0.;
-        Scalar uu = 0.;
+        float dot = 0.;
+        float uu = 0.;
         for(int c=0; c<D; ++c)
         {
             dot += e[l][c] * u[c];
             uu += u[c] * u[c];
         }
-        Scalar feq = w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
+        float feq = w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
         m_cells[m_current][index(i,j,k,l)] =
                 m_omega * feq + (1.0-m_omega) * m_cells[m_current][index(i,j,k,l)];
     }
@@ -126,8 +126,8 @@ __global__ analyzeCuda()
             for(int i=0; i<m_width; ++i)
             {
                 // compute density and velocity in cell
-                Scalar density = 0.0;
-                Vector u;
+                float density = 0.0;
+                float3 u;
                 if(m_flags[index(i,j,k)] == CellNoSlip)
                 {
                     density = 1.;
@@ -136,7 +136,7 @@ __global__ analyzeCuda()
                 {
                     for(int l=0; l<Q; ++l)
                     {
-                        const Scalar weight = m_cells[m_current][index(i,j,k,l)];
+                        const float weight = m_cells[m_current][index(i,j,k,l)];
                         density += weight;
                         for(int c=0; c<D; ++c)
                             u[c] += e[l][c] * weight;
