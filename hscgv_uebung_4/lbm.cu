@@ -75,7 +75,7 @@ __global__ collideCuda(float *d_cellsCur) {
         const float weight = d_cellsCur[index(i,j,k,l)];
         density += weight;
         for(int c=0; c<D; ++c)
-            u[c] += e[l][c] * weight;
+            u[c] += d_e[l][c] * weight;
     }
 
     // override velocity for Velocity cells
@@ -91,7 +91,7 @@ __global__ collideCuda(float *d_cellsCur) {
         float uu = 0.;
         for(int c=0; c<D; ++c)
         {
-            dot += e[l][c] * u[c];
+            dot += d_e[l][c] * u[c];
             uu += u[c] * u[c];
         }
         float feq = d_w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
@@ -112,10 +112,10 @@ __global__ streamCuda(float *d_cellsCur, float *d_cellsLast) {
 
     for(int l=0; l<Q; ++l)
     {
-        const int inv = invDir[l];
-        const int si = i+e[inv][0];
-        const int sj = j+e[inv][1];
-        const int sk = k+e[inv][2];
+        const int inv = d_invDir[l];
+        const int si = i+d_e[inv][0];
+        const int sj = j+d_e[inv][1];
+        const int sk = k+d_e[inv][2];
         if(d_flags[index(si,sj,sk)] == CellNoSlip)
         {
             // reflect at NoSlip cell
@@ -151,7 +151,7 @@ __global__ analyzeCuda(float *d_cellsCur)
                         const float weight = d_cells[index(i,j,k,l)];
                         density += weight;
                         for(int c=0; c<D; ++c)
-                            u[c] += e[l][c] * weight;
+                            u[c] += d_e[l][c] * weight;
                     }
                 }
 
