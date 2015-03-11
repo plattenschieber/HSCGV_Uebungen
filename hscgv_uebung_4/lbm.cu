@@ -51,7 +51,7 @@ size_t __device__ index(int i, int j, int k, int l)
 #endif
 }
 
-__global__ collideCuda(float *d_cells) {
+__global__ collideCuda(float *d_cellsCur) {
     int i = threadIdx.x;
     int j = threadIdx.y;
     int k = blockIdx.x;
@@ -72,7 +72,7 @@ __global__ collideCuda(float *d_cells) {
     float3 u = make_float3(0., 0., 0.,);
     for(int l=0; l<Q; ++l)
     {
-        const float weight = d_cells[index(i,j,k,l)];
+        const float weight = d_cellsCur[index(i,j,k,l)];
         density += weight;
         for(int c=0; c<D; ++c)
             u[c] += e[l][c] * weight;
@@ -95,11 +95,11 @@ __global__ collideCuda(float *d_cells) {
             uu += u[c] * u[c];
         }
         float feq = w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
-        d_cells[d_current][index(i,j,k,l)] =
-                d_omega * feq + (1.0-d_omega) * d_cells[d_current][index(i,j,k,l)];
+        d_cellsCur[index(i,j,k,l)] =
+                d_omega * feq + (1.0-d_omega) * d_cellsCur[index(i,j,k,l)];
     }
 }
-__global__ streamCuda() {
+__global__ streamCuda(float *d_cellsCur, float *d_cellsLast) {
     for(int k=1-PeriodicBoundaries; k<d_depth-1+PeriodicBoundaries; ++k)
     {
         for(int j=1-PeriodicBoundaries; j<d_height-1+PeriodicBoundaries; ++j)
@@ -115,12 +115,12 @@ __global__ streamCuda() {
                     if(d_flags[index(si,sj,sk)] == CellNoSlip)
                     {
                         // reflect at NoSlip cell
-                        d_cells[d_current][index(i,j,k,l)] = d_cells[!d_current][index(i,j,k,inv)];
+                        d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(i,j,k,inv)];
                     }
                     else
                     {
                         // update from neighbours
-                        d_cells[d_current][index(i,j,k,l)] = d_cells[!d_current][index(si,sj,sk,l)];
+                        d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(si,sj,sk,l)];
                     }
                 }
             }
@@ -128,7 +128,7 @@ __global__ streamCuda() {
     }
 }
 
-__global__ analyzeCuda()
+__global__ analyzeCuda(float *d_cellsCur)
 {
     for(int k=0; k<d_depth; ++k)
     {
@@ -147,7 +147,7 @@ __global__ analyzeCuda()
                 {
                     for(int l=0; l<Q; ++l)
                     {
-                        const float weight = d_cells[d_current][index(i,j,k,l)];
+                        const float weight = d_cells[index(i,j,k,l)];
                         density += weight;
                         for(int c=0; c<D; ++c)
                             u[c] += e[l][c] * weight;
