@@ -243,6 +243,20 @@ class LBMD3Q19
         //! compute minimum and maximum density and velocity on CPU
         void minMaxCpu();
 
+        // ------ CUDA
+
+        //! we need some kind of initialization of our device
+        void intializeCuda();
+
+        //! collide implementation with CUDA
+        void collideCuda();
+        //! streaming with CUDA
+        void streamCuda();
+
+        //! compute densities and velocities with CUDA
+        void analyzeCuda();
+        //! compute minimum and maximum density and velocity with CUDA
+        void minMaxCpu();
 };
 
 #endif

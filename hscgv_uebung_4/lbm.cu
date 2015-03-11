@@ -13,3 +13,28 @@ static const int Q = 19;
 __constant__ float d_w[Q];
 __constant__ int d_e[Q][D];
 __constant__ int d_invDir[Q];
+
+//! we need some kind of initialization of our device
+void LBMD3Q19::intializeCuda() {
+
+}
+
+//! collide implementation with CUDA
+void LBMD3Q19::collideCuda() {
+
+}
+
+//! streaming with CUDA
+void LBMD3Q19::streamCuda() {
+
+}
+
+//! compute densities and velocities with CUDA
+void LBMD3Q19::analyzeCuda() {
+
+}
+
+//! compute minimum and maximum density and velocity with CUDA
+void LBMD3Q19::minMaxCpu() {
+
+}
