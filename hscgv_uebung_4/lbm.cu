@@ -23,6 +23,17 @@ void LBMD3Q19::intializeCuda() {
     cudaMalloc((void **) &d_density, sizeof(float) * m_width * m_height * m_depth);
     cudaMalloc((void **) &d_cells[0], sizeof(float) * m_width * m_height * m_depth * Q);
     cudaMalloc((void **) &d_cells[1], sizeof(float) * m_width * m_height * m_depth * Q);
+
+    // use cpyToSymbol for known sizes (LEGACY CODE - WORKS ONLY WITH CUDA <= 5.5)
+    cudaMemcpyToSymbol(d_w, w.w, sizeof(float)*Q);
+    cudaMemcpyToSymbol(d_e, e, sizeof(int3)*Q);
+    cudaMemcpyToSymbol(d_invDir, invDir, sizeof(int)*Q);
+
+    // copy data from host to device
+    cudaMemcpy(d_flags, m_flags, m_width * m_height * m_depth, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_velocity, m_velocity, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_cells[0], m_cells[0], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_cells[1], m_cells[1], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
 }
 
 //! collide implementation with CUDA
