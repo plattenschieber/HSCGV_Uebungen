@@ -14,6 +14,32 @@ __constant__ float d_w[Q];
 __constant__ int d_e[Q][D];
 __constant__ int d_invDir[Q];
 
+size_t __device__ index(int i, int j, int k) {
+
+    if(PeriodicBoundaries)
+    {
+        i = (i+gridDim.x)%gridDim.x;
+        j = (j+blockDim.x)%blockDim.x;
+        k = (k+blockDim.y)%blockDim.y;
+    }
+    return i + blockDim.x*(j + blockDim.y*size_t(k));
+}
+
+size_t __device__ index(int i, int j, int k, int l)
+{
+    if(PeriodicBoundaries)
+    {
+        i = (i+gridDim.x)%gridDim.x;
+        j = (j+blockDim.x)%blockDim.x;
+        k = (k+blockDim.y)%blockDim.y;
+    }
+#ifdef INNER_INDEX_DISTRIBUTION
+    return l + Q*(i + blockDim.x*(j + blockDim.y*size_t(k)));
+#else
+    return i + blockDim.x*(j + blockDim.y*(size_t(k) + gridDim.x*l));
+#endif
+}
+
 __global__ collideCuda() {
     int i = threadIdx.x;
     int j = threadIdx.y;
