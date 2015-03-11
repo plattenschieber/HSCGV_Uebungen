@@ -24,50 +24,42 @@ __global__ collideCuda() {
         if (i==0 || i==blockDim.x-1 || j==0 || j==blockDim.y-1 || k==0 || k==gridDim.x-1)
             return;
     }
-    for(int k=1-PeriodicBoundaries; k<m_depth-1+PeriodicBoundaries; ++k)
+
+    // nothing to do for NoSlip cells
+    const int flag = m_flags[index(i,j,k)];
+    if (flag == CellNoSlip)
+        continue;
+
+    // compute density and velocity in cell
+    Scalar density = 0.0;
+    Vector u;
+    for(int l=0; l<Q; ++l)
     {
-        for(int j=1-PeriodicBoundaries; j<m_height-1+PeriodicBoundaries; ++j)
+        const Scalar weight = m_cells[m_current][index(i,j,k,l)];
+        density += weight;
+        for(int c=0; c<D; ++c)
+            u[c] += e[l][c] * weight;
+    }
+
+    // override velocity for Velocity cells
+    if (flag == CellVelocity)
+    {
+        u = m_velocity[index(i,j,k)];
+    }
+
+    // collision
+    for(int l=0; l<Q; ++l)
+    {
+        Scalar dot = 0.;
+        Scalar uu = 0.;
+        for(int c=0; c<D; ++c)
         {
-            for(int i=1-PeriodicBoundaries; i<m_width-1+PeriodicBoundaries; ++i)
-            {
-                // nothing to do for NoSlip cells
-                const int flag = m_flags[index(i,j,k)];
-                if (flag == CellNoSlip)
-                    continue;
-
-                // compute density and velocity in cell
-                Scalar density = 0.0;
-                Vector u;
-                for(int l=0; l<Q; ++l)
-                {
-                    const Scalar weight = m_cells[m_current][index(i,j,k,l)];
-                    density += weight;
-                    for(int c=0; c<D; ++c)
-                        u[c] += e[l][c] * weight;
-                }
-
-                // override velocity for Velocity cells
-                if (flag == CellVelocity)
-                {
-                    u = m_velocity[index(i,j,k)];
-                }
-
-                // collision
-                for(int l=0; l<Q; ++l)
-                {
-                    Scalar dot = 0.;
-                    Scalar uu = 0.;
-                    for(int c=0; c<D; ++c)
-                    {
-                        dot += e[l][c] * u[c];
-                        uu += u[c] * u[c];
-                    }
-                    Scalar feq = w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
-                    m_cells[m_current][index(i,j,k,l)] =
-                            m_omega * feq + (1.0-m_omega) * m_cells[m_current][index(i,j,k,l)];
-                }
-            }
+            dot += e[l][c] * u[c];
+            uu += u[c] * u[c];
         }
+        Scalar feq = w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
+        m_cells[m_current][index(i,j,k,l)] =
+                m_omega * feq + (1.0-m_omega) * m_cells[m_current][index(i,j,k,l)];
     }
 }
 __global__ streamCuda() {
