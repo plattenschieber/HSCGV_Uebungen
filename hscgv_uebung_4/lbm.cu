@@ -210,6 +210,9 @@ void LBMD3Q19::streamCuda() {
 //! compute densities and velocities with CUDA
 void LBMD3Q19::analyzeCuda() {
     analyzeCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_flags, d_density, d_u, d_velocity);
+    // we need to copy back the analyzed data to the host
+    cudaMemcpy(m_u, d_u, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost);
+    cudaMemcpy(m_density, d_density, sizeof(float) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost);
 }
 
 //! compute minimum and maximum density and velocity with CUDA
