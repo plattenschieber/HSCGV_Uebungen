@@ -18,7 +18,7 @@ INCLUDEPATH *= $${OSGHOME}/include
 LIBS *= -L$${OSGHOME}/lib $${OSG_LIBS}
 
 CUDA_SOURCES += \
-    lbmCu.cu
+    cudaTest.cu
 
 SOURCES += main.cpp \
     applicationwindow.cpp \
@@ -43,7 +43,7 @@ HEADERS += \
     qosgviewer.h \
     overlayviewer.h \
     helpdialog.h \
-    lbmCu.h
+    cudaTest.h
 
 release {
 # in release mode, use OpenMP parallelized CPU code

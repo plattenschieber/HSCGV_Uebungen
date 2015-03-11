@@ -1,5 +1,5 @@
-#ifndef LBMCU_H
-#define LBMCU_H
+#ifndef CUDATEST_H
+#define CUDATEST_H
 
 // we don't need extern "C" here
 int launchKernel ();
@@ -8,4 +8,4 @@ void cudaSquareTest();
 void thrustVectorTest();
 void thrustSortTest();
 
-#endif // LBMCU_H
+#endif // CUDATEST_H

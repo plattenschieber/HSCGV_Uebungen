@@ -1,4 +1,4 @@
-#include "lbmCu.h"
+#include "cudaTest.h"
 #include <stdio.h>
 #include <thrust/transform_reduce.h>
 #include <thrust/functional.h>
