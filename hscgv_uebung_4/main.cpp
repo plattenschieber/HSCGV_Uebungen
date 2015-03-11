@@ -13,11 +13,11 @@
 
 int main(int argc, char *argv[])
 {
+    launchKernel();
     QApplication a(argc, argv);
     new ApplicationWindow;
 
     a.connect( &a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()) );
-    launchKernel();
 
     return a.exec();
 }

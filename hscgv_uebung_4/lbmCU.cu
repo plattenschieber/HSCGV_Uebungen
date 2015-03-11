@@ -28,7 +28,7 @@ __global__ void square (float * d_out, float * d_in) {
 }
 
 int launchKernel () {
-    cudaSquareTest();
+    thrustSortTest();
     return 0;
 }
 
