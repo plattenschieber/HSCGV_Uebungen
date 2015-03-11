@@ -58,7 +58,7 @@ __global__ collideCuda(float *d_cells) {
 
     // compute density and velocity in cell
     float density = 0.0;
-    float3 u;
+    float3 u = make_float3(0., 0., 0.,);
     for(int l=0; l<Q; ++l)
     {
         const float weight = d_cells[index(i,j,k,l)];
@@ -127,7 +127,7 @@ __global__ analyzeCuda()
             {
                 // compute density and velocity in cell
                 float density = 0.0;
-                float3 u;
+                float3 u = make_float3(0., 0., 0.,);
                 if(d_flags[index(i,j,k)] == CellNoSlip)
                 {
                     density = 1.;
