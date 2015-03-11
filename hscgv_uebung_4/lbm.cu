@@ -23,6 +23,7 @@ enum CellFlags {
 __constant__ float d_w[Q];
 __constant__ int d_e[Q][D];
 __constant__ int d_invDir[Q];
+__constant__ float d_omega;
 
 size_t __device__ index(int i, int j, int k) {
 
@@ -189,6 +190,7 @@ void LBMD3Q19::intializeCuda() {
     cudaMemcpyToSymbol(d_w, w.w, sizeof(float)*Q);
     cudaMemcpyToSymbol(d_e, e, sizeof(int3)*Q);
     cudaMemcpyToSymbol(d_invDir, invDir, sizeof(int)*Q);
+    cudaMemcpyToSymbol(d_omega, &m_omega, sizeof(float));
 
     // copy data from host to device
     cudaMemcpy(d_flags, m_flags, m_width * m_height * m_depth, cudaMemcpyHostToDevice);
