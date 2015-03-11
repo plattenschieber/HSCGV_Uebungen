@@ -63,7 +63,7 @@ __global__ collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
     // nothing to do for NoSlip cells
     const int flag = d_flags[index(i,j,k)];
     if (flag == CellNoSlip)
-        continue;
+        return;
 
     // compute density and velocity in cell
     float density = 0.0;
