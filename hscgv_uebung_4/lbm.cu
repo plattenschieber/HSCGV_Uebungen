@@ -52,6 +52,6 @@ void LBMD3Q19::analyzeCuda() {
 }
 
 //! compute minimum and maximum density and velocity with CUDA
-void LBMD3Q19::minMaxCpu() {
+void LBMD3Q19::minMaxCuda() {
 
 }
