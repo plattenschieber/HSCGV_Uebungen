@@ -150,34 +150,6 @@ __global__ void analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, 
     d_u[index(i,j,k)] = u;
 }
 
-    // get the current thread position
-    int i = threadIdx.x;
-    int j = threadIdx.y;
-    int k = blockIdx.x;
-
-    // reset minium and maximum values
-    d_minDensity = 1000.;
-    d_maxDensity = 0.;
-    d_maxVelocity2 = 0.;
-
-    const size_t idx = index(i,j,k);
-    // nothing to do for NoSlip cells
-    const int flag = d_flags[idx];
-    if (flag == CellNoSlip)
-        continue;
-
-    // store min and max values - we don't care for race conditions
-    if(d_density[idx] < d_minDensity)
-        d_minDensity = d_density[idx];
-    if(d_density[idx] > d_maxDensity)
-        d_maxDensity = d_density[idx];
-    float v2 = 0.;
-    for(int c=0; c<D; ++c) {
-        v2 += d_u[idx][c] * d_u[idx][c];
-    }
-    if(v2 > d_maxVelocity2)
-        d_maxVelocity2 = v2;
-}
 __global__ void minMaxCuda() { }
 
 //! we need some kind of initialization of our device
