@@ -177,12 +177,12 @@ void LBMD3Q19::intializeCuda() {
 
 //! collide implementation with CUDA
 void LBMD3Q19::collideCuda() {
-    collideCuda<<<dim3(m_width),dim3(m_height,m_depth)>>(d_cells[m_current], d_flags, d_velocity);
+    collideCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_flags, d_velocity);
 }
 
 //! streaming with CUDA
 void LBMD3Q19::streamCuda() {
-    streamCude<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_cells[!m_current], d_flags);
+    streamCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_cells[!m_current], d_flags);
 }
 
 //! compute densities and velocities with CUDA
