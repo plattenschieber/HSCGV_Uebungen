@@ -40,7 +40,7 @@ size_t __device__ index(int i, int j, int k, int l)
 #endif
 }
 
-__global__ collideCuda() {
+__global__ collideCuda(float *d_cells) {
     int i = threadIdx.x;
     int j = threadIdx.y;
     int k = blockIdx.x;
@@ -61,7 +61,7 @@ __global__ collideCuda() {
     float3 u;
     for(int l=0; l<Q; ++l)
     {
-        const float weight = d_cells[d_current][index(i,j,k,l)];
+        const float weight = d_cells[index(i,j,k,l)];
         density += weight;
         for(int c=0; c<D; ++c)
             u[c] += e[l][c] * weight;
