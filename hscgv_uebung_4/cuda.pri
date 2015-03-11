@@ -20,7 +20,7 @@ unix {
     LIBS += -lcudart
     NVCCFLAGS="-use_fast_math --ptxas-options=-v"
     NVCCFLAGS+="-Xptxas -fastimul" # 24 bit integer multiplication should be sufficient
-    debug:NVCCFLAGS+="-g -G"
+    debug:NVCCFLAGS+="-g"
     release:NVCCFLAGS+="-O3"
     macx:NVCCFLAGS+="-m64"
     FLAGS=$$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') $$join(DEFINES,'" -D"','-D"','"')
