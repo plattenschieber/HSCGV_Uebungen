@@ -14,9 +14,9 @@ win32 {
 unix {
 # auto-detect CUDA path
     CUDA_DIR = $$system(which nvcc | sed 's,/bin/nvcc$,,')
-    CUDA_DIR = /usr/local/cuda
+    CUDA_DIR = /usr/local/cuda-5.5
     INCLUDEPATH += $$CUDA_DIR/include
-    QMAKE_LIBDIR += $$CUDA_DIR/lib
+    QMAKE_LIBDIR += $$CUDA_DIR/lib64
     LIBS += -lcudart
     NVCCFLAGS="-use_fast_math --ptxas-options=-v"
     NVCCFLAGS+="-Xptxas -fastimul" # 24 bit integer multiplication should be sufficient
