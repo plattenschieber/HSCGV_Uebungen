@@ -52,6 +52,7 @@ size_t __device__ index(int i, int j, int k, int l)
 }
 
 __global__ collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
+    // get the current thread position
     int i = threadIdx.x;
     int j = threadIdx.y;
     int k = blockIdx.x;
@@ -129,73 +130,59 @@ __global__ streamCuda(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
     }
 }
 
-__global__ analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, float3 *d_u, float3 *d_velocity)
-{
-    for(int k=0; k<d_depth; ++k)
-    {
-        for(int j=0; j<d_height; ++j)
-        {
-            for(int i=0; i<d_width; ++i)
-            {
-                // compute density and velocity in cell
-                float density = 0.0;
-                float3 u = make_float3(0., 0., 0.,);
-                if(d_flags[index(i,j,k)] == CellNoSlip)
-                {
-                    density = 1.;
-                }
-                else
-                {
-                    for(int l=0; l<Q; ++l)
-                    {
-                        const float weight = d_cellsCur[index(i,j,k,l)];
-                        density += weight;
-                        for(int c=0; c<D; ++c)
-                            u[c] += d_e[l][c] * weight;
-                    }
-                }
+__global__ analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, float3 *d_u, float3 *d_velocity) {
+    // get the current thread position
+    int i = threadIdx.x;
+    int j = threadIdx.y;
+    int k = blockIdx.x;
 
-                d_density[index(i,j,k)] = density;
-                d_u[index(i,j,k)] = u;
-            }
+    // compute density and velocity in cell
+    float density = 0.0;
+    float3 u = make_float3(0., 0., 0.,);
+    if(d_flags[index(i,j,k)] == CellNoSlip) {
+        density = 1.;
+    }
+    else {
+        for(int l=0; l<Q; ++l) {
+            const float weight = d_cellsCur[index(i,j,k,l)];
+            density += weight;
+            for(int c=0; c<D; ++c)
+                u[c] += d_e[l][c] * weight;
         }
     }
+
+    d_density[index(i,j,k)] = density;
+    d_u[index(i,j,k)] = u;
 }
 
-__global__ minMaxCuda()
-{
+__global__ minMaxCuda() {
+    // get the current thread position
+    int i = threadIdx.x;
+    int j = threadIdx.y;
+    int k = blockIdx.x;
+
     // reset minium and maximum values
     d_minDensity = 1000.;
     d_maxDensity = 0.;
     d_maxVelocity2 = 0.;
 
-    for(int k=0; k<d_depth; ++k)
-    {
-        for(int j=0; j<d_height; ++j)
-        {
-            for(int i=0; i<d_width; ++i)
-            {
-                const size_t idx = index(i,j,k);
-                // nothing to do for NoSlip cells
-                const int flag = d_flags[idx];
-                if (flag == CellNoSlip)
-                    continue;
+    const size_t idx = index(i,j,k);
+    // nothing to do for NoSlip cells
+    const int flag = d_flags[idx];
+    if (flag == CellNoSlip)
+        continue;
 
-                // store min and max values - we don't care for race conditions
-                if(d_density[idx] < d_minDensity)
-                    d_minDensity = d_density[idx];
-                if(d_density[idx] > d_maxDensity)
-                    d_maxDensity = d_density[idx];
-                float v2 = 0.;
-                for(int c=0; c<D; ++c)
-                {
-                    v2 += d_u[idx][c] * d_u[idx][c];
-                }
-                if(v2 > d_maxVelocity2)
-                    d_maxVelocity2 = v2;
-            }
-        }
+    // store min and max values - we don't care for race conditions
+    if(d_density[idx] < d_minDensity)
+        d_minDensity = d_density[idx];
+    if(d_density[idx] > d_maxDensity)
+        d_maxDensity = d_density[idx];
+    float v2 = 0.;
+    for(int c=0; c<D; ++c) {
+        v2 += d_u[idx][c] * d_u[idx][c];
     }
+    if(v2 > d_maxVelocity2)
+        d_maxVelocity2 = v2;
 }
 
 //! we need some kind of initialization of our device
