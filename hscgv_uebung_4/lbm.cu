@@ -16,7 +16,13 @@ __constant__ int d_invDir[Q];
 
 //! we need some kind of initialization of our device
 void LBMD3Q19::intializeCuda() {
-
+    // get some space for our arrays
+    cudaMalloc((void **) &d_flags, sizeof(char) * m_width * m_height * m_depth);
+    cudaMalloc((void **) &d_velocity, sizeof(float3) * m_width * m_height * m_depth);
+    cudaMalloc((void **) &d_u, sizeof(float3) * m_width * m_height * m_depth);
+    cudaMalloc((void **) &d_density, sizeof(float) * m_width * m_height * m_depth);
+    cudaMalloc((void **) &d_cells[0], sizeof(float) * m_width * m_height * m_depth * Q);
+    cudaMalloc((void **) &d_cells[1], sizeof(float) * m_width * m_height * m_depth * Q);
 }
 
 //! collide implementation with CUDA
