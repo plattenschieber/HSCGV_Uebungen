@@ -4,6 +4,11 @@
 #include <thrust/functional.h>
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
+#include <thrust/sort.h>
+#include <cstdlib>
+#include <cmath>
+#include <algorithm>
+
 // square<T> computes the square of a number f(x) -> x*x
 template <typename T>
 struct squareThrust
@@ -90,3 +95,27 @@ void thrustVectorTest() {
     std::cout << "norm: " <<  norm << std::endl;
 }
 
+void thrustSortTest() {
+    // generate 128M random numbers serially
+    clock_t start = clock();
+    thrust::host_vector<int> h_vec(32 << 22);
+    std::generate(h_vec.begin(), h_vec.end(), rand);
+
+    // sort data on the device (846M keys per second on GeForce GTX 480)
+    std::sort(h_vec.begin(), h_vec.end());
+    clock_t end = clock();
+
+    // transfer data to the device
+    thrust::device_vector<int> d_vec = h_vec;
+
+    // sort data on the device (846M keys per second on GeForce GTX 480)
+    thrust::sort(d_vec.begin(), d_vec.end());
+    // transfer data back to host
+    thrust::copy(d_vec.begin(), d_vec.end(), h_vec.begin());
+    clock_t end2 = clock();
+
+    float seqSec = (float)(end - start) / CLOCKS_PER_SEC;
+    float parSec = (float)(end2 - end) / CLOCKS_PER_SEC;
+    std::cout << "it took " << parSec << " for the parallel algorithm" << std::endl;
+    std::cout << "it took " << seqSec << " for the sequential algorithm" << std::endl;
+}
