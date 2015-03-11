@@ -17,6 +17,8 @@ OSG_LIBS = -losgText -losgGA -losgFX \
 INCLUDEPATH *= $${OSGHOME}/include
 LIBS *= -L$${OSGHOME}/lib $${OSG_LIBS}
 
+CUDA_SOURCES += \
+    lbmCu.cu
 
 SOURCES += main.cpp \
     applicationwindow.cpp \
@@ -40,7 +42,8 @@ HEADERS += \
     clock.h \
     qosgviewer.h \
     overlayviewer.h \
-    helpdialog.h
+    helpdialog.h \
+    lbmCu.h
 
 release {
 # in release mode, use OpenMP parallelized CPU code
