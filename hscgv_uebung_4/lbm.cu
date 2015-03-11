@@ -71,8 +71,9 @@ __global__ void collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity
     for(int l=0; l<Q; ++l) {
         const float weight = d_cellsCur[index(i,j,k,l)];
         density += weight;
-        for(int c=0; c<D; ++c)
-            u[c] += d_e[l][c] * weight;
+        u.x += d_e[l][0] * weight;
+        u.y += d_e[l][1] * weight;
+        u.z += d_e[l][2] * weight;
     }
 
     // override velocity for Velocity cells
@@ -82,12 +83,14 @@ __global__ void collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity
 
     // collision
     for(int l=0; l<Q; ++l) {
-        for(int c=0; c<D; ++c) {
-            dot += d_e[l][c] * u[c];
-            uu += u[c] * u[c];
-        }
         float dot = 0.f;
         float uu = 0.f;
+        dot += d_e[l][0] * u.x;
+        uu += u.x * u.x;
+        dot += d_e[l][1] * u.y;
+        uu += u.y * u.y;
+        dot += d_e[l][2] * u.z;
+        uu += u.z * u.z;
         float feq = d_w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
         d_cellsCur[index(i,j,k,l)] =
                 d_omega * feq + (1.0-d_omega) * d_cellsCur[index(i,j,k,l)];
@@ -137,8 +140,9 @@ __global__ void analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, 
         for(int l=0; l<Q; ++l) {
             const float weight = d_cellsCur[index(i,j,k,l)];
             density += weight;
-            for(int c=0; c<D; ++c)
-                u[c] += d_e[l][c] * weight;
+            u.x += d_e[l][0] * weight;
+            u.y += d_e[l][1] * weight;
+            u.z += d_e[l][2] * weight;
         }
     }
 
