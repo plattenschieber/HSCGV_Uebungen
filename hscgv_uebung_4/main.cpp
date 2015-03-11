@@ -9,6 +9,7 @@
 
 #include <QtGui/QApplication>
 #include "applicationwindow.h"
+#include "lbmCu.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,7 @@ int main(int argc, char *argv[])
     new ApplicationWindow;
 
     a.connect( &a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()) );
+    launchKernel();
 
     return a.exec();
 }
