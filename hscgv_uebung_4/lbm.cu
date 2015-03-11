@@ -148,7 +148,7 @@ __global__ analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, float
                 {
                     for(int l=0; l<Q; ++l)
                     {
-                        const float weight = d_cells[index(i,j,k,l)];
+                        const float weight = d_cellsCur[index(i,j,k,l)];
                         density += weight;
                         for(int c=0; c<D; ++c)
                             u[c] += d_e[l][c] * weight;
