@@ -269,7 +269,7 @@ class LBMD3Q19
 
         // function pendants in CUDA
         //! we need some kind of initialization of our device
-        void intializeCuda();
+        void initializeCuda();
 
         //! collide implementation with CUDA
         void collideCuda();

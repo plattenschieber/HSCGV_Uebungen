@@ -121,6 +121,8 @@ LBMD3Q19::LBMD3Q19(int width, int height, int depth)
 
     if(!PeriodicBoundaries)
         setNoSlipBorders();
+    //! do the required step to use the CUDA acceleration
+    initializeCuda();
 }
 
 void LBMD3Q19::setOmega(double omega)

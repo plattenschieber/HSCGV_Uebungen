@@ -153,7 +153,7 @@ __global__ void analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, 
 __global__ void minMaxCuda() { }
 
 //! we need some kind of initialization of our device
-void LBMD3Q19::intializeCuda() {
+void LBMD3Q19::initializeCuda() {
     // get some space for our arrays
     cudaMalloc((void **) &d_flags, sizeof(char) * m_width * m_height * m_depth);
     cudaMalloc((void **) &d_velocity, sizeof(float3) * m_width * m_height * m_depth);
