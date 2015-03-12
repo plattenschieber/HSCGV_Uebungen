@@ -138,7 +138,7 @@ class LBMD3Q19
         //! compute densities and velocities
         void analyze();
         //! wait for in-flight operations to complete (in order to get valid timing values)
-        void sync() const;
+        void sync();
         //! return most recently computed density
         Scalar density(int i, int j, int k) const;
         //! return most recently computed velocity

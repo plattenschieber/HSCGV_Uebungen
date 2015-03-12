@@ -441,7 +441,7 @@ void LBMD3Q19::useCuda(bool enable)
         applyCuda();
 }
 
-void LBMD3Q19::sync() const
+void LBMD3Q19::sync()
 {
     if (m_useCuda)
         syncCuda();
