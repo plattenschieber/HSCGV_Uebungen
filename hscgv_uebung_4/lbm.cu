@@ -1,5 +1,6 @@
 #include "lbm.h"
 #include <cuda.h>
+#include <stdio.h>
 
 // constants
 //! 0 = no periodic boundaries, 1 = periodic boundaries -- non-periodic is faster
@@ -18,6 +19,15 @@ enum CellFlags {
     CellVelocity
 };
 
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess)
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
 
 // we can save constants on the GPU in an extra space with a lot faster access
 __constant__ float d_w[Q];
@@ -155,17 +165,17 @@ __global__ void minMaxCudaKernel() { }
 //! we need some kind of initialization of our device
 void LBMD3Q19::initializeCuda() {
     // get some space for our arrays
-    cudaMalloc((void **) &d_flags, sizeof(char) * m_width * m_height * m_depth);
-    cudaMalloc((void **) &d_velocity, sizeof(float3) * m_width * m_height * m_depth);
-    cudaMalloc((void **) &d_u, sizeof(float3) * m_width * m_height * m_depth);
-    cudaMalloc((void **) &d_density, sizeof(float) * m_width * m_height * m_depth);
-    cudaMalloc((void **) &d_cells[0], sizeof(float) * m_width * m_height * m_depth * Q);
-    cudaMalloc((void **) &d_cells[1], sizeof(float) * m_width * m_height * m_depth * Q);
+    gpuErrchk (cudaMalloc((void **) &d_flags, sizeof(char) * m_width * m_height * m_depth));
+    gpuErrchk (cudaMalloc((void **) &d_velocity, sizeof(float3) * m_width * m_height * m_depth));
+    gpuErrchk (cudaMalloc((void **) &d_u, sizeof(float3) * m_width * m_height * m_depth));
+    gpuErrchk (cudaMalloc((void **) &d_density, sizeof(float) * m_width * m_height * m_depth));
+    gpuErrchk (cudaMalloc((void **) &d_cells[0], sizeof(float) * m_width * m_height * m_depth * Q));
+    gpuErrchk (cudaMalloc((void **) &d_cells[1], sizeof(float) * m_width * m_height * m_depth * Q));
 
     // use cpyToSymbol for known sizes (LEGACY CODE - WORKS ONLY WITH CUDA <= 5.5)
-    cudaMemcpyToSymbol(d_w, w.w, sizeof(float)*Q);
-    cudaMemcpyToSymbol(d_e, e, sizeof(int)*D*Q);
-    cudaMemcpyToSymbol(d_invDir, invDir, sizeof(int)*Q);
+    gpuErrchk (cudaMemcpyToSymbol(d_w, w.w, sizeof(float)*Q));
+    gpuErrchk (cudaMemcpyToSymbol(d_e, e, sizeof(int)*D*Q));
+    gpuErrchk (cudaMemcpyToSymbol(d_invDir, invDir, sizeof(int)*Q));
 }
 
 //! collide implementation with CUDA
@@ -182,8 +192,8 @@ void LBMD3Q19::streamCuda() {
 void LBMD3Q19::analyzeCuda() {
     analyzeCudaKernel<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_flags, d_density, d_u, d_velocity);
     // we need to copy back the analyzed data to the host
-    cudaMemcpy(m_u, d_u, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost);
-    cudaMemcpy(m_density, d_density, sizeof(float) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost);
+    gpuErrchk (cudaMemcpy(m_u, d_u, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost));
+    gpuErrchk (cudaMemcpy(m_density, d_density, sizeof(float) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost));
 }
 
 //! compute minimum and maximum density and velocity with CUDA
@@ -193,32 +203,32 @@ void LBMD3Q19::minMaxCuda() {
 
 //! very dumb function that copies cells back to host
 void LBMD3Q19::cpCellsDeviceToHost() {
-    cudaMemcpy(m_cells[m_current], d_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyDeviceToHost);
-    cudaMemcpy(m_cells[!m_current], d_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyDeviceToHost);
+    gpuErrchk (cudaMemcpy(m_cells[m_current], d_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyDeviceToHost));
+    gpuErrchk (cudaMemcpy(m_cells[!m_current], d_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyDeviceToHost));
 }
 //! free allocated data on device
 void LBMD3Q19::freeCuda() {
     //! each malloc needs a free
-    cudaFree(d_flags);
-    cudaFree(d_velocity);
-    cudaFree(d_u);
-    cudaFree(d_density);
-    cudaFree(d_cells[0]);
-    cudaFree(d_cells[1]);
+    gpuErrchk (cudaFree(d_flags));
+    gpuErrchk (cudaFree(d_velocity));
+    gpuErrchk (cudaFree(d_u));
+    gpuErrchk (cudaFree(d_density));
+    gpuErrchk (cudaFree(d_cells[0]));
+    gpuErrchk (cudaFree(d_cells[1]));
 }
 
 //! this needs to be done, each time we switch our settings
 void LBMD3Q19::applyCuda() {
     //! copy data from host to device, the rest are constants which stay the same
-    cudaMemcpy(d_flags, m_flags, m_width * m_height * m_depth, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_velocity, m_velocity, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_cells[m_current], m_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_cells[!m_current], m_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
+    gpuErrchk (cudaMemcpy(d_flags, m_flags, m_width * m_height * m_depth, cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_velocity, m_velocity, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_cells[m_current], m_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_cells[!m_current], m_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice));
     //! omega can be changed, too
-    cudaMemcpyToSymbol(d_omega, &m_omega, sizeof(float));
+    gpuErrchk (cudaMemcpyToSymbol(d_omega, &m_omega, sizeof(float)));
 }
 
 //! http://www.cs.cmu.edu/afs/cs/academic/class/15668-s11/www/cuda-doc/html/group__CUDART__THREAD_g6e0c5163e6f959b56b6ae2eaa8483576.html
 void LBMD3Q19::syncCuda() {
-    cudaThreadSynchronize();
+    gpuErrchk (cudaThreadSynchronize());
 }
