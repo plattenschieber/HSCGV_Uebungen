@@ -284,6 +284,8 @@ class LBMD3Q19
         void cpCellsHostToDevice();
         //! very dumb function that copies cells back to host
         void cpCellsDeviceToHost();
+        //! free allocated data on device
+        void freeCuda();
 };
 
 #endif

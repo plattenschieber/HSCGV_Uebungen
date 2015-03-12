@@ -175,6 +175,9 @@ LBMD3Q19::~LBMD3Q19()
     delete[] m_flags;
     delete[] m_u;
     delete[] m_density;
+
+    //! free the device
+    freeCuda();
 }
 
 void LBMD3Q19::apply()
