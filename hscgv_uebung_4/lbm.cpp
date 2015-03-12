@@ -182,6 +182,8 @@ LBMD3Q19::~LBMD3Q19()
 
 void LBMD3Q19::apply()
 {
+    //! this has to be done at least one time, when using acceleration
+    applyCuda();
 }
 
 int LBMD3Q19::getDimension(int c) const

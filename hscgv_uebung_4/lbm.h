@@ -286,6 +286,8 @@ class LBMD3Q19
         void cpCellsDeviceToHost();
         //! free allocated data on device
         void freeCuda();
+        //! this needs to be done each time we change settings
+        void applyCuda();
 };
 
 #endif
