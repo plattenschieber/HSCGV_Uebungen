@@ -434,9 +434,9 @@ void LBMD3Q19::useCuda(bool enable)
         cpCellsDeviceToHost();
     //! change state
     m_useCuda = enable;
-    //! move cells back to device if we enabled GPU acceleration
+    //! move cells back to device if we enabled GPU acceleration and update device data
     if (m_useCuda)
-        cpCellHostToDevice();
+        applyCuda();
 }
 
 void LBMD3Q19::sync() const

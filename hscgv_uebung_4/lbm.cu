@@ -191,12 +191,6 @@ void LBMD3Q19::minMaxCuda() {
     minMaxCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>();
 }
 
-//! very dumb function that copies cells back to device
-void LBMD3Q19::cpCellsHostToDevice() {
-    cudaMemcpy(d_cells[m_current], m_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_cells[!m_current], m_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
-}
-
 //! very dumb function that copies cells back to host
 void LBMD3Q19::cpCellsDeviceToHost() {
     cudaMemcpy(m_cells[m_current], d_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyDeviceToHost);
@@ -218,8 +212,8 @@ void LBMD3Q19::applyCuda() {
     //! copy data from host to device, the rest are constants which stay the same
     cudaMemcpy(d_flags, m_flags, m_width * m_height * m_depth, cudaMemcpyHostToDevice);
     cudaMemcpy(d_velocity, m_velocity, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_cells[0], m_cells[0], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_cells[1], m_cells[1], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_cells[m_current], m_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_cells[!m_current], m_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
     //! omega can be changed, too
     cudaMemcpyToSymbol(d_omega, &m_omega, sizeof(float));
 }
