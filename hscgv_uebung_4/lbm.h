@@ -131,6 +131,8 @@ class LBMD3Q19
         int getStep() const;
 
         //! switch GPU acceleration on and off
+        //! we need this method to copy cells from and to GPU only in case of on/off switching
+        //! since we can do all analysis either on CPU or GPU
         void useCuda(bool enable);
 
         //! compute densities and velocities
@@ -245,6 +247,7 @@ class LBMD3Q19
         void minMaxCpu();
 
         // ------ CUDA
+        //! dummy for compile time errors, in fact use CUDA implementation
         struct float3 {
             float3() {};
             float3(float s) : x(s), y(s), z(s) {}
@@ -253,15 +256,15 @@ class LBMD3Q19
         };
 
         // we need a CUDA pendant for every allocated datatype
-        //! cell types
+        //! (device) cell types
         char *d_flags;
-        //! prescribed velocity for Velocity cells
+        //! (device) prescribed velocity for Velocity cells
         float3 *d_velocity;
-        //! simulated velocity
+        //! (device) simulated velocity
         float3 *d_u;
-        //! simulated density
+        //! (device) simulated density
         float *d_density;
-        //! two arrays of distributions that are updated alternating, each indexed by 4 coordinates
+        //! (device) two arrays of distributions that are updated alternating, each indexed by 4 coordinates
         float *d_cells[2];
 
         // function pendants in CUDA
