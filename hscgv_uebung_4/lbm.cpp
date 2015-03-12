@@ -227,6 +227,8 @@ void LBMD3Q19::step()
         streamCuda();
         collideCuda();
     }
+    //! synchronize after each step
+    sync();
     ++m_step;
 }
 

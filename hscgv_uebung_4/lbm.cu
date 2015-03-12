@@ -217,3 +217,8 @@ void LBMD3Q19::applyCuda() {
     //! omega can be changed, too
     cudaMemcpyToSymbol(d_omega, &m_omega, sizeof(float));
 }
+
+//! http://www.cs.cmu.edu/afs/cs/academic/class/15668-s11/www/cuda-doc/html/group__CUDART__THREAD_g6e0c5163e6f959b56b6ae2eaa8483576.html
+void LBMD3Q19::syncCuda() {
+    cudaThreadSynchronize()
+}

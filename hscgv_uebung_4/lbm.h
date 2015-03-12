@@ -286,6 +286,8 @@ class LBMD3Q19
         void freeCuda();
         //! this needs to be done each time we change settings
         void applyCuda();
+        //! we need to wait until one step of the calculation is done before proceeding
+        void syncCuda();
 };
 
 #endif
