@@ -166,7 +166,6 @@ void LBMD3Q19::initializeCuda() {
     cudaMemcpyToSymbol(d_w, w.w, sizeof(float)*Q);
     cudaMemcpyToSymbol(d_e, e, sizeof(int)*D*Q);
     cudaMemcpyToSymbol(d_invDir, invDir, sizeof(int)*Q);
-    cudaMemcpyToSymbol(d_omega, &m_omega, sizeof(float));
 }
 
 //! collide implementation with CUDA
@@ -216,9 +215,11 @@ void LBMD3Q19::freeCuda() {
 
 //! this needs to be done, each time we switch our settings
 void LBMD3Q19::applyCuda() {
-    // copy data from host to device, the rest are constants which stay the same
+    //! copy data from host to device, the rest are constants which stay the same
     cudaMemcpy(d_flags, m_flags, m_width * m_height * m_depth, cudaMemcpyHostToDevice);
     cudaMemcpy(d_velocity, m_velocity, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyHostToDevice);
     cudaMemcpy(d_cells[0], m_cells[0], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
     cudaMemcpy(d_cells[1], m_cells[1], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
+    //! omega can be changed, too
+    cudaMemcpyToSymbol(d_omega, &m_omega, sizeof(float));
 }
