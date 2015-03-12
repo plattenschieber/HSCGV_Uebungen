@@ -236,13 +236,13 @@ void LBMD3Q19::analyze()
 {
     if (!m_useCuda) {
         analyzeCpu();
+        minMaxCpu();
     }
     //! use CUDA to anlyze the data
     else {
         analyzeCuda();
-        // not yet implemented minMaxCuda();
+        minMaxCuda();
     }
-    minMaxCpu();
 }
 
 int LBMD3Q19::getStep() const

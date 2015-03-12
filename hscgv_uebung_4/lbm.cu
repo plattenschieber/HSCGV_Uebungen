@@ -150,7 +150,11 @@ __global__ void analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, 
     d_u[index(i,j,k)] = u;
 }
 
-__global__ void minMaxCuda() { }
+//! every thread compares its value against every other thread and writes it to an array
+//! where we can read it out
+__global__ void minMaxCuda() {
+
+}
 
 //! we need some kind of initialization of our device
 void LBMD3Q19::initializeCuda() {
@@ -188,7 +192,11 @@ void LBMD3Q19::analyzeCuda() {
 
 //! compute minimum and maximum density and velocity with CUDA
 void LBMD3Q19::minMaxCuda() {
+    // we need some inputs to kernel
     minMaxCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>();
+    // device maxima and minima
+    cudaMemcpy(m_u, d_u, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost);
+    cudaMemcpy(m_density, d_density, sizeof(float) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost);
 }
 
 //! very dumb function that copies cells back to host
@@ -214,8 +222,11 @@ void LBMD3Q19::applyCuda() {
     cudaMemcpy(d_velocity, m_velocity, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyHostToDevice);
     cudaMemcpy(d_cells[m_current], m_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
     cudaMemcpy(d_cells[!m_current], m_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
-    //! omega can be changed, too
+    //! omega and friends can be changed, too
     cudaMemcpyToSymbol(d_omega, &m_omega, sizeof(float));
+    cudaMemcpyToSymbol(d_minDensity, &m_minDensity, sizeof(float));
+    cudaMemcpyToSymbol(d_maxDensity, &m_maxDensity, sizeof(float));
+    cudaMemcpyToSymbol(d_maxVelocity2, &m_maxVelocity2, sizeof(float));
 }
 
 //! http://www.cs.cmu.edu/afs/cs/academic/class/15668-s11/www/cuda-doc/html/group__CUDART__THREAD_g6e0c5163e6f959b56b6ae2eaa8483576.html

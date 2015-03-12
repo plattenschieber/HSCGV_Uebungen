@@ -266,6 +266,14 @@ class LBMD3Q19
         float *d_density;
         //! (device) two arrays of distributions that are updated alternating, each indexed by 4 coordinates
         float *d_cells[2];
+        //! (device) minimum density at last analysis step
+        float d_minDensity;
+        //! (device) maximum density at last analysis step
+        float d_maxDensity;
+        //! (device) maximum velocity at last analysis step
+        float d_maxVelocity2;
+        //! (device) maxFlags[threadx] = 1 <=> threadx has maximum
+        char *maxFlags;
 
         // function pendants in CUDA
         //! we need some kind of initialization of our device
