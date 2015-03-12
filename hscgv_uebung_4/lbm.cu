@@ -38,23 +38,23 @@ __constant__ float d_omega;
 size_t __device__ index(int i, int j, int k) {
 
     if(PeriodicBoundaries) {
-        i = (i+gridDim.x)%gridDim.x;
-        j = (j+blockDim.x)%blockDim.x;
-        k = (k+blockDim.y)%blockDim.y;
+        i = (i+blockDim.x)%blockDim.x;
+        j = (j+gridDim.x)%gridDim.x;
+        k = (k+gridDim.y)%gridDim.y;
     }
-    return i + blockDim.x*(j + blockDim.y*size_t(k));
+    return i + blockDim.x*(j + gridDim.x*size_t(k));
 }
 
 size_t __device__ index(int i, int j, int k, int l) {
     if(PeriodicBoundaries) {
-        i = (i+gridDim.x)%gridDim.x;
-        j = (j+blockDim.x)%blockDim.x;
-        k = (k+blockDim.y)%blockDim.y;
+        i = (i+blockDim.x)%blockDim.x;
+        j = (j+gridDim.x)%gridDim.x;
+        k = (k+gridDim.y)%gridDim.y;
     }
 #ifdef INNER_INDEX_DISTRIBUTION
-    return l + Q*(i + blockDim.x*(j + blockDim.y*size_t(k)));
+    return l + Q*(i + blockDim.x*(j + gridDim.x*size_t(k)));
 #else
-    return i + blockDim.x*(j + blockDim.y*(size_t(k) + gridDim.x*l));
+    return i + blockDim.x*(j + gridDim.x*(size_t(k) + gridDim.y*l));
 #endif
 }
 
@@ -66,7 +66,7 @@ __global__ void collideCudaKernel(float *d_cellsCur, char *d_flags, float3 *d_ve
 
     // in case we have no periodic boundaries, the threads on the edges don't have anything to do
     if (!PeriodicBoundaries) {
-        if (i==0 || i==blockDim.x-1 || j==0 || j==blockDim.y-1 || k==0 || k==gridDim.x-1)
+        if (i==0 || i==blockDim.x-1 || j==0 || j==gridDim.x-1 || k==0 || k==gridDim.y-1)
             return;
     }
 
@@ -79,7 +79,7 @@ __global__ void collideCudaKernel(float *d_cellsCur, char *d_flags, float3 *d_ve
     float density = 0.f;
     float3 u = make_float3(0.f, 0.f, 0.f);
     for(int l=0; l<Q; ++l) {
-        const float weight = d_cellsCur[index(i,j,k,l)];
+        const float weight = d_cellsCur[index(i,j,k)+l*blockDim.x*gridDim.x*gridDim.y];
         density += weight;
         u.x += d_e[l][0] * weight;
         u.y += d_e[l][1] * weight;
@@ -102,19 +102,19 @@ __global__ void collideCudaKernel(float *d_cellsCur, char *d_flags, float3 *d_ve
         dot += d_e[l][2] * u.z;
         uu += u.z * u.z;
         float feq = d_w[l] * (density - 1.5f*uu + 3.f*dot + 4.5f*dot*dot);
-        d_cellsCur[index(i,j,k,l)] =
-                d_omega * feq + (1.0f-d_omega) * d_cellsCur[index(i,j,k,l)];
+        d_cellsCur[index(i,j,k)] =
+                d_omega * feq + (1.0f-d_omega) * d_cellsCur[index(i,j,k)];
     }
 }
 __global__ void streamCudaKernel(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
     // get the current thread position
     int i = threadIdx.x;
-    int j = threadIdx.y;
-    int k = blockIdx.x;
+    int j = blockIdx.x;
+    int k = blockIdx.y;
 
     // in case we have no periodic boundaries, the threads on the edges don't have anything to do
     if (!PeriodicBoundaries) {
-        if (i==0 || i==blockDim.x-1 || j==0 || j==blockDim.y-1 || k==0 || k==gridDim.x-1)
+        if (i==0 || i==blockDim.x-1 || j==0 || j==gridDim.x-1 || k==0 || k==gridDim.y-1)
             return;
     }
 
@@ -125,11 +125,11 @@ __global__ void streamCudaKernel(float *d_cellsCur, float *d_cellsLast, char *d_
         const int sk = k+d_e[inv][2];
         if(d_flags[index(si,sj,sk)] == CellNoSlip) {
             // reflect at NoSlip cell
-            d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(i,j,k,inv)];
+            d_cellsCur[index(i,j,k)+l*blockDim.x*gridDim.x*gridDim.y] = d_cellsLast[index(i,j,k)+inv*blockDim.x*gridDim.x*gridDim.y];
         }
         else {
             // update from neighbours
-            d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(si,sj,sk,l)];
+            d_cellsCur[index(i,j,k)+l*blockDim.x*gridDim.x*gridDim.y] = d_cellsLast[index(si,sj,sk)+l*blockDim.x*gridDim.x*gridDim.y];
         }
     }
 }
@@ -137,8 +137,8 @@ __global__ void streamCudaKernel(float *d_cellsCur, float *d_cellsLast, char *d_
 __global__ void analyzeCudaKernel(float *d_cellsCur, char *d_flags, float *d_density, float3 *d_u, float3 *d_velocity) {
     // get the current thread position
     int i = threadIdx.x;
-    int j = threadIdx.y;
-    int k = blockIdx.x;
+    int j = blockIdx.x;
+    int k = blockIdx.y;
 
     // compute density and velocity in cell
     float density = 0.f;
@@ -180,17 +180,17 @@ void LBMD3Q19::initializeCuda() {
 
 //! collide implementation with CUDA
 void LBMD3Q19::collideCuda() {
-    collideCudaKernel<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_flags, d_velocity);
+    collideCudaKernel<<<dim3(m_height, m_depth),dim3(m_width)>>>(d_cells[m_current], d_flags, d_velocity);
 }
 
 //! streaming with CUDA
 void LBMD3Q19::streamCuda() {
-    streamCudaKernel<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_cells[!m_current], d_flags);
+    streamCudaKernel<<<dim3(m_height, m_depth),dim3(m_width)>>>(d_cells[m_current], d_cells[!m_current], d_flags);
 }
 
 //! compute densities and velocities with CUDA
 void LBMD3Q19::analyzeCuda() {
-    analyzeCudaKernel<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_flags, d_density, d_u, d_velocity);
+    analyzeCudaKernel<<<dim3(m_height, m_depth),dim3(m_width)>>>(d_cells[m_current], d_flags, d_density, d_u, d_velocity);
     // we need to copy back the analyzed data to the host
     gpuErrchk (cudaMemcpy(m_u, d_u, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost));
     gpuErrchk (cudaMemcpy(m_density, d_density, sizeof(float) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost));
@@ -198,7 +198,7 @@ void LBMD3Q19::analyzeCuda() {
 
 //! compute minimum and maximum density and velocity with CUDA
 void LBMD3Q19::minMaxCuda() {
-    minMaxCudaKernel<<<dim3(m_width),dim3(m_height,m_depth)>>>();
+    minMaxCudaKernel<<<dim3(m_height, m_depth),dim3(m_width)>>>();
 }
 
 //! very dumb function that copies cells back to host
