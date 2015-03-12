@@ -199,12 +199,12 @@ void LBMD3Q19::cpCellsDeviceToHost() {
 //! free allocated data on device
 void LBMD3Q19::freeCuda() {
     //! each malloc needs a free
-    cudaMalloc(d_flags);
-    cudaMalloc(d_velocity);
-    cudaMalloc(d_u);
-    cudaMalloc(d_density);
-    cudaMalloc(d_cells[0]);
-    cudaMalloc(d_cells[1]);
+    cudaFree(d_flags);
+    cudaFree(d_velocity);
+    cudaFree(d_u);
+    cudaFree(d_density);
+    cudaFree(d_cells[0]);
+    cudaFree(d_cells[1]);
 }
 
 //! this needs to be done, each time we switch our settings
