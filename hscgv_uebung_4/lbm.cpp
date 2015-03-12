@@ -423,7 +423,15 @@ LBMD3Q19::Scalar LBMD3Q19::maxVelocity() const
 
 void LBMD3Q19::useCuda(bool enable)
 {
+    //! copy cells back to host, if CUDA was enabled and we want to disable GPU
+    //! otherwise, we would copy data back and forth
+    if(m_useCuda && enable == false)
+        cpCellsDeviceToHost();
+    //! change state
     m_useCuda = enable;
+    //! move cells back to device if we enabled GPU acceleration
+    if (m_useCuda)
+        cpCellHostToDevice();
 }
 
 void LBMD3Q19::sync() const

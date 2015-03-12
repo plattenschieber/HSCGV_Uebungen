@@ -197,3 +197,15 @@ void LBMD3Q19::analyzeCuda() {
 void LBMD3Q19::minMaxCuda() {
     minMaxCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>();
 }
+
+//! very dumb function that copies cells back to device
+void LBMD3Q19::cpCellsHostToDevice() {
+    cudaMemcpy(d_cells[m_current], m_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_cells[!m_current], m_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice);
+}
+
+//! very dumb function that copies cells back to host
+void LBMD3Q19::cpCellsDeviceToHost() {
+    cudaMemcpy(m_cells[m_current], d_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyDeviceToHost);
+    cudaMemcpy(m_cells[!m_current], d_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyDeviceToHost);
+}

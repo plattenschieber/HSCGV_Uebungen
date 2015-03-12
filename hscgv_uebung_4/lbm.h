@@ -280,6 +280,10 @@ class LBMD3Q19
         void analyzeCuda();
         //! compute minimum and maximum density and velocity with CUDA
         void minMaxCuda();
+        //! very dumb function that copies cells back to device
+        void cpCellsHostToDevice();
+        //! very dumb function that copies cells back to host
+        void cpCellsDeviceToHost();
 };
 
 #endif
