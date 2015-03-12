@@ -48,7 +48,7 @@ size_t __device__ index(int i, int j, int k, int l) {
 #endif
 }
 
-__global__ void collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
+__global__ void collideCudaKernel(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
     // get the current thread position
     int i = threadIdx.x;
     int j = threadIdx.y;
@@ -96,7 +96,7 @@ __global__ void collideCuda(float *d_cellsCur, char *d_flags, float3 *d_velocity
                 d_omega * feq + (1.0-d_omega) * d_cellsCur[index(i,j,k,l)];
     }
 }
-__global__ void streamCuda(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
+__global__ void streamCudaKernel(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
     // get the current thread position
     int i = threadIdx.x;
     int j = threadIdx.y;
@@ -124,7 +124,7 @@ __global__ void streamCuda(float *d_cellsCur, float *d_cellsLast, char *d_flags)
     }
 }
 
-__global__ void analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, float3 *d_u, float3 *d_velocity) {
+__global__ void analyzeCudaKernel(float *d_cellsCur, char *d_flags, float *d_density, float3 *d_u, float3 *d_velocity) {
     // get the current thread position
     int i = threadIdx.x;
     int j = threadIdx.y;
@@ -150,7 +150,7 @@ __global__ void analyzeCuda(float *d_cellsCur, char *d_flags, float *d_density, 
     d_u[index(i,j,k)] = u;
 }
 
-__global__ void minMaxCuda() { }
+__global__ void minMaxCudaKernel() { }
 
 //! we need some kind of initialization of our device
 void LBMD3Q19::initializeCuda() {
@@ -170,17 +170,17 @@ void LBMD3Q19::initializeCuda() {
 
 //! collide implementation with CUDA
 void LBMD3Q19::collideCuda() {
-    collideCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_flags, d_velocity);
+    collideCudaKernel<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_flags, d_velocity);
 }
 
 //! streaming with CUDA
 void LBMD3Q19::streamCuda() {
-    streamCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_cells[!m_current], d_flags);
+    streamCudaKernel<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_cells[!m_current], d_flags);
 }
 
 //! compute densities and velocities with CUDA
 void LBMD3Q19::analyzeCuda() {
-    analyzeCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_flags, d_density, d_u, d_velocity);
+    analyzeCudaKernel<<<dim3(m_width),dim3(m_height,m_depth)>>>(d_cells[m_current], d_flags, d_density, d_u, d_velocity);
     // we need to copy back the analyzed data to the host
     cudaMemcpy(m_u, d_u, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost);
     cudaMemcpy(m_density, d_density, sizeof(float) * m_width * m_height * m_depth, cudaMemcpyDeviceToHost);
@@ -188,7 +188,7 @@ void LBMD3Q19::analyzeCuda() {
 
 //! compute minimum and maximum density and velocity with CUDA
 void LBMD3Q19::minMaxCuda() {
-    minMaxCuda<<<dim3(m_width),dim3(m_height,m_depth)>>>();
+    minMaxCudaKernel<<<dim3(m_width),dim3(m_height,m_depth)>>>();
 }
 
 //! very dumb function that copies cells back to host
