@@ -227,8 +227,13 @@ void LBMD3Q19::step()
 
 void LBMD3Q19::analyze()
 {
-    {
+    if (!m_useCuda) {
         analyzeCpu();
+    }
+    //! use CUDA to anlyze the data
+    else {
+        analyzeCuda();
+        // not yet implemented minMaxCuda();
     }
     minMaxCpu();
 }
