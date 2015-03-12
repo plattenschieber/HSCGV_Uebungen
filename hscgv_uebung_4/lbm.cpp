@@ -210,12 +210,17 @@ void LBMD3Q19::setNoSlip(int i, int j, int k)
 void LBMD3Q19::step()
 {
     m_current = !m_current;
-    {
+    if (!m_useCuda) {
 #       pragma omp parallel
         {
             streamCpu();
             collideCpu();
         }
+    }
+    //! use CUDA to stream and collide
+    else {
+        streamCuda();
+        collideCuda();
     }
     ++m_step;
 }
