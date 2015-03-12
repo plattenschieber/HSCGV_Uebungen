@@ -10,7 +10,7 @@
 #define LBM_H
 
 #include <cstdlib>
-#include <cuda.h>
+struct float3;
 
 
 //#define INNER_INDEX_DISTRIBUTION
@@ -247,14 +247,6 @@ class LBMD3Q19
         void minMaxCpu();
 
         // ------ CUDA
-        //! dummy for compile time errors, in fact use CUDA implementation
-        struct float3 {
-            float3() {};
-            float3(float s) : x(s), y(s), z(s) {}
-            float3(float x, float y, float z) : x(x), y(y), z(z) {}
-            float x, y, z;
-        };
-
         // we need a CUDA pendant for every allocated datatype
         //! (device) cell types
         char *d_flags;
