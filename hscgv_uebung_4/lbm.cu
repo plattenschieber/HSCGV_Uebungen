@@ -91,9 +91,9 @@ __global__ void collideCudaKernel(float *d_cellsCur, char *d_flags, float3 *d_ve
         uu += u.y * u.y;
         dot += d_e[l][2] * u.z;
         uu += u.z * u.z;
-        float feq = d_w[l] * (density - 1.5*uu + 3.*dot + 4.5*dot*dot);
+        float feq = d_w[l] * (density - 1.5f*uu + 3.f*dot + 4.5f*dot*dot);
         d_cellsCur[index(i,j,k,l)] =
-                d_omega * feq + (1.0-d_omega) * d_cellsCur[index(i,j,k,l)];
+                d_omega * feq + (1.0f-d_omega) * d_cellsCur[index(i,j,k,l)];
     }
 }
 __global__ void streamCudaKernel(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
@@ -134,7 +134,7 @@ __global__ void analyzeCudaKernel(float *d_cellsCur, char *d_flags, float *d_den
     float density = 0.f;
     float3 u = make_float3(0.f, 0.f, 0.f);
     if(d_flags[index(i,j,k)] == CellNoSlip) {
-        density = 1.;
+        density = 1.f;
     }
     else {
         for(int l=0; l<Q; ++l) {
