@@ -9,11 +9,9 @@
 
 #include <QtGui/QApplication>
 #include "applicationwindow.h"
-#include "lbmCu.h"
 
 int main(int argc, char *argv[])
 {
-    launchKernel();
     QApplication a(argc, argv);
     new ApplicationWindow;
 
