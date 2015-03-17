@@ -102,11 +102,13 @@ void thrustSortTest() {
     std::generate(h_vec.begin(), h_vec.end(), rand);
 
     // sort data on the device (846M keys per second on GeForce GTX 480)
-    std::sort(h_vec.begin(), h_vec.end());
+    thrust::sort(h_vec.begin(), h_vec.end());
     clock_t end = clock();
 
     // transfer data to the device
-    thrust::device_vector<int> d_vec = h_vec;
+    thrust::host_vector<int> h_vec2(32 << 22);
+    std::generate(h_vec2.begin(), h_vec2.end(), rand);
+    thrust::device_vector<int> d_vec = h_vec2;
 
     // sort data on the device (846M keys per second on GeForce GTX 480)
     thrust::sort(d_vec.begin(), d_vec.end());
