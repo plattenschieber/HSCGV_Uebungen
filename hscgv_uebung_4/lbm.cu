@@ -174,8 +174,10 @@ void LBMD3Q19::initializeCuda() {
 
     // use cpyToSymbol for known sizes (LEGACY CODE - WORKS ONLY WITH CUDA <= 5.5)
     gpuErrchk (cudaMemcpyToSymbol(d_w, w.w, sizeof(float)*Q));
-    gpuErrchk (cudaMemcpyToSymbol(d_e, e, sizeof(int)*D*Q));
     gpuErrchk (cudaMemcpyToSymbol(d_invDir, invDir, sizeof(int)*Q));
+    for (int i=0; i<Q; i++)
+        gpuErrchk (cudaMemcpyToSymbol(d_e, e[i].e, sizeof(int)*D, sizeof(int) * i * D, cudaMemcpyHostToDevice));
+
 }
 
 //! collide implementation with CUDA
