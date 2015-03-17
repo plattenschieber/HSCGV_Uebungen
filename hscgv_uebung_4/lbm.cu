@@ -222,8 +222,8 @@ void LBMD3Q19::freeCuda() {
 //! this needs to be done, each time we switch our settings
 void LBMD3Q19::applyCuda() {
     //! copy data from host to device, the rest are constants which stay the same
-    gpuErrchk (cudaMemcpy(d_flags, m_flags, m_width * m_height * m_depth, cudaMemcpyHostToDevice));
-    gpuErrchk (cudaMemcpy(d_velocity, m_velocity, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_flags, m_flags, sizeof(char) * m_width * m_height * m_depth, cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_velocity, m_velocity, sizeof(float) * m_width * m_height * m_depth * D, cudaMemcpyHostToDevice));
     gpuErrchk (cudaMemcpy(d_cells[m_current], m_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice));
     gpuErrchk (cudaMemcpy(d_cells[!m_current], m_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice));
     //! omega can be changed, too
