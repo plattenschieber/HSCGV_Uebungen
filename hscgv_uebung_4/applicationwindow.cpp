@@ -98,7 +98,6 @@ void ApplicationWindow::start(int initial)
             }
     }
 
-    m_lbm->apply();
     m_lbm->useCuda(m_useGpu);
 
     // scene hierarchy
