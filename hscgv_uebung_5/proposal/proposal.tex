@@ -1,0 +1,88 @@
+%\documentclass[10pt,twocolumn]{article}
+\documentclass[10pt]{article}
+\usepackage{cgp}
+
+\usepackage[ngerman]{babel}
+
+\usepackage{graphicx}
+
+
+\title{Aufgabe 5: Wettbewerb}
+
+\author{Dein Name \thanks{deine-adresse@uni-koeln.de}\\
+        \scriptsize Universität zu Köln\\
+        Wintersemester 2010
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{multicols}{2}
+
+\section{Themen}
+In dieser Aufgabe werden folgende Themengebiete bearbeitet:
+\begin{itemize}
+\item Alles, was Dir einfällt.
+\item Etwas Originelles.
+\item Z.~B.\ einen kleinen Grafik-Algorithmus demonstrieren.
+\item Z.~B.\ zeigen, was Deine Grafikkarte mit Shadern kann.
+\item Z.~B.\ etwas auf der GPU berechnen.
+\item Oder missbrauche Deine Grafikkarte für andere Zwecke.
+\item Z.~B.\ ein kleines Computerspiel.
+\item \dots
+\end{itemize}
+
+
+\section{Übersicht}
+
+Eine kurze Beschreibung dessen, was Du vor hast.
+
+\section{Aufbau}
+
+Der grobe Aufbau Deines fertigen Progamms.
+
+\section{Arbeitsschritte}
+Hier sollte ein grober Plan stehen, in welchen Schritten Du Dein Ziel
+erreichen möchtest.
+\subsection{Arbeitsschritt 1: Blah}
+\subsection{Arbeitsschritt 2: Fasel}
+
+\section{Bewertungsrichtlinien}
+
+Wenn Du die folgenden Bedingungen erfüllst, dann kannst Du die
+Höchstpunktzahl von 20 Punkten erreichen:
+
+\begin{description}
+\item[2 Punkte]
+        Mindestens ein sinnvoller Aufgabenvorschlag wurde eingereicht.
+        Er ist einfallsreich, und es wird aufgezeigt, wie man das gesteckte Ziel
+        Schritt für Schritt erreicht.
+\item[2 Punkte]
+        Das Programm folgt einem objektorientierten Entwurf.
+        Der Quelltext ist vollständig in objektorientiertem C++ verfasst.
+        Der Code kompiliert auf dem Referenzsystem mit dem GNU C++-Compiler
+        ohne Fehler und erzeugt mit den Optionen \texttt{-Wall -O2} keine
+        unnötigen Warnungen.
+        Auch die anderen Programmierrichtlinien wurden befolgt.
+\item[2 Punkte]
+        Der gesamte Quelltext ist in englischer Sprache kommentiert und
+        die Kommentare erklären die algorithmische Struktur des C++-Codes.
+        Die Kommentare sind so formatiert, dass sie das Erzeugen einer
+        HTML- und \LaTeX-Dokumentation mit \texttt{doxygen} erlauben.
+\item[1 Punkte]
+        Das fertige Programm ist von einer README-Datei begleitet, die die
+        seine Verwendung beschreibt.
+\item[? Punkte]
+        Deine Kriterien hier -- so dass sich insgesamt 20 Punkte ergeben!
+\end{description}
+
+
+
+\bibliographystyle{plain}
+\nocite{*}
+\bibliography{proposal}
+
+\end{multicols}
+
+\end{document}
