@@ -4,6 +4,8 @@
 
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true}
 
 \usepackage{graphicx}
 
@@ -27,7 +29,6 @@ In dieser Aufgabe werden folgende Themengebiete bearbeitet:
     \item Parallelisierung von Raytracing
     \item Visualisierung von GPU Daten
     \item einfache Interaktion mit Visualisierungen
-    \item \dots
 \end{itemize}
 
 
@@ -37,14 +38,27 @@ Ziel dieser Aufgabe wird es sein, den in Aufgabe 3 implementierten Raytracer zu 
 
 \section{Aufbau} 
 
-Der Aufbau des Programms unterscheidet sich nur in folgenden Dateien und Klasse:
+Der Aufbau des Programms entspricht im Wesentlichen dem der Aufgabe 3. Es müssen jedoch an einigen Stellen Anpassungen gemacht werden. Unter Anderem in dem Aufruf der \textit{shade~()} Methode und ihrer Implementierung. Eine allgemeine Einführung in die Programmierbarkeit von Grafikhardware und in CUDA findet man in Aufgabe 4. 
 
 
 \section{Arbeitsschritte}
-Hier sollte ein grober Plan stehen, in welchen Schritten Du Dein Ziel
-erreichen möchtest.
-\subsection{Arbeitsschritt 1: Blah}
-\subsection{Arbeitsschritt 2: Fasel}
+Bei der Implementierung einer parallelen Version eines Raytracers gibt es zu der Ausgangssituation aus Aufgabe 3 Anpassungen zu machen. So ist z.B. die algorithmische Struktur an die Grafikhardware anzupassen und eine korrekte Übermittlung der Daten zur und von der Grafikhardware sicherzustellen. Damit die Szene live gerendert und in ihr interagiert werden kann, bedarf es der Einbindung spezieller APIs.
+
+\subsection{Arbeitsschritt 1: GPU-Portierung von Aufgabe 3}
+Die Implementierung der \href{https://github.com/plattenschieber/HSCGV_Uebungen/tree/master/hscgv_uebung_3}{Aufgabe 3} dient als Basis für die Portierung. Dabei beschränken wir uns auf das Rendern von Quadriken. 
+
+\subsection{Arbeitsschritt 2: Live Rendering mit OpenGL}
+Nach dem ersten Arbeitsschritt haben wir nun eine voll funktionsfähige Version eines parallelisierten Raytracers vor uns liegen. Bislang werden, zum Darstellen der gerenderten Szene, die Daten auf das Host System zurückkopiert um dann in eine Bitmap Datei geschrieben zu werden.
+Wir möchten diesen Schritt gerne überspringen und die gerenderte Szene gleich auf dem Bildschirm darstellen. Dazu bietet sich die selbsterklärende Methode \textit{glDrawPixels~()} an. OpenGL kann jedoch nicht von Hause aus mit CUDA kommunizieren. Um OpenGL nutzen zu können, benötigen wir weiterhin die \textit{CUDA/OpenGL interoperability API}. Die gerenderten Pixel werden anschließend mit der oben genannten Methode gezeichnet. Optional bietet es sich an, die Daten in eine Textur zu packen und auf einen Bildschirmfüllenden Einheitswürfel zu präsentieren. 
+
+\subsection{Arbeitsschritt 3: Interaktion mit der Szene}
+Um die (hoffentlich) deutlich höhere Framerate bei der Nutzung von Grafikhardware auch zu nutzen, bietet sich an eine Manipulation der Szene zuzulassen. Eine Möglichkeit wäre es mit Maus oder Tastatur die Kameraposition im Raum zu verändern. Folglich wäre eine bessere Inspektion der in der Szene gerenderten Objekte möglich. 
+
+\subsection{Arbeitsschritt 4: Optionales}
+Da die veränderte Kameraposition mit einer größeren Komplexität des gerenderten Bildes einhergehen kann, wäre es interessant zu wissen, wie schnell die Berechnung der aktuellen Szene von Statten geht. Es gibt zwei Maßzahlen die eine Bewertung der Berechnungsgeschwindigkeit zulassen: 
+1. FLOPS - dies sind die Anzahl der Fließkommazahlberechnungen (floating point operations) pro Sekunde. 
+2. FPS - die entspricht der Anzahl an vollständig dargestellten Bildern pro Sekunde (frames per second).
+
 
 \section{Bewertungsrichtlinien}
 
