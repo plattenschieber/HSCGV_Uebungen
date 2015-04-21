@@ -21,3 +21,5 @@ hscgv_uebung_3/input_yacc.*
 *.log
 *.pdf
 *.dvi
+*.out
+*.pdfsync
