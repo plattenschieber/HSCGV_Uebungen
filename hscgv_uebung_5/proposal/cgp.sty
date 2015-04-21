@@ -1,1 +1,30 @@
-../../cgp.sty
+\NeedsTeXFormat{LaTeX2e} 
+\ProvidesPackage{cgp} 
+
+\RequirePackage{graphicx}
+\RequirePackage{hyperref}
+\RequirePackage{multicol}
+\RequirePackage{amsmath}
+
+\RequirePackage{pdfsync}
+
+\RequirePackage{ifxetex}
+\ifxetex
+\else
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\RequirePackage{textcomp}
+\fi
+
+%\usepackage[scaled=0.95,medium]{optima}
+%\renewcommand{\familydefault}{\sfdefault}
+\RequirePackage{mathpazo}
+
+\newcounter{task}
+
+\newcommand{\code}[1]{{\em {#1}}}
+\newcommand{\task}[1]{\addtocounter{task}{1}\begin{center}\vspace{.5cm}\begin{tabular}{|c|}\hline\bfseries
+   Aufgabe~\arabic{task}: {#1}\\ \hline \end{tabular}\vspace{.5cm}\end{center}}
+
+\usepackage[a4paper]{geometry}
+\geometry{a4paper,lmargin=1.5cm,rmargin=1.5cm,tmargin=3cm,bmargin=3cm}
