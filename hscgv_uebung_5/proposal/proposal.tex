@@ -49,7 +49,7 @@ Die Implementierung der \href{https://github.com/plattenschieber/HSCGV_Uebungen/
 
 \subsection{Arbeitsschritt 2: Live Rendering mit OpenGL}
 Nach dem ersten Arbeitsschritt haben wir nun eine voll funktionsfähige Version eines parallelisierten Raytracers vor uns liegen. Bislang werden, zum Darstellen der gerenderten Szene, die Daten auf das Host System zurückkopiert um dann in eine Bitmap Datei geschrieben zu werden.
-Wir möchten diesen Schritt gerne überspringen und die gerenderte Szene gleich auf dem Bildschirm darstellen. Dazu bietet sich die selbsterklärende Methode \textit{glDrawPixels~()} an. OpenGL kann jedoch nicht von Hause aus mit CUDA kommunizieren. Um OpenGL nutzen zu können, benötigen wir weiterhin die \textit{CUDA/OpenGL interoperability API}. Die gerenderten Pixel werden anschließend mit der oben genannten Methode gezeichnet. Optional bietet es sich an, die Daten in eine Textur zu packen und auf einen Bildschirmfüllenden Einheitswürfel zu präsentieren. 
+Wir möchten diesen Schritt gerne überspringen und die gerenderte Szene gleich auf dem Bildschirm darstellen. OpenGL kann jedoch nicht von Hause aus mit CUDA kommunizieren. Um OpenGL nutzen zu können, benötigen wir weiterhin die \textit{CUDA/OpenGL interoperability API}. Die gerenderten Pixel werden anschließend mit der oben genannten Methode gezeichnet. Es bietet sich an, die Daten in eine Textur zu packen und auf einen Bildschirmfüllenden Einheitswürfel zu präsentieren. 
 
 \subsection{Arbeitsschritt 3: Interaktion mit der Szene}
 Um die (hoffentlich) deutlich höhere Framerate bei der Nutzung von Grafikhardware auch zu nutzen, bietet sich an eine Manipulation der Szene zuzulassen. Eine Möglichkeit wäre es mit Maus oder Tastatur die Kameraposition im Raum zu verändern. Folglich wäre eine bessere Inspektion der in der Szene gerenderten Objekte möglich. 
@@ -89,11 +89,11 @@ Höchstpunktzahl von 20 Punkten erreichen:
 \item[1 Punkte]
         Es kann per Tastendruck zwischen CPU/GPU Berechnung gewechselt werden.
 \item[3 Punkte] 
-        Es können einfache Interaktionen mit der Maus/Tastatur ausgeführt werden.
+        Es können einfache Manipulationen der Kamera mit der Maus ausgeführt werden.
 \item[2 Punkte]
-        Es wurde eine zusätzliche interessante Ausgangssituation geschaffen.
+        Es wurde ein Headlight in die Szene eingebaut
 \item[1 Punkt]
-        Zur Visualisierung werden die benötigten FLOPS angezeigt.
+        Zur Visualisierung werden die benötigten FPS angezeigt.
 \item[1 Punkte] 
         Das fertige Programm ist von einer README-Datei begleitet, die die
         seine Verwendung beschreibt.
