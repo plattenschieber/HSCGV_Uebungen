@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <algorithm>
+#include <stdlib.h>
 
 // square<T> computes the square of a number f(x) -> x*x
 template <typename T>
@@ -95,6 +96,10 @@ void thrustVectorTest() {
     std::cout << "norm: " <<  norm << std::endl;
 }
 
+int compare (void const *p1, void const *p2) {
+    return ( *(int*) p1 - *(int *)p2);
+}
+
 void thrustSortTest() {
     // generate 128M random numbers serially
     clock_t start = clock();
@@ -102,17 +107,27 @@ void thrustSortTest() {
     std::generate(h_vec.begin(), h_vec.end(), rand);
 
     // sort data on the device (846M keys per second on GeForce GTX 480)
-    std::sort(h_vec.begin(), h_vec.end());
+    thrust::sort(h_vec.begin(), h_vec.end());
+//    qsort(h_vec.data(), h_vec.size(), sizeof(int), compare);
     clock_t end = clock();
 
     // transfer data to the device
-    thrust::device_vector<int> d_vec = h_vec;
+    thrust::host_vector<int> h_vec2(32 << 22);
+    std::generate(h_vec2.begin(), h_vec2.end(), rand);
+    thrust::device_vector<int> d_vec = h_vec2;
 
     // sort data on the device (846M keys per second on GeForce GTX 480)
     thrust::sort(d_vec.begin(), d_vec.end());
     // transfer data back to host
     thrust::copy(d_vec.begin(), d_vec.end(), h_vec.begin());
     clock_t end2 = clock();
+
+//    for (auto val : h_vec2)
+/*    for (thrust::host_vector<int>::const_iterator it = h_vec.begin(); it != h_vec.end(); ++it)
+    {
+        int val = *it;
+        std::cerr << val << std::endl;
+    }*/
 
     float seqSec = (float)(end - start) / CLOCKS_PER_SEC;
     float parSec = (float)(end2 - end) / CLOCKS_PER_SEC;

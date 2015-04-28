@@ -11,6 +11,7 @@
 #include <cstring>
 #include <cmath>
 #include <iostream>
+#include <cstdio>
 
 LBMD3Q19::LBMD3Q19(int width, int height, int depth)
 : m_current(0)
@@ -112,8 +113,9 @@ LBMD3Q19::LBMD3Q19(int width, int height, int depth)
                 m_flags[index(i,j,k)] = CellFluid;
                 for(int l=0; l<Q; ++l)
                 {
-                    m_cells[0][index(i,j,k,l)] = w[l];
-                    m_cells[1][index(i,j,k,l)] = w[l];
+                    int idx = index(i,j,k,l);
+                    m_cells[0][idx] = w[l];
+                    m_cells[1][idx] = w[l];
                 }
             }
         }

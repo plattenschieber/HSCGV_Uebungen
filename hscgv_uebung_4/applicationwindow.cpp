@@ -30,7 +30,7 @@ ApplicationWindow::ApplicationWindow()
 : m_lbm(NULL)
 , m_currentAxis(0)
 , m_value(Slice::Density)
-, m_paused(false)
+, m_paused(true)
 , m_useGpu(true)
 {
     m_mainWindow = new QMainWindow();
@@ -98,7 +98,7 @@ void ApplicationWindow::start(int initial)
             }
     }
 
-    m_lbm->apply();
+//    m_lbm->apply();
     m_lbm->useCuda(m_useGpu);
 
     // scene hierarchy

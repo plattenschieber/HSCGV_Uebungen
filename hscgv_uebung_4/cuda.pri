@@ -19,7 +19,7 @@ unix {
     QMAKE_LIBDIR += $$CUDA_DIR/lib64
     LIBS += -lcudart
     NVCCFLAGS="-use_fast_math --ptxas-options=-v"
-    NVCCFLAGS+="-Xptxas -fastimul" # 24 bit integer multiplication should be sufficient
+    NVCCFLAGS+="-Xptxas -fastimul -arch=sm_20" # 24 bit integer multiplication should be sufficient
     debug:NVCCFLAGS+="-g"
     release:NVCCFLAGS+="-O3"
     macx:NVCCFLAGS+="-m64"

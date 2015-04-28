@@ -45,6 +45,7 @@ size_t __device__ index(int i, int j, int k) {
     return i + blockDim.x*(j + gridDim.x*size_t(k));
 }
 
+//collideCudaKernel<<<dim3(m_height, m_depth),dim3(m_width)>>>(d_cells[m_current], d_flags, d_velocity);
 size_t __device__ index(int i, int j, int k, int l) {
     if(PeriodicBoundaries) {
         i = (i+blockDim.x)%blockDim.x;
@@ -61,8 +62,8 @@ size_t __device__ index(int i, int j, int k, int l) {
 __global__ void collideCudaKernel(float *d_cellsCur, char *d_flags, float3 *d_velocity) {
     // get the current thread position
     int i = threadIdx.x;
-    int j = threadIdx.y;
-    int k = blockIdx.x;
+    int j = blockIdx.x;
+    int k = blockIdx.y;
 
     // in case we have no periodic boundaries, the threads on the edges don't have anything to do
     if (!PeriodicBoundaries) {
@@ -79,7 +80,7 @@ __global__ void collideCudaKernel(float *d_cellsCur, char *d_flags, float3 *d_ve
     float density = 0.f;
     float3 u = make_float3(0.f, 0.f, 0.f);
     for(int l=0; l<Q; ++l) {
-        const float weight = d_cellsCur[index(i,j,k)+l*blockDim.x*gridDim.x*gridDim.y];
+        const float weight = d_cellsCur[index(i,j,k,l)];
         density += weight;
         u.x += d_e[l][0] * weight;
         u.y += d_e[l][1] * weight;
@@ -102,8 +103,8 @@ __global__ void collideCudaKernel(float *d_cellsCur, char *d_flags, float3 *d_ve
         dot += d_e[l][2] * u.z;
         uu += u.z * u.z;
         float feq = d_w[l] * (density - 1.5f*uu + 3.f*dot + 4.5f*dot*dot);
-        d_cellsCur[index(i,j,k)] =
-                d_omega * feq + (1.0f-d_omega) * d_cellsCur[index(i,j,k)];
+        d_cellsCur[index(i,j,k,l)] =
+                d_omega * feq + (1.0f-d_omega) * d_cellsCur[index(i,j,k,l)];
     }
 }
 __global__ void streamCudaKernel(float *d_cellsCur, float *d_cellsLast, char *d_flags) {
@@ -125,11 +126,11 @@ __global__ void streamCudaKernel(float *d_cellsCur, float *d_cellsLast, char *d_
         const int sk = k+d_e[inv][2];
         if(d_flags[index(si,sj,sk)] == CellNoSlip) {
             // reflect at NoSlip cell
-            d_cellsCur[index(i,j,k)+l*blockDim.x*gridDim.x*gridDim.y] = d_cellsLast[index(i,j,k)+inv*blockDim.x*gridDim.x*gridDim.y];
+            d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(i,j,k,inv)];
         }
         else {
             // update from neighbours
-            d_cellsCur[index(i,j,k)+l*blockDim.x*gridDim.x*gridDim.y] = d_cellsLast[index(si,sj,sk)+l*blockDim.x*gridDim.x*gridDim.y];
+            d_cellsCur[index(i,j,k,l)] = d_cellsLast[index(si,sj,sk,l)];
         }
     }
 }
@@ -174,8 +175,20 @@ void LBMD3Q19::initializeCuda() {
 
     // use cpyToSymbol for known sizes (LEGACY CODE - WORKS ONLY WITH CUDA <= 5.5)
     gpuErrchk (cudaMemcpyToSymbol(d_w, w.w, sizeof(float)*Q));
-    gpuErrchk (cudaMemcpyToSymbol(d_e, e, sizeof(int)*D*Q));
     gpuErrchk (cudaMemcpyToSymbol(d_invDir, invDir, sizeof(int)*Q));
+    for (int i=0; i<Q; i++)
+        gpuErrchk (cudaMemcpyToSymbol(d_e, e[i].e, sizeof(int)*D, sizeof(int) * i * D, cudaMemcpyHostToDevice));
+
+
+    // copy back and present data
+    Distribution test1;
+    int test2[Q];
+    Velocity test3[Q];
+
+    gpuErrchk (cudaMemcpyFromSymbol(test1.w, d_w,sizeof(float)*Q));
+    gpuErrchk (cudaMemcpyFromSymbol(test2, d_invDir, sizeof(int)*Q));
+    for (int i=0; i<Q; i++)
+        gpuErrchk (cudaMemcpyFromSymbol(test3[i].e, d_e, sizeof(int)*D, sizeof(int) * i * D));
 }
 
 //! collide implementation with CUDA
@@ -220,8 +233,8 @@ void LBMD3Q19::freeCuda() {
 //! this needs to be done, each time we switch our settings
 void LBMD3Q19::applyCuda() {
     //! copy data from host to device, the rest are constants which stay the same
-    gpuErrchk (cudaMemcpy(d_flags, m_flags, m_width * m_height * m_depth, cudaMemcpyHostToDevice));
-    gpuErrchk (cudaMemcpy(d_velocity, m_velocity, sizeof(float3) * m_width * m_height * m_depth, cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_flags, m_flags, sizeof(char) * m_width * m_height * m_depth, cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_velocity, m_velocity, sizeof(float) * m_width * m_height * m_depth * D, cudaMemcpyHostToDevice));
     gpuErrchk (cudaMemcpy(d_cells[m_current], m_cells[m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice));
     gpuErrchk (cudaMemcpy(d_cells[!m_current], m_cells[!m_current], sizeof(float) * m_width * m_height * m_depth * Q, cudaMemcpyHostToDevice));
     //! omega can be changed, too

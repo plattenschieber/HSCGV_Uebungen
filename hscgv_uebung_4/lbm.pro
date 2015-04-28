@@ -4,8 +4,8 @@ TARGET = lbm
 TEMPLATE = app
 
 # use this for an optimised build
-#CONFIG -= debug
-#CONFIG += release
+#CONFIG += debug
+CONFIG += release
 
 # Adjust this to point to your OpenSceneGraph folder
 OSGHOME=openscenegraph
