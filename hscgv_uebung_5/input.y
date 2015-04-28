@@ -387,7 +387,7 @@ static int lookatSeen = 0;
   float floatval;
 }
 
-%type <intval> index
+%type <intval> index coeffIntVal
 %type <floatval> colourVal realVal angleVal zeroToOneVal coeffVal
 
 %token <intval> INTEGER
@@ -810,9 +810,20 @@ specular
   : SPECULAR  zeroToOneVal coeffVal
     {
       if ( propertyCounter < nproperties ) {
-	TOUT((stderr,"specular %f\n", $2));
+	TOUT((stderr,"specular %f, fexp %f\n", $2,$3));
         currentSpecular = $2;
         currentSpecularExp = $3;
+      }
+    }
+;
+
+specular
+  : SPECULAR  zeroToOneVal coeffIntVal 
+    {
+      if ( propertyCounter < nproperties ) {
+	TOUT((stderr,"specular %f, iexp %f\n", $2,(double)$3));
+        currentSpecular = $2;
+        currentSpecularExp = (double)$3;
       }
     }
 ;
@@ -959,6 +970,18 @@ index : INTEGER
     yyerror("index out of range (only 1 or more allowed)");
   }
   
+  /* pass that value up the tree */
+  $$ = $1;
+}
+;
+
+/* make sure each coeffVal is positive */
+coeffIntVal : INTEGER
+{
+  if ( $1 < 0 ) {
+    yyerror("exponent out of range (only 0 or more allowed)");
+  }
+
   /* pass that value up the tree */
   $$ = $1;
 }
