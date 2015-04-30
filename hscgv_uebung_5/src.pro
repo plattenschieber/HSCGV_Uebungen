@@ -27,6 +27,13 @@ DEFINES         *= TRACE VERBOSE
 CONFIG          += debug
 CONFIG          -= release
 
-QMAKE_CXXFLAGS += -W -Wall -Wextra -pedantic
+debug {
+#QMAKE_CXXFLAGS += -W -Wall -pedantic
+}
+release {
+# in release mode, use OpenMP parallelized CPU code
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
+}
 
 include(cuda.pri)
