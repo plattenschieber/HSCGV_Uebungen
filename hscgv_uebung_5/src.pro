@@ -6,7 +6,8 @@ TEMPLATE =      app
 CUDA_SOURCES += cudaTest.cu
 
 HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h param.h \
-    geopolygon.h
+    geopolygon.h \
+    cudaTest.h
 SOURCES=        geoobject.cpp geoquadric.cpp lightobject.cpp main.cpp ray.cpp \
     geopolygon.cpp
 win32:SOURCES*= xgetopt.cpp

@@ -62,7 +62,7 @@ GeoPolygon::getNormal(const Vec3d &v) const
         // drop cordinate with smallest range
         // cordinate vector cvector = {0, 1, x2x} or {x0x, 1, 2},..
         int cVector[2];
-        for (unsigned i=0, it=0; i<3; i++)
+        for (int i=0, it=0; i<3; i++)
             if (i != minRangeIndex) cVector[it++] = i;
 
         // check if v lies in this projected polygon

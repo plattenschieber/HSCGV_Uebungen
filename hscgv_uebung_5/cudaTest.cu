@@ -103,7 +103,7 @@ int compare (void const *p1, void const *p2) {
 void thrustSortTest() {
     // generate 128M random numbers serially
     clock_t start = clock();
-    thrust::host_vector<int> h_vec(32 << 22);
+    thrust::host_vector<int> h_vec(32 << 18);
     std::generate(h_vec.begin(), h_vec.end(), rand);
 
     // sort data on the device (846M keys per second on GeForce GTX 480)
@@ -112,7 +112,7 @@ void thrustSortTest() {
     clock_t end = clock();
 
     // transfer data to the device
-    thrust::host_vector<int> h_vec2(32 << 22);
+    thrust::host_vector<int> h_vec2(32 << 18);
     std::generate(h_vec2.begin(), h_vec2.end(), rand);
     thrust::device_vector<int> d_vec = h_vec2;
 
