@@ -1,4 +1,9 @@
+QT       += core gui opengl
+
 TARGET=         raytrace
+TEMPLATE =      app
+
+CUDA_SOURCES += cudaTest.cu
 
 HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h param.h \
     geopolygon.h
@@ -22,3 +27,5 @@ CONFIG          += debug
 CONFIG          -= release
 
 QMAKE_CXXFLAGS += -W -Wall -Wextra -pedantic
+
+include(cuda.pri)
