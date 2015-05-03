@@ -50,6 +50,7 @@ class ApplicationWindow : public QMainWindow
         //! destroy application window
         virtual ~ApplicationWindow();
 
+    // ----- signal definitions for our Application -----
     signals:
         //! reset camera position and orientation to default values
         void resetCam();
@@ -74,9 +75,8 @@ class ApplicationWindow : public QMainWindow
         //! designer ui
         Ui::ApplicationWindow ui;
 
-        private slots:
-
-        // ----- Slot Definition for our Application -----
+    // ----- slot definitions for our Application -----
+    private slots:
 
         //! slot for File/Quit menu
         void fileQuit();
@@ -105,7 +105,7 @@ class ApplicationWindow : public QMainWindow
         //! we want to have some nice output
         void antialiasingChanged() const;
 
-private:
+    private:
        //! store status bar message
         QString m_message;
         //! revert to default message if time is up
