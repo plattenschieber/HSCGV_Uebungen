@@ -26,13 +26,12 @@
 // Qt include files
 #include <QMainWindow>
 #include "ui_ApplicationWindow.h"
+#include "GLFrame.h"
 
-class UserParameterDialog;
 class GLFrame;
 
 /*! Declaration of ApplicationWindow the main application window.
-  This ApplicationWindow contains a GLFrame for rendering the 3D object
-  and an UserParameterDialog for selecting various render options.
+  This ApplicationWindow contains a GLFrame for rendering the 3D object.
   You can interact with the object by moving the mouse over
   the rendering area. */
 
@@ -59,14 +58,8 @@ class ApplicationWindow : public QMainWindow
         //! request to open another model
         void openFile(const QString &filename) const;
 
-        //! a different shader was selected
-        void shader(int shader) const;
-        //! GL draw mode was changed
-        void glMode(int mode) const;
         //! render mode was changed
         void renderMode(int mode) const;
-        //! material was changed
-        void material(int material) const;
 
     protected:
         //! initialize application state
@@ -74,9 +67,6 @@ class ApplicationWindow : public QMainWindow
 
         //! our main widget in the application is a OGLCanvas
         GLFrame *m_frame;
-
-        //! a pointer to the options dialog
-        UserParameterDialog *m_userParamDialog;
 
         //! timer for triggering continuous re-rendering
         QTimer *m_trigger;
@@ -87,9 +77,6 @@ class ApplicationWindow : public QMainWindow
         private slots:
 
         // ----- Slot Definition for our Application -----
-
-        //! slot for showing dialog for modifying user shader parameter
-        void userParamDialog();
 
         //! slot for File/Quit menu
         void fileQuit();
@@ -112,28 +99,14 @@ class ApplicationWindow : public QMainWindow
         //! deduce render mode from menu state
         int getRenderMode() const;
 
-        //! deduce GL mode from menu state
-        int getGlMode() const;
-
-        //! deduce shader from menu state
-        int getShader() const;
-
-        //! deduce material from menu state
-        int getMaterial() const;
-
-        //! make sure that GL mode signal is triggerd
-        void glModeChanged() const;
         //! make sure that render mode signal is triggerd
         void renderModeChanged() const;
-        //! make sure that shader signal is triggerd
-        void shaderChanged() const;
-        //! make sure that material signal is triggerd
-        void materialChanged() const;
+
+        //! we want to have some nice output
+        void antialiasingChanged() const;
 
 private:
-        //! store programmatically created actions corresponding to material definition
-        std::vector<QAction *> m_materialActions;
-        //! store status bar message
+       //! store status bar message
         QString m_message;
         //! revert to default message if time is up
         int m_secondsToDisplay;
