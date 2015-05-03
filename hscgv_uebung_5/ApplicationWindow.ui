@@ -32,58 +32,25 @@
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuShader">
-    <property name="title">
-     <string>Shader</string>
-    </property>
-    <addaction name="actionFixedFunction"/>
-    <addaction name="actionSimple"/>
-    <addaction name="actionPhong"/>
-    <addaction name="actionFreestyle"/>
-    <addaction name="separator"/>
-    <addaction name="actionUserParam"/>
-   </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionCoordinateAxes"/>
-    <addaction name="actionModel"/>
-    <addaction name="actionWireframeOverlay"/>
-    <addaction name="separator"/>
     <addaction name="actionResetCamera"/>
     <addaction name="actionResetLight"/>
     <addaction name="separator"/>
     <addaction name="actionAnimate"/>
    </widget>
-   <widget class="QMenu" name="menuMaterial">
-    <property name="title">
-     <string>Material</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menuOpenGL">
-    <property name="title">
-     <string>OpenGL</string>
-    </property>
-    <addaction name="actionImmediateMode"/>
-    <addaction name="actionVertexArrays"/>
-    <addaction name="actionVertexBufferObjects"/>
-   </widget>
    <widget class="QMenu" name="menuRendering">
     <property name="title">
      <string>Rendering</string>
     </property>
-    <addaction name="actionWireframe"/>
-    <addaction name="actionFlat"/>
-    <addaction name="actionSmooth"/>
-    <addaction name="separator"/>
+    <addaction name="actionCPU"/>
+    <addaction name="actionGPU"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
-   <addaction name="menuMaterial"/>
    <addaction name="menuRendering"/>
-   <addaction name="menuShader"/>
-   <addaction name="menuOpenGL"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionResetCamera">
@@ -317,6 +284,16 @@
    </property>
    <property name="menuRole">
     <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionCPU">
+   <property name="text">
+    <string>CPU</string>
+   </property>
+  </action>
+  <action name="actionGPU">
+   <property name="text">
+    <string>GPU</string>
    </property>
   </action>
  </widget>
