@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <author>Martin Aumueller &lt;aumueller@uni-koeln.de&gt;</author>
+ <class>ApplicationWindow</class>
+ <widget class="QMainWindow" name="ApplicationWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>520</width>
+    <height>461</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Aufgabe 1: &quot;Ui, OpenGL!&quot;</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>520</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionLoadFile"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuShader">
+    <property name="title">
+     <string>Shader</string>
+    </property>
+    <addaction name="actionFixedFunction"/>
+    <addaction name="actionSimple"/>
+    <addaction name="actionPhong"/>
+    <addaction name="actionFreestyle"/>
+    <addaction name="separator"/>
+    <addaction name="actionUserParam"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionCoordinateAxes"/>
+    <addaction name="actionModel"/>
+    <addaction name="actionWireframeOverlay"/>
+    <addaction name="separator"/>
+    <addaction name="actionResetCamera"/>
+    <addaction name="actionResetLight"/>
+    <addaction name="separator"/>
+    <addaction name="actionAnimate"/>
+   </widget>
+   <widget class="QMenu" name="menuMaterial">
+    <property name="title">
+     <string>Material</string>
+    </property>
+   </widget>
+   <widget class="QMenu" name="menuOpenGL">
+    <property name="title">
+     <string>OpenGL</string>
+    </property>
+    <addaction name="actionImmediateMode"/>
+    <addaction name="actionVertexArrays"/>
+    <addaction name="actionVertexBufferObjects"/>
+   </widget>
+   <widget class="QMenu" name="menuRendering">
+    <property name="title">
+     <string>Rendering</string>
+    </property>
+    <addaction name="actionWireframe"/>
+    <addaction name="actionFlat"/>
+    <addaction name="actionSmooth"/>
+    <addaction name="separator"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuMaterial"/>
+   <addaction name="menuRendering"/>
+   <addaction name="menuShader"/>
+   <addaction name="menuOpenGL"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionResetCamera">
+   <property name="text">
+    <string>Reset Camera</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
+  </action>
+  <action name="actionUserParam">
+   <property name="text">
+    <string>Modify User Parameter</string>
+   </property>
+   <property name="toolTip">
+    <string>Modify user defined shader parameter</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::NoRole</enum>
+   </property>
+  </action>
+  <action name="actionLoadFile">
+   <property name="text">
+    <string>Open</string>
+   </property>
+   <property name="toolTip">
+    <string>Load Model File</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionFixedFunction">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fixed Function</string>
+   </property>
+   <property name="toolTip">
+    <string>No shader</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+1</string>
+   </property>
+  </action>
+  <action name="actionSimple">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Simple</string>
+   </property>
+   <property name="toolTip">
+    <string>Simple Shader</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+2</string>
+   </property>
+  </action>
+  <action name="actionPhong">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Phong</string>
+   </property>
+   <property name="toolTip">
+    <string>Phong Shading</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+3</string>
+   </property>
+  </action>
+  <action name="actionFreestyle">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Freestyle</string>
+   </property>
+   <property name="toolTip">
+    <string>Your Idea</string>
+   </property>
+   <property name="shortcut">
+    <string>Meta+4</string>
+   </property>
+  </action>
+  <action name="actionCoordinateAxes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Coordinate Axes</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Coordinate Axes</string>
+   </property>
+  </action>
+  <action name="actionModel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Model</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Model</string>
+   </property>
+  </action>
+  <action name="actionWireframeOverlay">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Wireframe Overlay</string>
+   </property>
+   <property name="toolTip">
+    <string>Show Wireframe Overlay</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionAnimate">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Animate</string>
+   </property>
+   <property name="toolTip">
+    <string>Render Continuously</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+M</string>
+   </property>
+  </action>
+  <action name="actionImmediateMode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Immediate Mode</string>
+   </property>
+   <property name="toolTip">
+    <string>Immediate Mode</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionVertexArrays">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Vertex Arrays</string>
+   </property>
+   <property name="toolTip">
+    <string>Vertex Arrays</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="actionVertexBufferObjects">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Vertex Buffer Objects</string>
+   </property>
+   <property name="toolTip">
+    <string>Vertex Buffer Objects (VBOs)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionWireframe">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Wireframe</string>
+   </property>
+   <property name="toolTip">
+    <string>Wireframe</string>
+   </property>
+  </action>
+  <action name="actionFlat">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Flat</string>
+   </property>
+  </action>
+  <action name="actionSmooth">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Smooth</string>
+   </property>
+  </action>
+  <action name="actionResetLight">
+   <property name="text">
+    <string>Reset Light</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset Light</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

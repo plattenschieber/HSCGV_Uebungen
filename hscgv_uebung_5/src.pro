@@ -1,7 +1,9 @@
 TARGET=         raytrace
 
 HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h param.h \
-    geopolygon.h
+    geopolygon.h \
+    ApplicationWindow.h \
+    ui_ApplicationWindow.h
 SOURCES=        geoobject.cpp geoquadric.cpp lightobject.cpp main.cpp ray.cpp \
     geopolygon.cpp
 win32:SOURCES*= xgetopt.cpp
@@ -22,3 +24,6 @@ CONFIG          += debug
 CONFIG          -= release
 
 QMAKE_CXXFLAGS += -W -Wall -Wextra -pedantic
+
+FORMS += \
+    ApplicationWindow.ui
