@@ -21,7 +21,7 @@
      <x>0</x>
      <y>0</y>
      <width>520</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -47,6 +47,8 @@
     </property>
     <addaction name="actionCPU"/>
     <addaction name="actionGPU"/>
+    <addaction name="separator"/>
+    <addaction name="actionAntialiasing"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuView"/>
@@ -72,17 +74,6 @@
     <enum>QAction::QuitRole</enum>
    </property>
   </action>
-  <action name="actionUserParam">
-   <property name="text">
-    <string>Modify User Parameter</string>
-   </property>
-   <property name="toolTip">
-    <string>Modify user defined shader parameter</string>
-   </property>
-   <property name="menuRole">
-    <enum>QAction::NoRole</enum>
-   </property>
-  </action>
   <action name="actionLoadFile">
    <property name="text">
     <string>Open</string>
@@ -97,98 +88,6 @@
     <enum>QAction::TextHeuristicRole</enum>
    </property>
   </action>
-  <action name="actionFixedFunction">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Fixed Function</string>
-   </property>
-   <property name="toolTip">
-    <string>No shader</string>
-   </property>
-   <property name="shortcut">
-    <string>Meta+1</string>
-   </property>
-  </action>
-  <action name="actionSimple">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Simple</string>
-   </property>
-   <property name="toolTip">
-    <string>Simple Shader</string>
-   </property>
-   <property name="shortcut">
-    <string>Meta+2</string>
-   </property>
-  </action>
-  <action name="actionPhong">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Phong</string>
-   </property>
-   <property name="toolTip">
-    <string>Phong Shading</string>
-   </property>
-   <property name="shortcut">
-    <string>Meta+3</string>
-   </property>
-  </action>
-  <action name="actionFreestyle">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Freestyle</string>
-   </property>
-   <property name="toolTip">
-    <string>Your Idea</string>
-   </property>
-   <property name="shortcut">
-    <string>Meta+4</string>
-   </property>
-  </action>
-  <action name="actionCoordinateAxes">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Coordinate Axes</string>
-   </property>
-   <property name="toolTip">
-    <string>Show Coordinate Axes</string>
-   </property>
-  </action>
-  <action name="actionModel">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Model</string>
-   </property>
-   <property name="toolTip">
-    <string>Show Model</string>
-   </property>
-  </action>
-  <action name="actionWireframeOverlay">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Wireframe Overlay</string>
-   </property>
-   <property name="toolTip">
-    <string>Show Wireframe Overlay</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+W</string>
-   </property>
-  </action>
   <action name="actionAnimate">
    <property name="checkable">
     <bool>true</bool>
@@ -201,75 +100,6 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+M</string>
-   </property>
-  </action>
-  <action name="actionImmediateMode">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Immediate Mode</string>
-   </property>
-   <property name="toolTip">
-    <string>Immediate Mode</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+1</string>
-   </property>
-  </action>
-  <action name="actionVertexArrays">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Vertex Arrays</string>
-   </property>
-   <property name="toolTip">
-    <string>Vertex Arrays</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+2</string>
-   </property>
-  </action>
-  <action name="actionVertexBufferObjects">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Vertex Buffer Objects</string>
-   </property>
-   <property name="toolTip">
-    <string>Vertex Buffer Objects (VBOs)</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+3</string>
-   </property>
-  </action>
-  <action name="actionWireframe">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Wireframe</string>
-   </property>
-   <property name="toolTip">
-    <string>Wireframe</string>
-   </property>
-  </action>
-  <action name="actionFlat">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Flat</string>
-   </property>
-  </action>
-  <action name="actionSmooth">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Smooth</string>
    </property>
   </action>
   <action name="actionResetLight">
@@ -294,6 +124,14 @@
   <action name="actionGPU">
    <property name="text">
     <string>GPU</string>
+   </property>
+  </action>
+  <action name="actionAntialiasing">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Antialiasing</string>
    </property>
   </action>
  </widget>
