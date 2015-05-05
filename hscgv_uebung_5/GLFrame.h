@@ -12,6 +12,28 @@
 
 #include <QGLWidget>
 #include <QTime>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <qdebug.h>
+
+#ifdef NDEBUG
+#define CHECKGL
+#else
+inline bool checkGL(const char *label, int line)
+{
+    GLenum err = glGetError();
+    if(err == GL_NO_ERROR)
+        return true;
+
+    qDebug() << "GL error -" << label << line << (char*)gluErrorString(err);
+    return false;
+}
+#ifdef _WIN32
+#define CHECKGL do { checkGL(__FUNCTION__, __LINE__); } while(0)
+#else
+#define CHECKGL do { checkGL(__PRETTY_FUNCTION__, __LINE__); } while(0)
+#endif
+#endif
 
 class QMouseEvent;
 
