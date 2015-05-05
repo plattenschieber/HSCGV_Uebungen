@@ -90,13 +90,6 @@ void GLFrame::loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-    // generate the texture
-    unsigned char num[4*3] = { 0x0, 0x0, 0x0,
-                      0xff, 0xff, 0xff,
-                      0xff, 0xff, 0xff,
-                      0x0, 0x0, 0x0 };
-
-    unsigned char num2[2*2] = { 0xff, 56, 128, 0x0};
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)m_userData);CHECKGL;
 
 }
