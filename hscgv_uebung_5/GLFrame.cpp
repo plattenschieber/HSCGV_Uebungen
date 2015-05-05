@@ -18,8 +18,7 @@
 #include "GLFrame.h"
 
 
-
-GLFrame::GLFrame(QWidget *parent)
+GLFrame::GLFrame(ApplicationWindow *parent)
 : QGLWidget(parent)
 , m_axesVisible(true)
 , m_modelVisible(true)
@@ -45,7 +44,7 @@ GLFrame::GLFrame(QWidget *parent)
     setFormat(format);
 
     // add user data
-    m_userData = property("myData").value<unsigned char *>();
+    m_userData = parent->m_userData;
 
     // make the above state active
     resetCam();
@@ -83,9 +82,9 @@ void GLFrame::loadTexture()
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     // when texture area is small, bilinear filter the closest MIP map
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     // when texture area is large, bilinear filter the first MIP map
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
     // the texture ends at the edges (clamp)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
@@ -98,7 +97,7 @@ void GLFrame::loadTexture()
                       0x0, 0x0, 0x0 };
 
     unsigned char num2[2*2] = { 0xff, 56, 128, 0x0};
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)num);CHECKGL;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)m_userData);CHECKGL;
 
 }
 

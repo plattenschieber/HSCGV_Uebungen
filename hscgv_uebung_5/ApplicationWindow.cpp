@@ -21,14 +21,10 @@
 #include "ApplicationWindow.h"
 
 // create an application window
-ApplicationWindow::ApplicationWindow()
+ApplicationWindow::ApplicationWindow(const unsigned char *userData)
 {
     ui.setupUi(this);
-
-    // setup user data
-    QVariant v = this->property("myData");
-    unsigned char* test = v.value<unsigned char *>();
-    m_frame->setProperty("myData", this->property("myData"));
+    m_userData = userData;
 
     // set center widget
     m_frame = new GLFrame(this);

@@ -37,6 +37,9 @@ inline bool checkGL(const char *label, int line)
 #endif
 #endif
 
+#include "ApplicationWindow.h"
+class ApplicationWindow;
+
 class QMouseEvent;
 
 class GeoObject;
@@ -54,7 +57,7 @@ class GLFrame : public QGLWidget
 
 public:
     //! create a new GLFrame
-    GLFrame(QWidget *parent=0);
+    GLFrame(ApplicationWindow *parent=0);
     //! destroy an OGL Frame
     virtual ~GLFrame();
 
@@ -179,7 +182,7 @@ protected:
     QTime m_time;
 
     //! user data
-    unsigned char* m_userData;
+    const unsigned char* m_userData;
 
 };
 

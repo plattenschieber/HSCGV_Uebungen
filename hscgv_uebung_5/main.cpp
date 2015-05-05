@@ -113,12 +113,7 @@ int startWindow(int argc, char *argv[], const unsigned char* myData)
 
     // create main widget of our application.
     // you have to pass the application object.
-    ApplicationWindow *win = new ApplicationWindow();
-    win->setProperty("myData", myData);
-
-    QVariant test = win->property("myData");
-    unsigned char * testchar = test.value<unsigned char*>();
-    fprintf(stderr, "%c", testchar[0]);
+    ApplicationWindow *win = new ApplicationWindow(myData);
 
     // set an initial size of the main window (not too small)
     win->resize(500,300);
