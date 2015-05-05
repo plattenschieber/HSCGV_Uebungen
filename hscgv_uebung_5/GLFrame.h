@@ -16,6 +16,8 @@
 #include <OpenGL/glu.h>
 #include <qdebug.h>
 
+Q_DECLARE_METATYPE(unsigned char *)
+
 #ifdef NDEBUG
 #define CHECKGL
 #else
@@ -175,6 +177,9 @@ protected:
 
     //! timer for Time shader parameter
     QTime m_time;
+
+    //! user data
+    unsigned char* m_userData;
 
 };
 

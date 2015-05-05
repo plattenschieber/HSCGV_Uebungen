@@ -44,6 +44,8 @@ GLFrame::GLFrame(QWidget *parent)
     // try to enable format
     setFormat(format);
 
+    // add user data
+    m_userData = property("myData").value<unsigned char *>();
 
     // make the above state active
     resetCam();

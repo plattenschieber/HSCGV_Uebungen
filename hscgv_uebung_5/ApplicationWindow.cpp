@@ -25,6 +25,11 @@ ApplicationWindow::ApplicationWindow()
 {
     ui.setupUi(this);
 
+    // setup user data
+    QVariant v = this->property("myData");
+    unsigned char* test = v.value<unsigned char *>();
+    m_frame->setProperty("myData", this->property("myData"));
+
     // set center widget
     m_frame = new GLFrame(this);
     setCentralWidget(m_frame);

@@ -101,7 +101,7 @@ extern std::vector<LightObject*>         g_lightList;
 //! the list of surface properties of the objects
 extern std::vector<GeoObjectProperties*> g_propList;
 
-int startWindow(int argc, char *argv[])
+int startWindow(int argc, char *argv[], const unsigned char* myData)
 {
     // use true color visual on SGIs
     QApplication::setColorSpec(QApplication::ManyColor);
@@ -114,6 +114,11 @@ int startWindow(int argc, char *argv[])
     // create main widget of our application.
     // you have to pass the application object.
     ApplicationWindow *win = new ApplicationWindow();
+    win->setProperty("myData", myData);
+
+    QVariant test = win->property("myData");
+    unsigned char * testchar = test.value<unsigned char*>();
+    fprintf(stderr, "%c", testchar[0]);
 
     // set an initial size of the main window (not too small)
     win->resize(500,300);
@@ -300,7 +305,7 @@ main (int argc, char *argv[])
    fprintf(stderr,"\ndone\n");
 
    // start visualization
-   startWindow(argc, argv);
+   startWindow(argc, argv, data);
    // clean up
    fclose(outfile);
    cleanUp();
