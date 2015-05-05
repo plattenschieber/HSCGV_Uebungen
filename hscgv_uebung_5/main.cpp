@@ -149,7 +149,6 @@ int startWindow(int argc, char *argv[])
 int
 main (int argc, char *argv[])
 {
-   startWindow(argc, argv);
    int c;
    bool haveFilename = false, antialiasing = false;
    char filename[MAXNAMLEN - 5] = "";
