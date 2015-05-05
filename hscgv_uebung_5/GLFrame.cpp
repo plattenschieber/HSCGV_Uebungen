@@ -500,12 +500,17 @@ void GLFrame::drawScene()
 
        glMatrixMode(GL_PROJECTION);
        glPushMatrix();
+//       glLoadIdentity();
        glMatrixMode(GL_MODELVIEW);
        glPushMatrix();
+//       glLoadIdentity();
 
+//       glActiveTexture(GL_TEXTURE0);
        glBindTexture(GL_TEXTURE_2D, m_texHandle);
 
        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+       // set to red
+    glColor3f(1.0,0.0,.0);
 
        glBegin(GL_QUADS);
        glTexCoord2f(0.0f, 0.0f); glVertex2f(-0.50f, -0.5f);
