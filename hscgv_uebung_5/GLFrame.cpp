@@ -68,6 +68,25 @@ void GLFrame::initializeGL()
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glEnable(GL_DEPTH_TEST);
+void GLFrame::loadTexture()
+{
+
+    // allocate a texture name
+    glGenTextures( 1, &m_texHandle );CHECKGL;
+
+    // select our current texture
+    glBindTexture( GL_TEXTURE_2D, m_texHandle );
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    // when texture area is small, bilinear filter the closest MIP map
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    // when texture area is large, bilinear filter the first MIP map
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+
+    // the texture ends at the edges (clamp)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
 }
 
 

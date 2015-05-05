@@ -111,6 +111,9 @@ protected:
     //! draw a representation for the light source
     void drawLight();
 
+    //! load current raytracing scene into texture
+    void loadTexture();
+
     // ---- More Drawing and Interaction Handling ----
 
     //! adjust the camera according to the mouse action
@@ -151,6 +154,8 @@ protected:
 
     // what to draw
     
+    //! the currently used texture cache
+    GLuint m_texHandle;
     //! axes visibility
     bool m_axesVisible;
     //! model visibility
