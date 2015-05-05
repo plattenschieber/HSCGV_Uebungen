@@ -94,7 +94,7 @@ void GLFrame::loadTexture()
                       0x0, 0x0, 0x0 };
 
     unsigned char num2[2*2] = { 0xff, 56, 128, 0x0};
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)m_userData);CHECKGL;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)num);CHECKGL;
 
 }
 
