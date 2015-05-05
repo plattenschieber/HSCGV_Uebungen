@@ -166,6 +166,9 @@ void GLFrame::paintGL()
     }
 
     glPopMatrix();
+    // here we have the raytraced scene
+    loadTexture();
+    drawScene();
 
     // draw transparent light source last
     glPushMatrix();
