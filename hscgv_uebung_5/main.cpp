@@ -206,6 +206,9 @@ main (int argc, char *argv[])
 
    fprintf(stderr,"%s rendering %s:\n",argv[0],outfilename);
 
+   // prepare byte stream for rgb data
+   unsigned char * data;
+   data = (unsigned char*)malloc( sizeof(unsigned char) * g_scene.picture.Xresolution * g_scene.picture.Yresolution * 3 );
 
    // TODO take view parameters from file into account and remove hardcoded values
    // setup viewport, its origin is bottom left
@@ -284,6 +287,10 @@ main (int argc, char *argv[])
          // write the clamped color to the output file
          fprintf(outfile,"%4d %4d %4d ",cCol[0],cCol[1],cCol[2]);
 
+         int index = 3*((sy-1) * g_scene.picture.Xresolution + sx);
+         data[index + 0] = (char)cCol[0];
+         data[index + 1] = (char)cCol[1];
+         data[index + 2] = (char)cCol[2];
       } // foreach x
 
       fprintf(outfile,"\n");
@@ -292,6 +299,8 @@ main (int argc, char *argv[])
 
    fprintf(stderr,"\ndone\n");
 
+   // start visualization
+   startWindow(argc, argv);
    // clean up
    fclose(outfile);
    cleanUp();
