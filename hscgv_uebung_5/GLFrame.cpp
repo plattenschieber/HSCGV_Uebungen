@@ -499,10 +499,10 @@ void GLFrame::drawScene()
 
        glMatrixMode(GL_PROJECTION);
        glPushMatrix();
-//       glLoadIdentity();
+       glLoadIdentity();
        glMatrixMode(GL_MODELVIEW);
        glPushMatrix();
-//       glLoadIdentity();
+       glLoadIdentity();
 
 //       glActiveTexture(GL_TEXTURE0);
        glBindTexture(GL_TEXTURE_2D, m_texHandle);
@@ -512,10 +512,10 @@ void GLFrame::drawScene()
     glColor3f(1.0,0.0,.0);
 
        glBegin(GL_QUADS);
-       glTexCoord2f(0.0f, 0.0f); glVertex2f(-0.50f, -0.5f);
-       glTexCoord2f(1.0f, 0.0f); glVertex2f( 0.50f, -0.5f);
-       glTexCoord2f(1.0f, 1.0f); glVertex2f( 0.50f,  0.5f);
-       glTexCoord2f(0.0f, 1.0f); glVertex2f(-0.50f,  0.5f);
+       glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.00f, -1.0f);
+       glTexCoord2f(1.0f, 0.0f); glVertex2f( 1.00f, -1.0f);
+       glTexCoord2f(1.0f, 1.0f); glVertex2f( 1.00f,  1.0f);
+       glTexCoord2f(0.0f, 1.0f); glVertex2f(-1.00f,  1.0f);
        glEnd();
 
        glMatrixMode(GL_PROJECTION);
