@@ -111,6 +111,9 @@ protected:
     //! draw a representation for the light source
     void drawLight();
 
+    //! draws a quad where we will paint the raytracing scene
+    void drawScene();
+
     //! load current raytracing scene into texture
     void loadTexture();
 

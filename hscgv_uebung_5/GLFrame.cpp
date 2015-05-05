@@ -491,6 +491,40 @@ void GLFrame::drawLight()
     glDisable(GL_CULL_FACE);
 }
 
+void GLFrame::drawScene()
+{
+
+    // setup texture mapping
+    glEnable( GL_TEXTURE_2D );
+    glPushAttrib(GL_TEXTURE_BIT | GL_TRANSFORM_BIT);
+
+       glMatrixMode(GL_PROJECTION);
+       glPushMatrix();
+       glMatrixMode(GL_MODELVIEW);
+       glPushMatrix();
+
+       glBindTexture(GL_TEXTURE_2D, m_texHandle);
+
+       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+       glBegin(GL_QUADS);
+       glTexCoord2f(0.0f, 0.0f); glVertex2f(-0.50f, -0.5f);
+       glTexCoord2f(1.0f, 0.0f); glVertex2f( 0.50f, -0.5f);
+       glTexCoord2f(1.0f, 1.0f); glVertex2f( 0.50f,  0.5f);
+       glTexCoord2f(0.0f, 1.0f); glVertex2f(-0.50f,  0.5f);
+       glEnd();
+
+       glMatrixMode(GL_PROJECTION);
+       glPopMatrix();
+       glMatrixMode(GL_MODELVIEW);
+       glPopMatrix();
+
+       glPopAttrib();
+
+
+       glDeleteTextures(1, &m_texHandle);
+}
+
 // draw model
 void GLFrame::drawModel(RenderMode mode)
 {
