@@ -19,6 +19,10 @@
 #include "param.h"
 #include "types.h"
 
+// get definition of our application window class called ApplicationWindow
+#include "ApplicationWindow.h"
+#include <QApplication>
+
 #ifndef M_PI
 #define M_PI 3.1415927
 #endif
@@ -97,6 +101,42 @@ extern std::vector<LightObject*>         g_lightList;
 //! the list of surface properties of the objects
 extern std::vector<GeoObjectProperties*> g_propList;
 
+int startWindow(int argc, char *argv[], const unsigned char* myData)
+{
+    // use true color visual on SGIs
+    QApplication::setColorSpec(QApplication::ManyColor);
+
+    // create application object and pass all the arguments.
+    // this will filter out all Qt-relevant commands and returns
+    // a modified command line (containing your options).
+    QApplication app(argc,argv);
+
+    // create main widget of our application.
+    // you have to pass the application object.
+    ApplicationWindow *win = new ApplicationWindow(myData);
+
+    // set an initial size of the main window (not too small)
+    win->resize(500,300);
+
+    // show the window
+    win->show();
+
+    // if the last window (here the app window) gets closed by the
+    // user (i.e. by clicking on the close button of the window frame) then
+    // the window will emit a "lastWindowClosed" signal. We connect this
+    // signal with the "quit" slot of the application object. On quit the
+    // application will leave the event loop started below.
+    app.connect( &app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()) );
+
+    // enter main event loop of the Qt application object.
+    // this object will reveive all mesages from the GUI and pass them
+    // along to our widgets (e.g. the main application window). These
+    // events are called signals and they trigger the slot-methods they
+    // are connected to.
+    // if you trigger the "quit" slot of the application object then the
+    // method call will return.
+    return app.exec();
+}
 
 // Description:
 /*!
@@ -166,6 +206,9 @@ main (int argc, char *argv[])
 
    fprintf(stderr,"%s rendering %s:\n",argv[0],outfilename);
 
+   // prepare byte stream for rgb data
+   unsigned char * data;
+   data = (unsigned char*)malloc( sizeof(unsigned char) * g_scene.picture.Xresolution * g_scene.picture.Yresolution * 3 );
 
    // TODO take view parameters from file into account and remove hardcoded values
    // setup viewport, its origin is bottom left
@@ -244,6 +287,10 @@ main (int argc, char *argv[])
          // write the clamped color to the output file
          fprintf(outfile,"%4d %4d %4d ",cCol[0],cCol[1],cCol[2]);
 
+         int index = 3*((sy-1) * g_scene.picture.Xresolution + sx);
+         data[index + 0] = (char)cCol[0];
+         data[index + 1] = (char)cCol[1];
+         data[index + 2] = (char)cCol[2];
       } // foreach x
 
       fprintf(outfile,"\n");
@@ -252,6 +299,8 @@ main (int argc, char *argv[])
 
    fprintf(stderr,"\ndone\n");
 
+   // start visualization
+   startWindow(argc, argv, data);
    // clean up
    fclose(outfile);
    cleanUp();
