@@ -153,9 +153,7 @@ void GLFrame::paintGL()
     switch(m_renderMode)
     {
     case CPU:
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         drawModel(m_renderMode);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         break;
     case GPU:
         drawModel(m_renderMode);
