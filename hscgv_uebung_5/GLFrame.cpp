@@ -160,8 +160,6 @@ void GLFrame::paintGL()
         break;
     }
 
-    glPopMatrix();
-    // here we have the raytraced scene
     loadTexture();
     drawScene();
 
@@ -494,7 +492,6 @@ void GLFrame::drawScene()
 
     // setup texture mapping
     glEnable( GL_TEXTURE_2D );
-    glPushAttrib(GL_TEXTURE_BIT | GL_TRANSFORM_BIT);
 
        glMatrixMode(GL_PROJECTION);
        glPushMatrix();
@@ -503,12 +500,11 @@ void GLFrame::drawScene()
        glPushMatrix();
        glLoadIdentity();
 
-//       glActiveTexture(GL_TEXTURE0);
        glBindTexture(GL_TEXTURE_2D, m_texHandle);
 
        glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
        // set to red
-    glColor3f(1.0,0.0,.0);
+       glColor3f(1.0,0.0,.0);
 
        glBegin(GL_QUADS);
        glTexCoord2f(0.0f, 0.0f); glVertex2f(-1.00f, -1.0f);
@@ -521,9 +517,6 @@ void GLFrame::drawScene()
        glPopMatrix();
        glMatrixMode(GL_MODELVIEW);
        glPopMatrix();
-
-       glPopAttrib();
-
 
        glDeleteTextures(1, &m_texHandle);
 }
