@@ -90,7 +90,8 @@ void GLFrame::loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)m_userData);CHECKGL;
+    // TODO adaptive size
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600 , 600, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)m_userData);CHECKGL;
 
 }
 
