@@ -23,3 +23,5 @@ hscgv_uebung_3/input_yacc.*
 *.dvi
 *.out
 *.pdfsync
+
+*.bbl
