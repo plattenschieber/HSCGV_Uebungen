@@ -8,7 +8,7 @@
 
 // Description:
 // the connection to the parser
-extern int openSceneFile(char *s);
+extern int openSceneFile(const char *s);
 extern int closeSceneFile(void);
 extern int inputparse(void);
 extern int cleanUp(void);
@@ -19,7 +19,7 @@ extern int cleanUp(void);
   \param inputfile Filename of the scene
  */
 void
-ReadScene(char *inputfile)
+ReadScene(const char *inputfile)
 {
    openSceneFile(inputfile);
    inputparse();

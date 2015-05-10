@@ -107,7 +107,7 @@ static FILE *YYIN = NULL;
  * open a file for use by the parser
  */
 int 
-openSceneFile(char *sceneFile)
+openSceneFile(const char *sceneFile)
 {
   /* complain if something seems wrong */
   if ( YYIN != NULL ) {

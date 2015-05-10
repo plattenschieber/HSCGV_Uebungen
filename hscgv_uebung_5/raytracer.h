@@ -23,13 +23,13 @@
 class Raytracer
 {
 public:
-    Raytracer(char*, char*, bool);
+    Raytracer(const char* filename, bool antialiasing);
     void start();
 private:
-    char *filename;
     char *outfilename;
     bool antialiasing;
 
+    const char *m_filename;
 };
 
 #endif // RAYTRACER_H
