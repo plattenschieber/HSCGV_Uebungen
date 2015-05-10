@@ -34,9 +34,18 @@ extern std::vector<LightObject*>         g_lightList;
 //! the list of surface properties of the objects
 extern std::vector<GeoObjectProperties*> g_propList;
 
-Raytracer::Raytracer(char *filename, char *outfilename, bool antialiasing):filename(filename),
-    outfilename(outfilename),
-    antialiasing(antialiasing)
+Raytracer::Raytracer():
+    m_isFileLoaded(false),
+    m_filename(0),
+    m_antialiasing(false) {}
+Raytracer::Raytracer(bool antialiasing):
+    m_isFileLoaded(false),
+    m_filename(0),
+    m_antialiasing(antialiasing) {}
+Raytracer::Raytracer(const char *filename, bool antialiasing):
+    m_isFileLoaded(true),
+    m_filename(filename),
+    m_antialiasing(antialiasing)
 {
    // parse the input file
    ReadScene(m_filename);
