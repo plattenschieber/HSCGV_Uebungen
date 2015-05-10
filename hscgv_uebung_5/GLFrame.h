@@ -15,6 +15,7 @@
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <qdebug.h>
+#include "raytracer.h"
 
 Q_DECLARE_METATYPE(unsigned char *)
 
@@ -81,8 +82,8 @@ public slots:
     void resetCam();
     //! reset light to default values
     void resetLight();
-    //! read model file
-    void loadModel(const QString &filename);
+    //! read scene file
+    void loadScene(const QString &filename);
 protected:
 
     // ---- OGLWidget Basic Methods ----
@@ -110,14 +111,14 @@ protected:
     //! draw the coordinate system with OpenGL
     void drawCoordSys();
 
-    //! draw model
-    void drawModel(RenderMode mode);
-
     //! draw a representation for the light source
     void drawLight();
 
-    //! draws a quad where we will paint the raytracing scene
-    void drawScene();
+    //! draws a quad where we will paint the raytracing scene in a texture
+    void drawFullScreenQuad();
+
+    //! draw scene
+    void drawScene(RenderMode mode);
 
     //! load current raytracing scene into texture
     void loadTexture();
@@ -172,8 +173,8 @@ protected:
     //! counter for displaying FPS
     unsigned int m_frameCounter;
 
-    //! currently loaded model
-    GeoObject *m_model;
+    //! currently loaded scene
+    Raytracer *m_raytracer;
 
     //! how our model is to be drawn
     RenderMode m_renderMode;
@@ -183,7 +184,6 @@ protected:
 
     //! user data
     const unsigned char* m_userData;
-
 };
 
 #endif

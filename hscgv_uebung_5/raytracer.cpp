@@ -38,14 +38,12 @@ Raytracer::Raytracer(char *filename, char *outfilename, bool antialiasing):filen
     outfilename(outfilename),
     antialiasing(antialiasing)
 {
+   // parse the input file
+   ReadScene(m_filename);
 }
 
 void
 Raytracer::start() {
-
-   // parse the input file
-   ReadScene(filename);
-
    unsigned int maxColVal   = 255;
 
    unsigned int cCol[3];
@@ -102,7 +100,7 @@ Raytracer::start() {
          Color col = theRay.shade();
 
          // in case we are using antialiasing, calculate the color of this pixel by averaging
-         if (antialiasing) {
+         if (m_antialiasing) {
                // scale the midpoint color since we are going to use 5 points to average our color
                col *= 0.2;
 

@@ -23,7 +23,7 @@ GLFrame::GLFrame(ApplicationWindow *parent)
 , m_axesVisible(true)
 , m_modelVisible(true)
 , m_frameCounter(0)
-, m_model(NULL)
+, m_raytracer(NULL)
 , m_renderMode(CPU)
 {
     // set minium size of rendering area
@@ -151,15 +151,15 @@ void GLFrame::paintGL()
     switch(m_renderMode)
     {
     case CPU:
-        drawModel(m_renderMode);
+        drawScene(m_renderMode);
         break;
     case GPU:
-        drawModel(m_renderMode);
+        drawScene(m_renderMode);
         break;
     }
 
     loadTexture();
-    drawScene();
+    drawFullScreenQuad();
 
     // draw transparent light source last
     glPushMatrix();
@@ -485,7 +485,7 @@ void GLFrame::drawLight()
     glDisable(GL_CULL_FACE);
 }
 
-void GLFrame::drawScene()
+void GLFrame::drawFullScreenQuad()
 {
 
     // setup texture mapping
@@ -520,9 +520,9 @@ void GLFrame::drawScene()
 }
 
 // draw model
-void GLFrame::drawModel(RenderMode mode)
+void GLFrame::drawScene(RenderMode mode)
 {
-    if(!m_model)
+    if(!m_raytracer->m_isFileLoaded)
         return;
 
     // TODO Draw Model/Scene
@@ -535,7 +535,7 @@ void GLFrame::drawModel(RenderMode mode)
     }
 }
 
-void GLFrame::loadModel(const QString &model)
+void GLFrame::loadScene(const QString &filename)
 {
 //    delete m_model;
 
