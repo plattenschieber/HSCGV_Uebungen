@@ -5,11 +5,13 @@ HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h pa
     geopolygon.h \
     ApplicationWindow.h \
     ui_ApplicationWindow.h \
-    GLFrame.h
+    GLFrame.h \
+    raytracer.h
 SOURCES=        geoobject.cpp geoquadric.cpp lightobject.cpp main.cpp ray.cpp \
     geopolygon.cpp \
     ApplicationWindow.cpp \
-    GLFrame.cpp
+    GLFrame.cpp \
+    raytracer.cpp
 win32:SOURCES*= xgetopt.cpp
 YACCSOURCES=    input.y
 
