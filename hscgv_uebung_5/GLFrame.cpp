@@ -76,6 +76,7 @@ void GLFrame::loadTexture()
 
     // select our current texture
     glBindTexture( GL_TEXTURE_2D, m_texHandle );
+    // important, since we store data in a contignous array (default is 4 bytes alignment)
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     // when texture area is small, bilinear filter the closest MIP map
