@@ -48,16 +48,6 @@ Raytracer::start() {
 
    unsigned int cCol[3];
 
-   // open output file
-   FILE *outfile;
-   if ( (outfile = fopen(outfilename,"w")) == NULL ) {
-      ERR("open out file failed");
-      exit(1);
-   }
-
-   // write header
-   fprintf(outfile,"P3\n%d %d\n%d\n",g_scene.picture.Xresolution,g_scene.picture.Yresolution,maxColVal);
-
    // prepare byte stream for rgb data
    unsigned char * data;
    data = (unsigned char*)malloc( sizeof(unsigned char) * g_scene.picture.Xresolution * g_scene.picture.Yresolution * 3 );
@@ -83,9 +73,6 @@ Raytracer::start() {
 
    // normal ray tracing: the color of the center of a pixel is computed
    for (unsigned int sy=g_scene.picture.Yresolution ; sy > 0 ; --sy) {
-
-      fprintf(stderr,"\rscanline %4d (%3d%%)",sy,(g_scene.picture.Yresolution-sy)*100/g_scene.picture.Yresolution);
-
       for (unsigned int sx=0 ; sx < g_scene.picture.Xresolution ; ++sx) {
          // the center of the pixel we are looking at right now
          Vec3d point = bottomLeft + deltaX*sx + deltaY*sy + deltaX/2 + deltaY/2;
@@ -136,9 +123,6 @@ Raytracer::start() {
                cCol[cc] = (unsigned int)(maxColVal * col[cc]);
          }
 
-         // write the clamped color to the output file
-         fprintf(outfile,"%4d %4d %4d ",cCol[0],cCol[1],cCol[2]);
-
          int index = 3*((sy-1) * g_scene.picture.Xresolution + sx);
          data[index + 0] = '\0';
          data[index + 1] = '\0';
@@ -147,15 +131,9 @@ Raytracer::start() {
 //         data[index + 1] = (char)cCol[1];
 //         data[index + 2] = (char)cCol[2];
       } // foreach x
-
-      fprintf(outfile,"\n");
-
    } // foreach y
 
-   fprintf(stderr,"\ndone\n");
-
    // clean up
-   fclose(outfile);
    cleanUp();
 
 }
