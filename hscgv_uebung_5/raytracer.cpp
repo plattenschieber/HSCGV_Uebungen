@@ -53,17 +53,16 @@ Raytracer::Raytracer(const char *filename, bool antialiasing):
 
 void
 Raytracer::start() {
+   // color clamp index
    unsigned int maxColVal   = 255;
-
+   // clamped RGB color
    unsigned int cCol[3];
 
    // prepare byte stream for rgb data
    unsigned char * data;
    data = (unsigned char*)malloc( sizeof(unsigned char) * g_scene.picture.Xresolution * g_scene.picture.Yresolution * 3 );
 
-   // TODO take view parameters from file into account and remove hardcoded values
    // setup viewport, its origin is bottom left
-
    // setup camera coordsys
    Vec3d eye_dir = (g_scene.view.lookat - g_scene.view.eyepoint).getNormalized();
    Vec3d eye_right = (eye_dir^g_scene.view.up).getNormalized();
@@ -108,17 +107,15 @@ Raytracer::start() {
                // |   o   |
                // | x   x |
                //  --------
-               for(float dx = -1/4.; dx <= 1/4.; dx+=1/2.)
-               {
-                 for(float dy = -1/4.; dy <= 1/4.; dy+=1/2.)
-                 {
-                   Vec3d superSamplePoint = point + deltaX*dx + deltaY*dy;
-                   Vec3d superSampleDir = superSamplePoint - g_scene.view.eyepoint;
+               for(float dx = -1/4.; dx <= 1/4.; dx+=1/2.) {
+                   for(float dy = -1/4.; dy <= 1/4.; dy+=1/2.) {
+                       Vec3d superSamplePoint = point + deltaX*dx + deltaY*dy;
+                       Vec3d superSampleDir = superSamplePoint - g_scene.view.eyepoint;
 
-                   // create ray from view.eyepoint to view.lookat
-                   Ray theRay(g_scene.view.eyepoint,superSampleDir.getNormalized(),0,g_objectList,g_lightList);
-                   col += theRay.shade()*0.2;//color, recursive_ray_trace(eye, ray, 0));
-                 }
+                       // create ray from view.eyepoint to view.lookat
+                       Ray theRay(g_scene.view.eyepoint,superSampleDir.getNormalized(),0,g_objectList,g_lightList);
+                       col += theRay.shade()*0.2;//color, recursive_ray_trace(eye, ray, 0));
+                   }
                }
          }
 
@@ -133,12 +130,9 @@ Raytracer::start() {
          }
 
          int index = 3*((sy-1) * g_scene.picture.Xresolution + sx);
-         data[index + 0] = '\0';
-         data[index + 1] = '\0';
-         data[index + 2] = '\0';
-//         data[index + 0] = (char)cCol[0];
-//         data[index + 1] = (char)cCol[1];
-//         data[index + 2] = (char)cCol[2];
+         data[index + 0] = (char)cCol[0];
+         data[index + 1] = (char)cCol[1];
+         data[index + 2] = (char)cCol[2];
       } // foreach x
    } // foreach y
 
