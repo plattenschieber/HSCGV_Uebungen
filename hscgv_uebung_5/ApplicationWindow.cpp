@@ -21,10 +21,9 @@
 #include "ApplicationWindow.h"
 
 // create an application window
-ApplicationWindow::ApplicationWindow(const unsigned char *userData)
+ApplicationWindow::ApplicationWindow()
 {
     ui.setupUi(this);
-    m_userData = userData;
 
     // set center widget
     m_frame = new GLFrame(this);

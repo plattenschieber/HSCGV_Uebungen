@@ -45,13 +45,10 @@ class ApplicationWindow : public QMainWindow
     public:
 
         //! create an application window and pass the application object
-        ApplicationWindow(const unsigned char * userData);
+        ApplicationWindow();
 
         //! destroy application window
         virtual ~ApplicationWindow();
-
-        //! user data
-        const unsigned char* m_userData;
 
     // ----- signal definitions for our Application -----
     signals:

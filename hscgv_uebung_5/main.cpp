@@ -113,7 +113,7 @@ int startWindow(int argc, char *argv[], const unsigned char* myData)
 
     // create main widget of our application.
     // you have to pass the application object.
-    ApplicationWindow *win = new ApplicationWindow(myData);
+    ApplicationWindow *win = new ApplicationWindow();
 
     // set an initial size of the main window (not too small)
     win->resize(500,300);

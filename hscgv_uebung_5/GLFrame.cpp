@@ -43,9 +43,6 @@ GLFrame::GLFrame(ApplicationWindow *parent)
     // try to enable format
     setFormat(format);
 
-    // add user data
-    m_userData = parent->m_userData;
-
     // make the above state active
     resetCam();
 
