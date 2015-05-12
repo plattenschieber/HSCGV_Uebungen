@@ -13,7 +13,7 @@ OTHER_FILES += \
     freestyle.vsh \
     freestyle.fsh
 
-unix:LIBS *= -lGLEW
+unix:LIBS *= -lGLEW -lglut
 
 macx {
 LIBS *= -lGLEW -L/usr/local/opt/glew/lib

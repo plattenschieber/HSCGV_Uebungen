@@ -31,13 +31,6 @@
 // ----- the program starts here -----
 int main(int argc,char **argv)
 {
-    // make fscanf work (use decimal point ".")
-    if(putenv((char *)"LC_NUMERIC=C") == -1)
-    {
-        perror("failed to set LC_NUMERIC to C");
-        return 1;
-    }
-
     // use true color visual on SGIs
     QApplication::setColorSpec(QApplication::ManyColor);
 
