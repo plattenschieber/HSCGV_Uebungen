@@ -52,6 +52,7 @@ GLFrame::GLFrame(ApplicationWindow *parent)
 
 GLFrame::~GLFrame()
 {
+    glDeleteTextures(1, &m_texHandle);
 }
 
 // ---------------------------- Basic OpenGL Widget Methods ------------------
@@ -66,14 +67,12 @@ void GLFrame::initializeGL()
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
     glEnable(GL_DEPTH_TEST);
+    // allocate a texture name
+    glGenTextures( 1, &m_texHandle );CHECKGL;
 }
 
 void GLFrame::loadTexture()
 {
-
-    // allocate a texture name
-    glGenTextures( 1, &m_texHandle );CHECKGL;
-
     // select our current texture
     glBindTexture( GL_TEXTURE_2D, m_texHandle );
     // important, since we store data in a contignous array (default is 4 bytes alignment)
@@ -89,7 +88,9 @@ void GLFrame::loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
     // TODO adaptive size
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600 , 600, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)m_userData);CHECKGL;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600 , 600, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)m_data);CHECKGL;
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 
 }
 
@@ -516,19 +517,21 @@ void GLFrame::drawFullScreenQuad()
        glMatrixMode(GL_MODELVIEW);
        glPopMatrix();
 
-       glDeleteTextures(1, &m_texHandle);
 }
 
 // draw model
 void GLFrame::drawScene(RenderMode mode)
 {
-    if(!m_raytracer->m_isFileLoaded)
+    if(!m_raytracer || !m_raytracer->m_isFileLoaded)
         return;
 
-    // TODO Draw Model/Scene
+    // Draw Model/Scene
     switch(mode)
     {
         case CPU:
+            m_data = (float*)malloc(sizeof(float) * 3 * m_height * m_width);
+            m_raytracer->start(m_data);
+            free(m_data);
             break;
         case GPU:
             break;
@@ -537,12 +540,10 @@ void GLFrame::drawScene(RenderMode mode)
 
 void GLFrame::loadScene(const QString &filename)
 {
-//    delete m_model;
+    delete m_raytracer;
 
-//    m_model = new GeoObject();
-//    connect(m_model, SIGNAL(info(QString)), this, SIGNAL(info(QString)));
-//    m_model->read(model);
-//    updateGL();
+    m_raytracer = new Raytracer(filename.toStdString().c_str(),false);
+    updateGL();
 }
 
 int GLFrame::frameCounter() const

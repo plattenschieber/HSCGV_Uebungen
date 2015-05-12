@@ -175,15 +175,13 @@ protected:
 
     //! currently loaded scene
     Raytracer *m_raytracer;
+    float* m_data;
 
     //! how our model is to be drawn
     RenderMode m_renderMode;
 
     //! timer for Time shader parameter
     QTime m_time;
-
-    //! user data
-    const unsigned char* m_userData;
 };
 
 #endif
