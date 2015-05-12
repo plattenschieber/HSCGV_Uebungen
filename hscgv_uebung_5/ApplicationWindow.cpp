@@ -71,6 +71,12 @@ ApplicationWindow::ApplicationWindow()
     connect(m_trigger, SIGNAL(timeout()), m_frame, SLOT(updateGL()));
 
     initState();
+
+    // load standard scene
+//    if(qApp->argc() > 1)
+//        loadFile(qApp->argv()[1]);
+//    else
+//        loadFile("REF1.data");
 }
 
 void ApplicationWindow::initState() const
