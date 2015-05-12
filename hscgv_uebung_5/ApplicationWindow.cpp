@@ -55,7 +55,7 @@ ApplicationWindow::ApplicationWindow()
     connect(this, SIGNAL(resetLight()), m_frame, SLOT(resetLight()));
 
     connect(ui.actionLoadFile, SIGNAL(triggered()), this, SLOT(loadFile()));
-    connect(this, SIGNAL(openFile(const QString&)), m_frame, SLOT(loadModel(const QString&)));
+    connect(this, SIGNAL(openFile(const QString&)), m_frame, SLOT(loadScene(const QString&)));
 
     connect(this, SIGNAL(renderMode(int)), m_frame, SLOT(setRenderMode(int)));
 
@@ -125,7 +125,7 @@ void ApplicationWindow::loadFile()
 {
     QString filename = QFileDialog::getOpenFileName(this,
             tr("Open Model File"), "",
-            tr("PLY Models (*.ply);;"
+            tr("Raytracing Scenes (*.data);;"
                 "All Files (*)"));
 
     if(!filename.isEmpty())
