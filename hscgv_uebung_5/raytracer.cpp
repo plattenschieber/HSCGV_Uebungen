@@ -52,16 +52,7 @@ Raytracer::Raytracer(const char *filename, bool antialiasing):
 }
 
 void
-Raytracer::start() {
-   // color clamp index
-   unsigned int maxColVal   = 255;
-   // clamped RGB color
-   unsigned int cCol[3];
-
-   // prepare byte stream for rgb data
-   unsigned char * data;
-   data = (unsigned char*)malloc( sizeof(unsigned char) * g_scene.picture.Xresolution * g_scene.picture.Yresolution * 3 );
-
+Raytracer::start(float *renderedScene) {
    // setup viewport, its origin is bottom left
    // setup camera coordsys
    Vec3d eye_dir = (g_scene.view.lookat - g_scene.view.eyepoint).getNormalized();
@@ -119,20 +110,10 @@ Raytracer::start() {
                }
          }
 
-         // clamp the computed color value to 0...maxColVal
-         for (unsigned int cc=0; cc<3; cc++) {
-            if(col[cc] < 0.0)
-               cCol[cc] = 0;
-            else if(col[cc] > 1.0)
-               cCol[cc] = maxColVal;
-            else
-               cCol[cc] = (unsigned int)(maxColVal * col[cc]);
-         }
-
          int index = 3*((sy-1) * g_scene.picture.Xresolution + sx);
-         data[index + 0] = (char)cCol[0];
-         data[index + 1] = (char)cCol[1];
-         data[index + 2] = (char)cCol[2];
+         renderedScene[index + 0] = col[0];
+         renderedScene[index + 1] = col[1];
+         renderedScene[index + 2] = col[2];
       } // foreach x
    } // foreach y
 
