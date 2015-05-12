@@ -10,10 +10,10 @@
 #ifndef GLFRAME_H
 #define GLFRAME_H
 
+#include <GL/glew.h>
+#include <GL/glu.h>
 #include <QGLWidget>
 #include <QTime>
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
 #include <qdebug.h>
 #include "raytracer.h"
 

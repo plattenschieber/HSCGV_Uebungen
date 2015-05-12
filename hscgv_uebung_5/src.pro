@@ -4,7 +4,6 @@ QT *=  opengl
 HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h param.h \
     geopolygon.h \
     ApplicationWindow.h \
-    ui_ApplicationWindow.h \
     GLFrame.h \
     raytracer.h
 SOURCES=        geoobject.cpp geoquadric.cpp lightobject.cpp main.cpp ray.cpp \
@@ -28,7 +27,7 @@ QMAKE_CXXFLAGS += -W -Wall
 FORMS += \
     ApplicationWindow.ui
 
-unix:LIBS *= -lGLEW
+unix:LIBS *= -lGLEW -lglut -lGLU
 
 macx {
 LIBS *= -lGLEW -L/usr/local/opt/glew/lib
