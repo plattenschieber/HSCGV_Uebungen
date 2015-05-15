@@ -25,6 +25,7 @@ GLFrame::GLFrame(ApplicationWindow *parent)
 , m_modelVisible(true)
 , m_frameCounter(0)
 , m_raytracer(NULL)
+, m_raytracingNeeded(false)
 , m_renderMode(CPU)
 {
     // set minium size of rendering area
@@ -104,6 +105,7 @@ void GLFrame::resizeGL(int w, int h)
     m_height = h;
 
     glViewport(0, 0, (GLint)w, (GLint)h);
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -197,6 +199,7 @@ void GLFrame::mouseMoveEvent(QMouseEvent *m)
     m_lastMouseY = mouseY;
 
     // force openGL to redraw the changes
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -208,6 +211,7 @@ void GLFrame::wheelEvent(QWheelEvent *ev)
     else
         adjustCam(false, false, true, 0, -0.001*ev->delta());
 
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -357,6 +361,8 @@ void GLFrame::adjustLight(bool leftButton, bool middleButton, bool rightButton,
         matMult(inc, invCam, inc);
         matMult(m_lightRot, inc, m_lightRot);
     }
+    // TODO
+    m_raytracingNeeded = true;
 }
 
 // interpret mouse movement in order to move the camera or adjust
@@ -402,12 +408,15 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
         if(m_fieldOfView > 160.0)
             m_fieldOfView = 160.0;
     }
+    // TODO
+    m_raytracingNeeded = true;
 }
 
 // notify when the drawMode should be changed
 void GLFrame::setRenderMode(int mode)
 {
     m_renderMode = (RenderMode)mode;
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -420,6 +429,7 @@ void GLFrame::setAxesVisibility(bool on)
 void GLFrame::setAntialiasing(bool on)
 {
     m_antialiasing = on;
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -430,6 +440,7 @@ void GLFrame::resetLight()
 
     matIdent(m_lightRot);
 
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -441,6 +452,7 @@ void GLFrame::resetCam()
     matIdent(m_camRot);
 
     m_fieldOfView = 15.0;
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -520,7 +532,7 @@ void GLFrame::drawFullScreenQuad()
 void GLFrame::renderScene(RenderMode mode)
 {
     // only render the scene if there is some intialized raytracer
-    if(!m_raytracer || !m_raytracer->m_isFileLoaded)
+    if(!m_raytracingNeeded || !m_raytracer || !m_raytracer->m_isFileLoaded)
         return;
 
     // draw scene
@@ -529,8 +541,8 @@ void GLFrame::renderScene(RenderMode mode)
         case CPU:
             m_data = (float*)malloc(sizeof(float) * 3 * m_width * m_height);
             m_raytracer->start(m_data, m_width, m_height);
+            m_raytracingNeeded = false;
             loadTexture();
-//            updateGL();
             break;
         case GPU:
             break;
@@ -547,6 +559,7 @@ void GLFrame::loadScene(const QString &filename)
 {
     delete m_raytracer;
     m_raytracer = new Raytracer(filename.toStdString().c_str(), m_antialiasing);
+    m_raytracingNeeded = true;
     loadViewFromData();
     updateGL();
 }

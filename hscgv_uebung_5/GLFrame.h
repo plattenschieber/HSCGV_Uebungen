@@ -187,6 +187,7 @@ protected:
 
     //! currently loaded scene
     Raytracer *m_raytracer;
+    bool m_raytracingNeeded;
     float* m_data;
 
     //! how our model is to be drawn
