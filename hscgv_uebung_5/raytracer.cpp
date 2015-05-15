@@ -50,6 +50,10 @@ Raytracer::Raytracer(const char *filename, bool antialiasing):
    ReadScene(m_filename);
    m_isFileLoaded = true;
 }
+Raytracer::~Raytracer() {
+   // clean up
+   cleanUp();
+}
 
 void
 Raytracer::start(float *renderedScene, int xRes, int yRes) {
@@ -116,8 +120,4 @@ Raytracer::start(float *renderedScene, int xRes, int yRes) {
          renderedScene[index + 2] = col[2];
       } // foreach x
    } // foreach y
-
-   // clean up
-   cleanUp();
-
 }
