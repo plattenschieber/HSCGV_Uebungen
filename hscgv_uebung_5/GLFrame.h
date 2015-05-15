@@ -10,8 +10,13 @@
 #ifndef GLFRAME_H
 #define GLFRAME_H
 
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#elif
 #include <GL/glew.h>
 #include <GL/glu.h>
+#endif
 #include <QGLWidget>
 #include <QTime>
 #include <qdebug.h>

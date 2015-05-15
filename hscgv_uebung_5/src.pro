@@ -27,7 +27,7 @@ QMAKE_CXXFLAGS += -W -Wall
 FORMS += \
     ApplicationWindow.ui
 
-unix:LIBS *= -lGLEW -lglut -lGLU
+unix:!macx:LIBS *= -lGLEW -lglut -lGLU
 
 macx {
 LIBS *= -lGLEW -L/usr/local/opt/glew/lib
