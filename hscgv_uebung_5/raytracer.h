@@ -26,7 +26,7 @@ public:
     Raytracer();
     Raytracer(bool antialiasing);
     Raytracer(const char* filename, bool antialiasing);
-    void start(float* renderedScene);
+    void start(float* renderedScene, int xRes, int yRes);
     bool m_isFileLoaded;
 private:
     const char *m_filename;

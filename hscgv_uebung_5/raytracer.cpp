@@ -43,16 +43,16 @@ Raytracer::Raytracer(bool antialiasing):
     m_filename(0),
     m_antialiasing(antialiasing) {}
 Raytracer::Raytracer(const char *filename, bool antialiasing):
-    m_isFileLoaded(true),
     m_filename(filename),
     m_antialiasing(antialiasing)
 {
    // parse the input file
    ReadScene(m_filename);
+   m_isFileLoaded = true;
 }
 
 void
-Raytracer::start(float *renderedScene) {
+Raytracer::start(float *renderedScene, int xRes, int yRes) {
    // setup viewport, its origin is bottom left
    // setup camera coordsys
    Vec3d eye_dir = (g_scene.view.lookat - g_scene.view.eyepoint).getNormalized();
@@ -64,15 +64,15 @@ Raytracer::start(float *renderedScene) {
     float width = height * g_scene.view.aspect;
 
     // compute delta steps in each direction
-    Vec3d deltaX = eye_right * (width / g_scene.picture.Xresolution);
-    Vec3d deltaY = eye_up * (height / g_scene.picture.Yresolution);
+    Vec3d deltaX = eye_right * (width / xRes);
+    Vec3d deltaY = eye_up * (height / yRes);
 
     // this should be bottom left
-    Vec3d bottomLeft = g_scene.view.eyepoint + eye_dir - deltaX*g_scene.picture.Xresolution/2 - deltaY*g_scene.picture.Yresolution/2;
+    Vec3d bottomLeft = g_scene.view.eyepoint + eye_dir - deltaX*xRes/2 - deltaY*yRes/2;
 
    // normal ray tracing: the color of the center of a pixel is computed
-   for (unsigned int sy=g_scene.picture.Yresolution ; sy > 0 ; --sy) {
-      for (unsigned int sx=0 ; sx < g_scene.picture.Xresolution ; ++sx) {
+   for (int sy=yRes ; sy > 0 ; --sy) {
+      for (int sx=0 ; sx < xRes ; ++sx) {
          // the center of the pixel we are looking at right now
          Vec3d point = bottomLeft + deltaX*sx + deltaY*sy + deltaX/2 + deltaY/2;
 
@@ -110,7 +110,7 @@ Raytracer::start(float *renderedScene) {
                }
          }
 
-         int index = 3*((sy-1) * g_scene.picture.Xresolution + sx);
+         int index = 3*((sy-1) * xRes + sx);
          renderedScene[index + 0] = col[0];
          renderedScene[index + 1] = col[1];
          renderedScene[index + 2] = col[2];
