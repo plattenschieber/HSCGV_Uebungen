@@ -89,8 +89,11 @@ void GLFrame::loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-    // TODO adaptive size
+    // move data into a texture
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT, (GLvoid*)m_data);CHECKGL;
+
+    // free data since its on the texture
+    free(m_data);
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -549,6 +552,7 @@ void GLFrame::renderScene(RenderMode mode)
     }
 }
 
+// TODO load initial position of camera, viewport etc.
 void GLFrame::loadViewFromData()
 {
 
