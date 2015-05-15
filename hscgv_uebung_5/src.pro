@@ -22,7 +22,8 @@ DEFINES         *= TRACE VERBOSE
 CONFIG          += debug
 CONFIG          -= release
 
-QMAKE_CXXFLAGS += -W -Wall
+QMAKE_CXXFLAGS += -W -Wall -fopenmp
+#QMAKE_LFLAGS += -fopenmp
 
 FORMS += \
     ApplicationWindow.ui

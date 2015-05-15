@@ -75,6 +75,7 @@ Raytracer::start(float *renderedScene, int xRes, int yRes) {
     Vec3d bottomLeft = g_scene.view.eyepoint + eye_dir - deltaX*xRes/2 - deltaY*yRes/2;
 
    // normal ray tracing: the color of the center of a pixel is computed
+   #pragma omp parallel for schedule(dynamic) collapse(2)
    for (int sy=yRes ; sy > 0 ; --sy) {
       for (int sx=0 ; sx < xRes ; ++sx) {
          // the center of the pixel we are looking at right now
