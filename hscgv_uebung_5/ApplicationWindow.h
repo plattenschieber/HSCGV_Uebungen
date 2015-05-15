@@ -96,14 +96,15 @@ class ApplicationWindow : public QMainWindow
         //! start and stop render timer
         void animate(bool on);
 
+        //! we want to have some nice output
+        void antialiasing(bool on);
+
         //! deduce render mode from menu state
         int getRenderMode() const;
 
         //! make sure that render mode signal is triggerd
         void renderModeChanged() const;
 
-        //! we want to have some nice output
-        void antialiasingChanged() const;
 
     private:
        //! store status bar message

@@ -41,10 +41,10 @@ ApplicationWindow::ApplicationWindow()
     connect(ui.actionResetLight, SIGNAL(triggered()), this, SIGNAL(resetLight()));
 
     connect(ui.actionAnimate, SIGNAL(toggled(bool)), this, SLOT(animate(bool)));
+    connect(ui.actionAntialiasing, SIGNAL(toggled(bool)), SLOT(antialiasing(bool)));
 
     connect(ui.actionCPU, SIGNAL(toggled(bool)), SLOT(renderModeChanged()));
     connect(ui.actionGPU, SIGNAL(toggled(bool)), SLOT(renderModeChanged()));
-    connect(ui.actionAntialiasing, SIGNAL(toggled(bool)), SLOT(antialiasingChanged()));
 
     // ----- SIGNALS -----
 
@@ -156,6 +156,10 @@ void ApplicationWindow::animate(bool on)
         m_trigger->stop();
 }
 
+void ApplicationWindow::antialiasing(bool on)
+{
+    m_frame->m_antialiasing = on;
+}
 
 int ApplicationWindow::getRenderMode() const
 {
@@ -170,8 +174,3 @@ void ApplicationWindow::renderModeChanged() const
     emit renderMode(getRenderMode());
 }
 
-void ApplicationWindow::antialiasingChanged() const
-{
-    // TODO: change to appropriate antialiasing set method
-    emit renderMode(getRenderMode());
-}
