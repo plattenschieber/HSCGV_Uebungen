@@ -20,6 +20,7 @@
 
 GLFrame::GLFrame(ApplicationWindow *parent)
 : QGLWidget(parent)
+, m_antialiasing(false)
 , m_axesVisible(true)
 , m_modelVisible(true)
 , m_frameCounter(0)
@@ -27,7 +28,7 @@ GLFrame::GLFrame(ApplicationWindow *parent)
 , m_renderMode(CPU)
 {
     // set minium size of rendering area
-    setMinimumSize(300,300);
+    setMinimumSize(150,150);
 
     // setup OpenGL buffers
     QGLFormat format;
@@ -88,7 +89,7 @@ void GLFrame::loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
     // TODO adaptive size
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600 , 600, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)m_data);CHECKGL;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT, (GLvoid*)m_data);CHECKGL;
 
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -149,17 +150,7 @@ void GLFrame::paintGL()
     if(m_axesVisible)
         drawCoordSys();
 
-    switch(m_renderMode)
-    {
-    case CPU:
-        drawScene(m_renderMode);
-        break;
-    case GPU:
-        drawScene(m_renderMode);
-        break;
-    }
-
-    loadTexture();
+    renderScene(m_renderMode);
     drawFullScreenQuad();
 
     // draw transparent light source last
@@ -426,6 +417,12 @@ void GLFrame::setAxesVisibility(bool on)
     updateGL();
 }
 
+void GLFrame::setAntialiasing(bool on)
+{
+    m_antialiasing = on;
+    updateGL();
+}
+
 // reset camera to default values
 void GLFrame::resetLight()
 {
@@ -519,30 +516,38 @@ void GLFrame::drawFullScreenQuad()
 
 }
 
-// draw model
-void GLFrame::drawScene(RenderMode mode)
+// render scene and save it into a texture
+void GLFrame::renderScene(RenderMode mode)
 {
+    // only render the scene if there is some intialized raytracer
     if(!m_raytracer || !m_raytracer->m_isFileLoaded)
         return;
 
-    // Draw Model/Scene
+    // draw scene
     switch(mode)
     {
         case CPU:
-            m_data = (float*)malloc(sizeof(float) * 3 * m_height * m_width);
-            m_raytracer->start(m_data);
-            free(m_data);
+            m_data = (float*)malloc(sizeof(float) * 3 * m_width * m_height);
+            m_raytracer->start(m_data, m_width, m_height);
+            loadTexture();
+//            updateGL();
             break;
         case GPU:
             break;
     }
 }
 
+void GLFrame::loadViewFromData()
+{
+
+
+}
+
 void GLFrame::loadScene(const QString &filename)
 {
     delete m_raytracer;
-
-    m_raytracer = new Raytracer(filename.toStdString().c_str(),false);
+    m_raytracer = new Raytracer(filename.toStdString().c_str(), m_antialiasing);
+    loadViewFromData();
     updateGL();
 }
 

@@ -68,6 +68,9 @@ public:
     //! accessor for frame counter
     int frameCounter() const;
 
+    //! antialiasing
+    bool m_antialiasing;
+
     // (Some Slots and Signals)
 signals:
     //! show some information to the user
@@ -78,12 +81,16 @@ public slots:
     void setRenderMode(int mode);
     //! set visibility of coordinate axes
     void setAxesVisibility(bool on);
+    //! set antialising
+    void setAntialiasing(bool on);
     //! reset camera to default values
     void resetCam();
     //! reset light to default values
     void resetLight();
     //! read scene file
     void loadScene(const QString &filename);
+    //! load the viewport, camera, position etc. into this frame
+    void loadViewFromData();
 protected:
 
     // ---- OGLWidget Basic Methods ----
@@ -118,7 +125,7 @@ protected:
     void drawFullScreenQuad();
 
     //! draw scene
-    void drawScene(RenderMode mode);
+    void renderScene(RenderMode mode);
 
     //! load current raytracing scene into texture
     void loadTexture();
