@@ -21,6 +21,7 @@
 #include <QTime>
 #include <qdebug.h>
 #include "raytracer.h"
+#include "param.h"
 
 Q_DECLARE_METATYPE(unsigned char *)
 

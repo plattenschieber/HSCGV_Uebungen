@@ -403,6 +403,9 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
     }
     else if(rightButton)
     {
+        // move eyepoint into scrolling direction
+        g_scene.view.eyepoint += Vec3d(.0,.0,dy*1000);
+
         // prevent negative fieldOfView
         if(dy < -0.5)
             dy = 0.5;
