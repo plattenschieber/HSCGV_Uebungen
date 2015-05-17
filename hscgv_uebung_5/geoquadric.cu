@@ -10,7 +10,7 @@
 
 // Description:
 // Constructor.
-GeoQuadric::GeoQuadric()
+ __host__ __device__ GeoQuadric::GeoQuadric()
 : m_a(0), m_b(0), m_c(0)
 , m_d(0), m_e(0), m_f(0)
 , m_g(0), m_h(0), m_j(0)
@@ -21,7 +21,7 @@ GeoQuadric::GeoQuadric()
 
 // Description:
 // explicit parametrization
-GeoQuadric::GeoQuadric(double na, double nb, double nc, double nd, double ne,
+ __host__ __device__ GeoQuadric::GeoQuadric(double na, double nb, double nc, double nd, double ne,
       double nf, double ng, double nh, double nj, double nk)
 : m_a(na), m_b(nb), m_c(nc)
 , m_d(nd), m_e(ne), m_f(nf)
@@ -33,14 +33,14 @@ GeoQuadric::GeoQuadric(double na, double nb, double nc, double nd, double ne,
 
 // Description:
 // Destructor.
-GeoQuadric::~GeoQuadric()
+ __host__ __device__ GeoQuadric::~GeoQuadric()
 {
 }
 
 
 // Description:
 // Return the normal vector at point v of this surface
-Vec3d
+Vec3d __host__ __device__
 GeoQuadric::getNormal(const Vec3d &v) const
 {
    Vec3d tmpvec( (v | Vec3d(2*m_a,m_b,m_c)) + m_d,
@@ -52,7 +52,7 @@ GeoQuadric::getNormal(const Vec3d &v) const
 // Description:
 // Compute intersection point on this surface
 // return distance to nearest intersection found or -1
-double
+double __host__ __device__
 GeoQuadric::intersect(const Ray &ray) const
 {
    double t = -1.0, acoef, bcoef, ccoef, root, disc;

@@ -8,30 +8,31 @@
 
 /* member access functions for GeoObjectProperties */
 
-Color GeoObjectProperties::ambient() const
+Color  __host__ __device__
+GeoObjectProperties::ambient() const
 {
    return m_ambient;
 }
 
-Vec3d
+Vec3d __host__ __device__
 GeoObjectProperties::reflectance() const
 {
    return m_reflectance;
 }
 
-double
+double __host__ __device__
 GeoObjectProperties::specular() const
 {
    return m_specular;
 }
 
-int
+int __host__ __device__
 GeoObjectProperties::specularExp() const
 {
    return m_specularExp;
 }
 
-double
+double __host__ __device__
 GeoObjectProperties::mirror() const
 {
    return m_mirror;
@@ -39,7 +40,8 @@ GeoObjectProperties::mirror() const
 
 /* access functions for the properties of a GeoObject */
 
-Color GeoObject::ambient() const
+Color __host__ __device__
+GeoObject::ambient() const
 {
     if (m_properties)
         return m_properties->ambient();
@@ -48,7 +50,7 @@ Color GeoObject::ambient() const
    return Vec3d(0.0);
 }
 
-Vec3d
+Vec3d __host__ __device__
 GeoObject::reflectance() const
 {
    if (m_properties)
@@ -58,7 +60,7 @@ GeoObject::reflectance() const
    return Vec3d(0.0);
 }
 
-double
+double __host__ __device__
 GeoObject::specular() const
 {
    if (m_properties)
@@ -68,7 +70,7 @@ GeoObject::specular() const
    return 0.0;
 }
 
-double
+double __host__ __device__
 GeoObject::specularExp() const
 {
    if (m_properties)
@@ -78,7 +80,7 @@ GeoObject::specularExp() const
    return 0.0;
 }
 
-double
+double __host__ __device__
 GeoObject::mirror() const
 {
    if (m_properties)
@@ -88,7 +90,7 @@ GeoObject::mirror() const
    return 0.0;
 }
 
-void
+void __host__ __device__
 GeoObject::setProperties(GeoObjectProperties *p)
 {
    m_properties = p;

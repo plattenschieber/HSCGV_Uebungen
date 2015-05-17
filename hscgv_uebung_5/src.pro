@@ -6,13 +6,18 @@ HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h pa
     ApplicationWindow.h \
     GLFrame.h \
     raytracer.h
-SOURCES=        geoobject.cpp geoquadric.cpp lightobject.cpp main.cpp ray.cpp \
+SOURCES=        lightobject.cpp main.cpp ray.cpp \
     geopolygon.cpp \
     ApplicationWindow.cpp \
     GLFrame.cpp \
     raytracer.cpp
 win32:SOURCES*= xgetopt.cpp
 YACCSOURCES=    input.y
+CUDA_SOURCES += \
+    raytracer.cu \
+    ray.cu \
+    geoobject.cu \
+    geoquadric.cu
 
 QMAKE_YACC              = bison
 QMAKE_YACCFLAGS         = -y -d
@@ -28,7 +33,10 @@ QMAKE_CXXFLAGS += -W -Wall -fopenmp
 FORMS += \
     ApplicationWindow.ui
 
-unix:!macx:LIBS *= -lGLEW -lglut -lGLU
+unix:!macx:{
+LIBS *= -lGLEW -lglut -lGLU
+include(cuda.pri)
+}
 
 macx {
 LIBS *= -lGLEW -L/usr/local/opt/glew/lib
@@ -42,3 +50,6 @@ INCLUDEPATH *= $$GLEWDIR/include
 DEFINES *= GLEW_STATIC
 LIBS *= -L$$GLEWDIR/lib -lglew32s
 }
+
+OTHER_FILES +=
+

@@ -425,6 +425,14 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
 void GLFrame::setRenderMode(int mode)
 {
     m_renderMode = (RenderMode)mode;
+
+    if(mode == CPU) {
+
+    }
+    else if (mode == GPU) {
+        // Todo: setup cuda (maybe earlier) and push all data to GPU
+    }
+
     m_raytracingNeeded = true;
     updateGL();
 }
