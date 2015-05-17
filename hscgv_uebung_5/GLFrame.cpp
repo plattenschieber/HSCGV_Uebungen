@@ -390,9 +390,7 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
             GLfloat inc[16];
             matRot(inc, a, d*5);
 
-            // multiply viewing transformation with incremental transformation
-            // to become the new viewing transformation
-            matMult(m_camRot, inc, m_camRot);
+            // multiply transformation matrix with eyepoint to get new perspective
             Vec3d eyeg = Vec3d(g_scene.view.eyepoint);
             GLfloat eye[4] = {eyeg[0],eyeg[1],eyeg[2],.0};
             matMult(eye, inc, eye);
@@ -420,7 +418,6 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
         if(m_fieldOfView > 160.0)
             m_fieldOfView = 160.0;
     }
-    // TODO
     m_raytracingNeeded = true;
 }
 
