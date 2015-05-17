@@ -129,7 +129,7 @@ protected:
     void drawFullScreenQuad();
 
     //! draw scene
-    void renderScene(RenderMode mode);
+    void renderScene();
 
     //! load current raytracing scene into texture
     void loadTexture();

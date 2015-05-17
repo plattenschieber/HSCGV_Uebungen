@@ -155,7 +155,7 @@ void GLFrame::paintGL()
     if(m_axesVisible)
         drawCoordSys();
 
-    renderScene(m_renderMode);
+    renderScene();
     drawFullScreenQuad();
 
     // draw transparent light source last
@@ -538,14 +538,14 @@ void GLFrame::drawFullScreenQuad()
 }
 
 // render scene and save it into a texture
-void GLFrame::renderScene(RenderMode mode)
+void GLFrame::renderScene()
 {
     // only render the scene if there is some intialized raytracer
     if(!m_raytracingNeeded || !m_raytracer || !m_raytracer->m_isFileLoaded)
         return;
 
     // draw scene
-    switch(mode)
+    switch(m_renderMode)
     {
         case CPU:
             m_data = (float*)malloc(sizeof(float) * 3 * m_width * m_height);
