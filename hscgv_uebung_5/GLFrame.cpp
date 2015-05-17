@@ -555,19 +555,12 @@ void GLFrame::renderScene(RenderMode mode)
     }
 }
 
-// TODO load initial position of camera, viewport etc.
-void GLFrame::loadViewFromData()
-{
-
-
-}
 
 void GLFrame::loadScene(const QString &filename)
 {
     delete m_raytracer;
     m_raytracer = new Raytracer(filename.toStdString().c_str(), m_antialiasing);
     m_raytracingNeeded = true;
-    loadViewFromData();
     updateGL();
 }
 

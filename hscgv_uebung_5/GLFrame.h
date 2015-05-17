@@ -95,8 +95,6 @@ public slots:
     void resetLight();
     //! read scene file
     void loadScene(const QString &filename);
-    //! load the viewport, camera, position etc. into this frame
-    void loadViewFromData();
 protected:
 
     // ---- OGLWidget Basic Methods ----
