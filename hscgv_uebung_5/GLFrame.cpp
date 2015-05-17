@@ -394,6 +394,12 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
             // multiply viewing transformation with incremental transformation
             // to become the new viewing transformation
             matMult(m_camRot, inc, m_camRot);
+            Vec3d eyeg = Vec3d(g_scene.view.eyepoint);
+            GLfloat eye[4] = {eyeg[0],eyeg[1],eyeg[2],.0};
+            matMult(eye, inc, eye);
+            for (int i=0;i<3;i++)
+                g_scene.view.eyepoint[i] = eye[i];
+
         }
     }
     else if(middleButton)
