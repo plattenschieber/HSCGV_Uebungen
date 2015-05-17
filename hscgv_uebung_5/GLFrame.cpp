@@ -388,7 +388,7 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
         {
             float a[4] = {dy/d, -dx/d, 0.0, 0.0}; // rotation axis
             GLfloat inc[16];
-            matRot(inc, a, d*10);
+            matRot(inc, a, d*5);
 
             // multiply viewing transformation with incremental transformation
             // to become the new viewing transformation
