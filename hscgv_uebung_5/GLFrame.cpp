@@ -364,7 +364,6 @@ void GLFrame::adjustLight(bool leftButton, bool middleButton, bool rightButton,
         matMult(inc, invCam, inc);
         matMult(m_lightRot, inc, m_lightRot);
     }
-    // TODO
     m_raytracingNeeded = true;
 }
 
@@ -409,12 +408,13 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
     }
     else if(rightButton)
     {
-        // move eyepoint into scrolling direction
-        g_scene.view.eyepoint += Vec3d(.0,.0,dy*1000);
 
         // prevent negative fieldOfView
         if(dy < -0.5)
             dy = 0.5;
+
+        // move eyepoint into scrolling direction
+        g_scene.view.eyepoint += Vec3d(.0,.0,dy*1000);
 
         m_fieldOfView *= 1.0+dy;
         if(m_fieldOfView > 160.0)
