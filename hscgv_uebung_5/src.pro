@@ -2,11 +2,9 @@ TARGET=         raytrace
 QT *=  opengl
 
 HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h param.h \
-    geopolygon.h \
     ApplicationWindow.h \
     GLFrame.h \
     raytracer.h
-    geopolygon.cpp \
 SOURCES=        main.cpp \
     ApplicationWindow.cpp \
     GLFrame.cpp \

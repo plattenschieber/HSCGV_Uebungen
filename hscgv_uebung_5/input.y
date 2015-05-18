@@ -23,7 +23,6 @@
 #include "vector.h"
 #include "param.h"
 #include "geoquadric.h"
-#include "geopolygon.h"
 #include "lightobject.h"
 
 #include "input_yacc.h"
@@ -44,7 +43,6 @@ static double currentSpecularExp = 0;
 static double currentMirror = 0;
 static std::vector<Vec3d> vertexList;
 static std::vector<int> indexList;
-static std::vector<std::vector<int> > polygonList;
 
 /*
  * table of the keywords that we use above
@@ -61,11 +59,8 @@ keywords[] = {
   { "aspect", ASPECT  },
   { "numsurfaces", NUMSURFACES },
   { "object", OBJECT },
-  { "poly", POLY  },
-  { "polygon", POLY  }, /* equivalent spelling */
   { "numvertices", NUMVERTICES },
   { "vertex", VERTEX },
-  { "numpolygons", NUMPOLYGONS },
   { "quadric", QUADRIC },
   { "numproperties", NUMPROPERTIES },
   { "ambient", AMBIENT },
@@ -347,7 +342,6 @@ static int propertyCounter = 0;
 static int objectCounter = 0;
 static int lightCounter = 0;
 static int vertexCounter = 0;
-static int polyCounter = 0;
 static int indexCounter = 0;
 
 /*
@@ -358,7 +352,6 @@ static int nsurfaces = 0;
 static int nobjs = 0;
 static int nlights = 0;
 static int nvertices = 0;
-static int npolys = 0;
 static int nindices = 0;
 
 /*
@@ -601,10 +594,9 @@ surfaces
   | one_surface
 ;
 
-/* we know quadric surfaces and polygonal surfaces */
+/* we know quadric surfaces*/
 one_surface
   : quadric_surface
-  | polygon_surface
 ;
 
 /* a quadric surface is given by the 10 parameters for
@@ -624,128 +616,6 @@ quadric_surface
     }
 ;
 
-/* The first step for creating a polygon surface is building up
- * a list of vertices. Then a list of polygons is created via
- * indices into this vertex list. */
-polygon_surface
-  : OBJECT POLY 
-    { 
-      if ( surfaceCounter >= nsurfaces ) {
-        yywarn("too many surfaces specified (ignoring)");
-      } else {
-        TOUT((stderr,"object poly\n")); 
-      }
-    }
-vertex_section polygon_section
-    {
-      if ( surfaceCounter < nsurfaces ) {
-        surfaceCounter++;
-        /* we completed parsing an entire polygonal surface,
-           now we can create a geoObject out of the input */
-        g_objectList.push_back(new GeoPolygon(vertexList, polygonList));
-        TOUT((stderr,"We just added a new polygonal surface\n"));
-      }
-    }
-;
-
-/* this starts a new list of vertices: clear the old one */
-vertex_section
-  : NUMVERTICES index 
-    { TOUT((stderr,"numvertices %d\n", $2));
-      nvertices = $2;
-      TOUT((stderr,"Begin parsing the vertices. Clear old vertexList.\n"));
-      vertexList.clear();
-    }
-
-/* completed parsing vertices, do nothing! */
-vertices
-    { TOUT((stderr,"Completed parsing all vertices.\n")); }
-;
-
-/* vertices follow each other */
-vertices
-  : vertices one_vertex
-  | one_vertex
-;
-
-/* parse one vertex and store it into our temporary vertex list */
-one_vertex
-  : VERTEX realVal realVal realVal
-    { TOUT((stderr,"vertex %f %f %f\n", $2, $3, $4));
-      if(vertexCounter >= nvertices) {
-        yywarn("too many vertices specified (ignoring)");
-      } else {
-        vertexList.push_back(Vec3d($2,$3,$4));
-      }
-    }
-;
-
-/* this starts a new polygon surface: clear the old list */
-polygon_section
-  : NUMPOLYGONS index 
-    { TOUT((stderr,"numpolygons %d\n", $2)); 
-      npolys = $2;
-      polygonList.clear();
-      polyCounter = 0;
-    }
-
-/* completed parsing indices, do nothing! */
-polygons
-    { TOUT((stderr,"Completed parsing all indices\n"));
-    }
-;
-
-/* a polygon object consists of several polygons */
-polygons 
-  : polygons one_polygon
-  | one_polygon
-;
-
-/* clear the old polygon as a new one is started parsing */
-one_polygon
-  : POLY index 
-    { TOUT((stderr,"polygon %d ", $2));
-      nindices = $2;
-      indexList.clear();
-      indexCounter = 0;
-    }
-
-/* add polygon to the list of polygons belonging to this surface */
-indices
-    { TOUT((stderr,"Add the whole indexList to our polygons\n"));
-      polygonList.push_back(indexList);
-      polyCounter++;
-    }
-;
-
-/* read the indices into the indexList that describes one polygon */
-indices
-  : indices index
-    { TOUT((stderr," %d", $2));
-      if($2<=0 || $2>nvertices) {
-        yywarn("vertex index out of range (ignoring)");
-      } else if(indexCounter > nindices) {
-        yywarn("too many vertices specified (ignoring)");
-      } else {
-        /* add the first index ($2) of a new polygon in the polygon list (polygons.push_back())
-           of the current polygon surface structure (g_objectList.back()) */
-        indexList.push_back($2);
-        indexCounter++;
-      }
-    }
-  | index
-    { TOUT((stderr," %d", $1));
-      if($1<=0 || $1>nvertices) {
-        yywarn("vertex index out of range (ignoring)");
-      } else if(indexCounter > nindices) {
-        yywarn("too many vertices specified (ignoring)");
-      } else {
-        /* add another index to the current polygon (there should be at least 3) */
-        indexList.push_back($1);
-        indexCounter++;
-      }
-    }
-;
 
 /* parse object properties */
 property_section
