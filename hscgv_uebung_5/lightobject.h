@@ -24,8 +24,8 @@ class LightObject
       virtual ~LightObject();
 
       // access methods
-      Color color() const;
-      Vec3d direction() const;
+      Color __device__ __host__ color() const;
+      Vec3d __device__ __host__ direction() const;
 
    protected:
       typedef struct {
@@ -36,5 +36,7 @@ class LightObject
    private:
       LightObjectProperties *m_properties;
 };
+
+#include "lightobject.inl"
 
 #endif /* LIGHTOBJECT_HH */

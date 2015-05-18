@@ -23,19 +23,20 @@ class Ray
 {
    public:
       // CONSTRUCTORS
-      Ray();
-      Ray(const Ray &r);
-      Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll);
-      ~Ray();
+      __host__ __device__ Ray();
+      __host__ __device__ Ray(const Ray &r);
+      __host__ __device__ Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll);
+      __host__ __device__ ~Ray();
 
-      const Color shade() const;
+      const Color __host__ shade() const;
+      const Color __device__ cudaShade(GeoObject* m_objListCuda, int objListSize, LightObject *m_lightListCuda, int lightListSize) const;
 
       // access methods
-      Vec3d origin() const;
-      Vec3d direction() const;
+      Vec3d __host__ __device__ origin() const;
+      Vec3d __host__ __device__ direction() const;
 
    protected:
-      const Color shadedColor(LightObject *light, const Ray &reflectedray, const Vec3d &normal, GeoObject *obj) const;
+      const Color __host__ __device__ shadedColor(LightObject *light, const Ray &reflectedray, const Vec3d &normal, GeoObject *obj) const;
 
    private:
       Vec3d        m_origin;
@@ -45,5 +46,6 @@ class Ray
       std::vector<GeoObject*>   *m_objList;
       std::vector<LightObject*> *m_lightList;
 };
+#include "ray.inl"
 
 #endif /* RAY_HH */

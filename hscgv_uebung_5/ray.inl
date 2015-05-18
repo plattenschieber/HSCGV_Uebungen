@@ -13,19 +13,18 @@
 
 // Description:
 // Constructor.
-Ray::Ray( )
+inline Ray::Ray( )
 : m_origin()
 , m_direction()
 , m_depth(0)
 , m_objList(NULL)
 , m_lightList(NULL)
 {
-   ERR("don't use uninitialized rays !");
 }
 
 // Description:
 // Copy-Constructor.
-Ray::Ray( const Ray &r )
+inline Ray::Ray( const Ray &r )
 {
    // copy it ! initialization is not enough !
    m_origin    = r.m_origin;
@@ -37,7 +36,7 @@ Ray::Ray( const Ray &r )
 
 // Description:
 // Constructor with explicit parameters
-Ray::Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll)
+inline Ray::Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll)
 {
    // copy it ! initialization is not enough !
    m_origin    = o;
@@ -49,13 +48,13 @@ Ray::Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*>
 
 // Description:
 // Destructor.
-Ray::~Ray( )
+inline Ray::~Ray( )
 {
 }
 
 // Description:
 // Determine color of this ray by tracing through the scene
-const Color
+inline const Color __host__
 Ray::shade() const
 {
    GeoObject *closest = NULL;
@@ -126,10 +125,77 @@ Ray::shade() const
       return Color(currentColor);
    }
 }
+// Description:
+// Determine color of this ray by tracing through the scene
+inline const Color __device__
+Ray::cudaShade(GeoObject* m_objListCuda, int objListSize, LightObject* m_lightListCuda, int lightListSize) const
+{
+    Color currentColor(0.0);
+    for (int i=0; i<5; i++) {
+        GeoObject *closest = NULL;
+        double tMin = DBL_MAX;
+
+        // find closest object that intersects
+        for (int j=0; j<objListSize; j++)
+        {
+            double t = m_objListCuda[j].intersect(*this);
+            if (0.0 < t && t < tMin) {
+                tMin = t;
+                closest = &m_objListCuda[j];
+            }
+        }
+
+        // no object hit -> ray goes to infinity
+        if (closest == NULL) {
+            if (m_depth == 0) {
+//                return g_sceneCuda.picture.background; // background color
+            }
+            else {
+                return Color(0.0);         // black
+            }
+        }
+        else {
+            // reflection
+            Vec3d intersectionPosition(m_origin + (m_direction * tMin));
+            Vec3d normal(closest->getNormal(intersectionPosition));
+            Ray reflectedRay(intersectionPosition,
+                             m_direction.getReflectedAt(normal).getNormalized(),
+                             m_depth+1,*m_objList,*m_lightList);
+
+            // calculate lighting
+            for (int j=0; j<lightListSize; j++) {
+
+                // where is the lightsource ?
+                Ray rayoflight(intersectionPosition, m_lightListCuda[j].direction(), 0, *m_objList, *m_lightList);
+                bool something_intersected = false;
+
+                // where are the objects ?
+                for (int k=0; k<objListSize; k++) {
+
+                    double t = m_objListCuda[k].intersect(rayoflight);
+                    if (t > 0.0) {
+                        something_intersected = true;
+                        break;
+                    }
+
+                } // for all obj
+
+                // is it visible ?
+                if (! something_intersected)
+                    currentColor += shadedColor(&m_lightListCuda[j], reflectedRay, normal, closest);
+
+            } // for all lights
+
+            // could be right...
+            currentColor *= closest->mirror();
+        }
+   }
+   return Color(currentColor);
+}
 
 // Description:
 // Determine color contribution of a lightsource
-const Color
+inline const Color __device__ __host__
 Ray::shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &normal, GeoObject *obj) const
 {
    double ldot = light->direction() | normal;
@@ -141,7 +207,7 @@ Ray::shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &norma
 
    // updated with ambient lightning as in:
    // [GENERALISED AMBIENT REFLECTION MODELS FOR LAMBERTIAN AND PHONG SURFACES, Xiaozheng Zhang and Yongsheng Gao]
-   reflectedColor += obj->ambient() * g_scene.ambience;
+//   reflectedColor += obj->ambient() * g_sceneCuda.ambience;
 
    // specular part
    double spec = reflectedRay.direction() | light->direction();
@@ -153,14 +219,15 @@ Ray::shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &norma
    return Color(reflectedColor);
 }
 
-Vec3d
+inline Vec3d __device__ __host__
 Ray::origin() const
 {
    return Vec3d(m_origin);
 }
 
-Vec3d
+inline Vec3d __device__ __host__
 Ray::direction() const
 {
    return Vec3d(m_direction);
 }
+

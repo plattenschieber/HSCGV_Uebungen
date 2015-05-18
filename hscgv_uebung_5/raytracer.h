@@ -28,10 +28,25 @@ public:
     Raytracer(const char* filename, bool antialiasing);
     ~Raytracer();
     void start(float* renderedScene, int xRes, int yRes);
+    void startCuda(float* renderedScene, int xRes, int yRes);
     bool m_isFileLoaded;
 private:
     const char *m_filename;
     bool m_antialiasing;
 };
+
+// Description:
+// the connection to the parser
+extern int openSceneFile(const char *s);
+extern int closeSceneFile(void);
+extern int inputparse(void);
+extern int cleanUp(void);
+// scene storage
+//! the list of geometric objects in the scene
+extern std::vector<GeoObject*>           g_objectList;
+//! the list of light sources in the scene
+extern std::vector<LightObject*>         g_lightList;
+//! the list of surface properties of the objects
+extern std::vector<GeoObjectProperties*> g_propList;
 
 #endif // RAYTRACER_H

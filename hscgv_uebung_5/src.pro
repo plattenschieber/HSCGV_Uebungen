@@ -6,18 +6,18 @@ HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h pa
     ApplicationWindow.h \
     GLFrame.h \
     raytracer.h
-SOURCES=        lightobject.cpp main.cpp ray.cpp \
     geopolygon.cpp \
+SOURCES=        main.cpp \
     ApplicationWindow.cpp \
     GLFrame.cpp \
-    raytracer.cpp
+    ray.inl \
+    geoobject.inl \
+    geoquadric.inl \
+    lightobject.inl
 win32:SOURCES*= xgetopt.cpp
 YACCSOURCES=    input.y
 CUDA_SOURCES += \
-    raytracer.cu \
-    ray.cu \
-    geoobject.cu \
-    geoquadric.cu
+    raytracer.cu
 
 QMAKE_YACC              = bison
 QMAKE_YACCFLAGS         = -y -d
