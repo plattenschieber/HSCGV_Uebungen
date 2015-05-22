@@ -137,10 +137,8 @@ Ray::shade() const
       return Color(currentColor);
    }
 }
-// Description:
-// Determine color of this ray by tracing through the scene
-inline const Color __device__
-Ray::cudaShade(GeoObject* m_objListCuda, int objListSize, LightObject* m_lightListCuda, int lightListSize) const
+
+inline const Color __device__ Ray::shade(Ray *thisRay, Vec3d d_origin, Vec3d d_direction, GeoObject *d_objList, int objListSize, LightObject *d_lightList, int lightListSize, Color background)
 {
     Color currentColor(0.0);
     for (int i=0; i<5; i++) {
@@ -150,17 +148,17 @@ Ray::cudaShade(GeoObject* m_objListCuda, int objListSize, LightObject* m_lightLi
         // find closest object that intersects
         for (int j=0; j<objListSize; j++)
         {
-            double t = m_objListCuda[j].intersect(*this);
+            double t = d_objList[j].intersect(*thisRay);
             if (0.0 < t && t < tMin) {
                 tMin = t;
-                closest = &m_objListCuda[j];
-            }
+                closest = &d_objList[j];
+}
         }
 
         // no object hit -> ray goes to infinity
         if (closest == NULL) {
-            if (m_depth == 0) {
-//                return g_sceneCuda.picture.background; // background color
+            if (i == 0) {
+                return background; // background color
             }
             else {
                 return Color(0.0);         // black
@@ -168,23 +166,23 @@ Ray::cudaShade(GeoObject* m_objListCuda, int objListSize, LightObject* m_lightLi
         }
         else {
             // reflection
-            Vec3d intersectionPosition(m_origin + (m_direction * tMin));
+            Vec3d intersectionPosition(d_origin + (d_direction * tMin));
             Vec3d normal(closest->getNormal(intersectionPosition));
             Ray reflectedRay(intersectionPosition,
-                             m_direction.getReflectedAt(normal).getNormalized(),
-                             m_depth+1,*m_objList,*m_lightList);
+                             d_direction.getReflectedAt(normal).getNormalized(),
+                             i+1,d_objList,d_lightList);
 
             // calculate lighting
             for (int j=0; j<lightListSize; j++) {
 
                 // where is the lightsource ?
-                Ray rayoflight(intersectionPosition, m_lightListCuda[j].direction(), 0, *m_objList, *m_lightList);
+                Ray rayoflight(intersectionPosition, d_lightList[j].direction(), 0, d_objList, d_lightList);
                 bool something_intersected = false;
 
                 // where are the objects ?
                 for (int k=0; k<objListSize; k++) {
 
-                    double t = m_objListCuda[k].intersect(rayoflight);
+                    double t = d_objList[k].intersect(rayoflight);
                     if (t > 0.0) {
                         something_intersected = true;
                         break;
@@ -194,7 +192,7 @@ Ray::cudaShade(GeoObject* m_objListCuda, int objListSize, LightObject* m_lightLi
 
                 // is it visible ?
                 if (! something_intersected)
-                    currentColor += shadedColor(&m_lightListCuda[j], reflectedRay, normal, closest);
+                    currentColor += shadedColor(&d_lightList[j], reflectedRay, normal, closest);
 
             } // for all lights
 

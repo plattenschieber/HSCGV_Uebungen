@@ -30,7 +30,7 @@ class Ray
       __host__ __device__ ~Ray();
 
       const Color __host__ shade() const;
-      const Color __device__ cudaShade(GeoObject* m_objListCuda, int objListSize, LightObject *m_lightListCuda, int lightListSize) const;
+      const Color __device__ shade(Ray *thisRay, Vec3d d_origin, Vec3d d_direction, GeoObject *d_objList, int objListSize, LightObject *d_lightList, int lightListSize, Color background) ;
 
       // access methods
       Vec3d __host__ __device__ origin() const;
