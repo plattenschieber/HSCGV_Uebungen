@@ -65,6 +65,32 @@ inline Ray::~Ray( )
 }
 
 // Description:
+// Determine color contribution of a lightsource
+inline Color __device__ __host__
+shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &normal, GeoObject *obj)
+{
+   double ldot = light->direction() | normal;
+   Color reflectedColor = Color(0.0);
+
+   // lambertian reflection model
+   if (ldot > 0.0)
+      reflectedColor += obj->reflectance() * (light->color() * ldot);
+
+   // updated with ambient lightning as in:
+   // [GENERALISED AMBIENT REFLECTION MODELS FOR LAMBERTIAN AND PHONG SURFACES, Xiaozheng Zhang and Yongsheng Gao]
+//   reflectedColor += obj->ambient() * g_sceneCuda.ambience;
+
+   // specular part
+   double spec = reflectedRay.direction() | light->direction();
+   if (spec > 0.0) {
+      spec = obj->specular() * pow(spec, obj->specularExp());
+      reflectedColor += light->color() * spec;
+   }
+
+   return Color(reflectedColor);
+}
+
+// Description:
 // Determine color of this ray by tracing through the scene
 inline const Color __host__
 Ray::shade() const
@@ -203,31 +229,6 @@ inline const Color __device__ Ray::shade(Ray *thisRay, Vec3d d_origin, Vec3d d_d
    return Color(currentColor);
 }
 
-// Description:
-// Determine color contribution of a lightsource
-inline const Color __device__ __host__
-Ray::shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &normal, GeoObject *obj) const
-{
-   double ldot = light->direction() | normal;
-   Color reflectedColor = Color(0.0);
-
-   // lambertian reflection model
-   if (ldot > 0.0)
-      reflectedColor += obj->reflectance() * (light->color() * ldot);
-
-   // updated with ambient lightning as in:
-   // [GENERALISED AMBIENT REFLECTION MODELS FOR LAMBERTIAN AND PHONG SURFACES, Xiaozheng Zhang and Yongsheng Gao]
-//   reflectedColor += obj->ambient() * g_sceneCuda.ambience;
-
-   // specular part
-   double spec = reflectedRay.direction() | light->direction();
-   if (spec > 0.0) {
-      spec = obj->specular() * pow(spec, obj->specularExp());
-      reflectedColor += light->color() * spec;
-   }
-
-   return Color(reflectedColor);
-}
 
 inline Vec3d __device__ __host__
 Ray::origin() const

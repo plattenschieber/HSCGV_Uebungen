@@ -36,9 +36,6 @@ class Ray
       Vec3d __host__ __device__ origin() const;
       Vec3d __host__ __device__ direction() const;
 
-   protected:
-      const Color __host__ __device__ shadedColor(LightObject *light, const Ray &reflectedray, const Vec3d &normal, GeoObject *obj) const;
-
    private:
       Vec3d        m_origin;
       Vec3d        m_direction;
