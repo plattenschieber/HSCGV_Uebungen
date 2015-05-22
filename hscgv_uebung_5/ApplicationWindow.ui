@@ -12,7 +12,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Aufgabe 1: &quot;Ui, OpenGL!&quot;</string>
+   <string>Aufgabe 5: &quot;Jeros CUDA Realtime Raytracer!&quot;</string>
   </property>
   <widget class="QWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">
@@ -21,7 +21,7 @@
      <x>0</x>
      <y>0</y>
      <width>520</width>
-     <height>22</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
