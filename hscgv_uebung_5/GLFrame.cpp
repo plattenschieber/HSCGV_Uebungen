@@ -104,6 +104,7 @@ void GLFrame::loadTexture()
 void GLFrame::resizeGL(int w, int h)
 {
     m_aspect = (GLdouble)w / (GLdouble)h;
+    g_scene.view.aspect = m_aspect;
     m_width = w;
     m_height = h;
 
