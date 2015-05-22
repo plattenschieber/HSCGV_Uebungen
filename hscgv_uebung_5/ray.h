@@ -25,7 +25,8 @@ class Ray
       // CONSTRUCTORS
       __host__ __device__ Ray();
       __host__ __device__ Ray(const Ray &r);
-      __host__ __device__ Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll);
+      __host__ Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll);
+      __device__ Ray(const Vec3d o, const Vec3d d, unsigned int i, GeoObject* ol, LightObject* ll);
       __host__ __device__ ~Ray();
 
       const Color __host__ shade() const;

@@ -47,6 +47,18 @@ inline Ray::Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoO
 }
 
 // Description:
+// Constructor with explicit parameters
+inline __device__ Ray::Ray(const Vec3d o, const Vec3d d, unsigned int i, GeoObject *ol, LightObject *ll)
+{
+   // copy it ! initialization is not enough !
+   m_origin    = o;
+   m_direction = d;
+   m_depth     = i;
+   d_objList   = ol;
+   d_lightList = ll;
+}
+
+// Description:
 // Destructor.
 inline Ray::~Ray( )
 {
