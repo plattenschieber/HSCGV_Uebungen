@@ -124,6 +124,12 @@ Raytracer::startCuda(float *renderedScene, int xRes, int yRes)
 //startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, bool d_antialiasing, Color backgroundCol)
 }
 
+// we can save constants on the GPU in an extra space with a lot faster access
+__constant__ GeoObject* d_objectList;
+__constant__ LightObject* d_lightList;
+__constant__ int objListSize;
+__constant__ int lightListSize;
+__constant__ double fovy;
 
 
 void __global__
