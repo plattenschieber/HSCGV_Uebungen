@@ -42,7 +42,7 @@ Raytracer::~Raytracer() {
    cleanUp();
 }
 
-__host__ void
+void
 Raytracer::start(float *renderedScene, int xRes, int yRes) {
    // setup viewport, its origin is bottom left
    // setup camera coordsys
