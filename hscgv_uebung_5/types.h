@@ -13,6 +13,12 @@
 #include <iostream>
 #include <cstdio>
 
+// ignore all compiler errors due to mixing up of cuda host and device code
+#ifndef __CUDACC__
+#define __host__
+#define __device__
+#endif
+
 //! error message macro
 /*!
   Use this macro to generate informative output in case the program detects
