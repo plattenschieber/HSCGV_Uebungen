@@ -14,6 +14,9 @@
 #include <QDebug>
 
 #include <GL/glew.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <cuda_gl_interop.h>
 
 #include "GLFrame.h"
 
@@ -89,12 +92,17 @@ void GLFrame::loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
+    // move data into a texture - the last parameter is either host data or
+    // NULL since we only want to allocate memory, not initialize it in case of PBO
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT,
+//                 (m_renderMode==CPU)?((GLvoid*)m_data):NULL); CHECKGL;
     // move data into a texture
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT, (GLvoid*)m_data);CHECKGL;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT, (GLvoid*)m_data); CHECKGL;
 
     // free data since its on the texture
     free(m_data);
 
+//    cudaGLMapBufferObject((void**)&m_currentDevice, m_currentVBO_CUDA);
     glBindTexture(GL_TEXTURE_2D, 0);
 
 }
@@ -428,10 +436,21 @@ void GLFrame::setRenderMode(int mode)
     m_renderMode = (RenderMode)mode;
 
     if(mode == CPU) {
-
+        // unset VBO
+        cudaGraphicsUnregisterResource(m_currentVBO_CUDA);
+        glDeleteBuffers(1, &m_currentVBO);
     }
     else if (mode == GPU) {
-        // Todo: setup cuda (maybe earlier) and push all data to GPU
+        // setup VBO
+        cudaGLSetGLDevice(0);
+        // Create buffer object and register it with CUDA
+        glGenBuffers(1, &m_currentVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, m_currentVBO);
+        unsigned int size = m_width * m_height * 3;//? * sizeof(float);
+        glBufferData(GL_ARRAY_BUFFER, size, 0, GL_DYNAMIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        cudaGraphicsGLRegisterBuffer(&m_currentVBO_CUDA, m_currentVBO, cudaGraphicsMapFlagsWriteDiscard);
+
     }
 
     m_raytracingNeeded = true;
@@ -558,11 +577,32 @@ void GLFrame::renderScene()
     {
         case CPU:
             m_data = (float*)malloc(sizeof(float) * 3 * m_width * m_height);
-            m_raytracer->start(m_data, m_width, m_height);
-            m_raytracingNeeded = false;
+            m_raytracer->render(m_data, m_width, m_height);
             loadTexture();
+            m_raytracingNeeded = false;
             break;
         case GPU:
+            // Map buffer object for writing from CUDA
+            cudaGraphicsMapResources(1, &m_currentVBO_CUDA, 0);
+            size_t num_bytes;
+            cudaGraphicsResourceGetMappedPointer((void**)&m_data,
+                                                 &num_bytes,
+                                                 m_currentVBO_CUDA);
+            // execute rendering on gpu with kernel
+            m_raytracer->renderCuda(m_data, m_width, m_height);
+            // Unmap buffer object
+            cudaGraphicsUnmapResources(1, &m_currentVBO_CUDA, 0);
+            // Render from buffer object
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glBindBuffer(GL_ARRAY_BUFFER, m_currentVBO);
+            glVertexPointer(3, GL_FLOAT, 0, 0);
+            glEnableClientState(GL_VERTEX_ARRAY);
+            glDrawArrays(GL_POINTS, 0, m_width * m_height);
+            glDisableClientState(GL_VERTEX_ARRAY);
+            // Swap buffers
+            swapBuffers();
+            // indicate done job
+            m_raytracingNeeded = false;
             break;
     }
 }
@@ -570,8 +610,12 @@ void GLFrame::renderScene()
 
 void GLFrame::loadScene(const QString &filename)
 {
+    // create a new raytracer
     delete m_raytracer;
     m_raytracer = new Raytracer(filename.toStdString().c_str(), m_antialiasing);
+    // initialize the cuda structure
+    m_raytracer->initCuda();
+    // and beg for drawing
     m_raytracingNeeded = true;
     updateGL();
 }

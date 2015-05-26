@@ -176,6 +176,11 @@ protected:
     
     //! the currently used texture cache
     GLuint m_texHandle;
+    //! the currently used VBO
+    GLuint m_currentVBO;
+    //! the currently used VBO in CUDA
+    struct cudaGraphicsResource* m_currentVBO_CUDA;
+
     //! axes visibility
     bool m_axesVisible;
     //! model visibility
