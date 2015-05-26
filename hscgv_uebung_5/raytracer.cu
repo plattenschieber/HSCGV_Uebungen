@@ -124,16 +124,39 @@ Raytracer::startCuda(float *renderedScene, int xRes, int yRes)
 //startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, bool d_antialiasing, Color backgroundCol)
 }
 
-// we can save constants on the GPU in an extra space with a lot faster access
-__constant__ GeoObject* d_objectList;
-__constant__ LightObject* d_lightList;
-__constant__ int objListSize;
-__constant__ int lightListSize;
-__constant__ double fovy;
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true) {
+   if (code != cudaSuccess) {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
 
+//! we need some kind of initialization of our device
+void Raytracer::initCuda() {
+    // get some space for the objects and their properties (
+    gpuErrchk (cudaMalloc((void **) &d_objList, sizeof(GeoObject) * g_objectList.size()));
+    gpuErrchk (cudaMalloc((void **) &d_objPropList, sizeof(GeoObjectProperties) * g_objectList.size()));
+    gpuErrchk (cudaMalloc((void **) &d_lightList, sizeof(LightObject) * g_lightList.size()));
+    gpuErrchk (cudaMalloc((void **) &d_lightPropList, sizeof(LightObjectProperties) * g_lightList.size()));
+
+    gpuErrchk (cudaMemcpy(d_objList, g_objectList.data(), sizeof(GeoObject) * g_objectList.size(), cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_objPropList, g_objectList.data(), sizeof(GeoObjectProperties) * g_objectList.size(), cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_lightList, g_objectList.data(), sizeof(LightObject) * g_lightList.size(), cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_lightPropList, g_objectList.data(), sizeof(LightObjectProperties) * g_lightList.size(), cudaMemcpyHostToDevice));
+ }
+
+void __device__
+Raytracer::initData() {
+   for (int i=0; i<d_objListSize; i++) {
+       d_objList[i].setProperties(&d_objPropList[i]);
+       d_lightList[i].m_properties->color = d_lightList[i].color();
+       d_lightList[i].m_properties->direction = d_lightList[i].direction();
+   }
+}
 
 void __global__
-startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, bool d_antialiasing, Color backgroundCol)
+startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, bool d_antialiasing, Color backgroundCol, GeoObject* d_objList, int d_objListSize, LightObject* d_lightList, int d_lightListSize, double d_fovy)
 {
     // find out id of this thread
     unsigned int idx = blockIdx.x*blockDim.x + threadIdx.x;
@@ -150,7 +173,7 @@ startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d 
     Vec3d eye_up = eye_dir^eye_right*-1;
 
     // calculatehe dimensions of the viewport using the scene's camera
-    float height = 2 * tan(M_PI/180 * .5 * fovy);
+    float height = 2 * tan(M_PI/180 * .5 * d_fovy);
     float width = height * aspect;
 
     // compute delta steps in each direction
