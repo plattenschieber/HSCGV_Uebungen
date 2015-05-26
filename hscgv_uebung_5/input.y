@@ -341,8 +341,6 @@ static int surfaceCounter = 0;
 static int propertyCounter = 0;
 static int objectCounter = 0;
 static int lightCounter = 0;
-static int vertexCounter = 0;
-static int indexCounter = 0;
 
 /*
  * checking to make sure indices are okay
@@ -351,8 +349,7 @@ static int nproperties = 0;
 static int nsurfaces = 0;
 static int nobjs = 0;
 static int nlights = 0;
-static int nvertices = 0;
-static int nindices = 0;
+
 
 /*
  * so that we can keep track if a particular parameter appeared
