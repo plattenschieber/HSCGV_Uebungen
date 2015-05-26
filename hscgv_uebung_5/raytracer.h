@@ -29,16 +29,15 @@ public:
     ~Raytracer();
     void start(float* renderedScene, int xRes, int yRes);
     void startCuda(float *renderedScene, int xRes, int yRes);
-    void __device__ initData();
-    void __host__ initCuda();
+    void initCuda();
     bool m_isFileLoaded;
+
+    //! CUDA Properties
     GeoObject* d_objList;
     GeoObjectProperties* d_objPropList;
-    int d_objListSize;
     LightObject* d_lightList;
     LightObjectProperties* d_lightPropList;
-    int d_lightListSize;
-    double d_fovy;
+    float *d_renderedScene;
 
 private:
     const char *m_filename;

@@ -110,20 +110,6 @@ Raytracer::start(float *renderedScene, int xRes, int yRes) {
    } // foreach y
 }
 
-void
-Raytracer::startCuda(float *renderedScene, int xRes, int yRes)
-{
-    // create empty space for scene on gpu
-
-    // updload current position of camera and the like, objects/lights/bgColor (should be done only once)
-
-    // RAY TRACING:
-    dim3 block(32, 16, 1);
-    dim3 grid(xRes/ block.x, yRes / block.y, 1);
-//    startCudaKernel<<<grid,block>>>block();
-//startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, bool d_antialiasing, Color backgroundCol)
-}
-
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
 inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true) {
    if (code != cudaSuccess) {
@@ -132,31 +118,18 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
    }
 }
 
-//! we need some kind of initialization of our device
-void Raytracer::initCuda() {
-    // get some space for the objects and their properties (
-    gpuErrchk (cudaMalloc((void **) &d_objList, sizeof(GeoObject) * g_objectList.size()));
-    gpuErrchk (cudaMalloc((void **) &d_objPropList, sizeof(GeoObjectProperties) * g_objectList.size()));
-    gpuErrchk (cudaMalloc((void **) &d_lightList, sizeof(LightObject) * g_lightList.size()));
-    gpuErrchk (cudaMalloc((void **) &d_lightPropList, sizeof(LightObjectProperties) * g_lightList.size()));
-
-    gpuErrchk (cudaMemcpy(d_objList, g_objectList.data(), sizeof(GeoObject) * g_objectList.size(), cudaMemcpyHostToDevice));
-    gpuErrchk (cudaMemcpy(d_objPropList, g_objectList.data(), sizeof(GeoObjectProperties) * g_objectList.size(), cudaMemcpyHostToDevice));
-    gpuErrchk (cudaMemcpy(d_lightList, g_objectList.data(), sizeof(LightObject) * g_lightList.size(), cudaMemcpyHostToDevice));
-    gpuErrchk (cudaMemcpy(d_lightPropList, g_objectList.data(), sizeof(LightObjectProperties) * g_lightList.size(), cudaMemcpyHostToDevice));
- }
-
-void __device__
-Raytracer::initData() {
-   for (int i=0; i<d_objListSize; i++) {
-       d_objList[i].setProperties(&d_objPropList[i]);
-       d_lightList[i].m_properties->color = d_lightList[i].color();
-       d_lightList[i].m_properties->direction = d_lightList[i].direction();
-   }
+void __global__
+initPropertiesKernel(GeoObject* d_objList, GeoObjectProperties* d_objPropList, int d_objListSize, LightObject* d_lightList, LightObjectProperties* d_lightPropList, int d_lightListSize) {
+    // setup the objects properties one by one, since we needed to copy them by hand into different lists (objPropList and lightPropList)
+    for (int i=0; i<d_objListSize; i++)
+        d_objList[i].setProperties(&d_objPropList[i]);
+    for (int i=0; i<d_lightListSize; i++)
+        d_lightList[i].setProperties(&d_lightPropList[i]);
 }
 
 void __global__
-startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, bool d_antialiasing, Color backgroundCol, GeoObject* d_objList, int d_objListSize, LightObject* d_lightList, int d_lightListSize, double d_fovy)
+startCudaKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, double fovy, Color backgroundCol, bool antialiasing,
+                GeoObject* d_objList, int objListSize, LightObject* d_lightList, int lightListSize)
 {
     // find out id of this thread
     unsigned int idx = blockIdx.x*blockDim.x + threadIdx.x;
@@ -173,7 +146,7 @@ startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d 
     Vec3d eye_up = eye_dir^eye_right*-1;
 
     // calculatehe dimensions of the viewport using the scene's camera
-    float height = 2 * tan(M_PI/180 * .5 * d_fovy);
+    float height = 2 * tan(M_PI/180 * .5 * fovy);
     float width = height * aspect;
 
     // compute delta steps in each direction
@@ -194,10 +167,10 @@ startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d 
 
     // compute the color
     Color col;
-    theRay.shade(&theRay, eyepoint, point, d_objList, d_objListSize, d_lightList, d_lightListSize, backgroundCol);
+    theRay.shade(&theRay, eyepoint, point, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
 
     // in case we are using antialiasing, calculate the color of this pixel by averaging
-    if (d_antialiasing) {
+    if (antialiasing) {
         // scale the midpoint color since we are going to use 5 points to average our color
         col *= 0.2;
 
@@ -216,15 +189,43 @@ startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d 
 
                 // create ray from view.eyepoint to view.lookat
                 Ray theRay(eyepoint,superSampleDir.getNormalized(),0);
-                col += theRay.shade(&theRay,eyepoint,superSamplePoint, d_objList, d_objListSize, d_lightList, d_lightListSize, backgroundCol)*0.2;
+                col += theRay.shade(&theRay,eyepoint,superSamplePoint, d_objList, objListSize, d_lightList, lightListSize, backgroundCol)*0.2;
                 //color, recursive_ray_trace(eye, ray, 0));
             }
         }
     }
 
     int index = 3*((sy-1) * xRes + sx);
-    renderedScene[index + 0] = col[0];
-    renderedScene[index + 1] = col[1];
-    renderedScene[index + 2] = col[2];
+    d_renderedScene[index + 0] = col[0];
+    d_renderedScene[index + 1] = col[1];
+    d_renderedScene[index + 2] = col[2];
 }
 
+
+
+//! we need some kind of initialization of our device
+void Raytracer::initCuda() {
+    // get some space for the objects and their properties (
+    gpuErrchk (cudaMalloc((void **) &d_objList, sizeof(GeoObject) * g_objectList.size()));
+    gpuErrchk (cudaMalloc((void **) &d_objPropList, sizeof(GeoObjectProperties) * g_objectList.size()));
+    gpuErrchk (cudaMalloc((void **) &d_lightList, sizeof(LightObject) * g_lightList.size()));
+    gpuErrchk (cudaMalloc((void **) &d_lightPropList, sizeof(LightObjectProperties) * g_lightList.size()));
+
+    gpuErrchk (cudaMemcpy(d_objList, g_objectList.data(), sizeof(GeoObject) * g_objectList.size(), cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_objPropList, g_objectList.data(), sizeof(GeoObjectProperties) * g_objectList.size(), cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_lightList, g_objectList.data(), sizeof(LightObject) * g_lightList.size(), cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_lightPropList, g_objectList.data(), sizeof(LightObjectProperties) * g_lightList.size(), cudaMemcpyHostToDevice));
+
+    initPropertiesKernel<<<1,1>>>(d_objList, d_objPropList, g_objectList.size(), d_lightList, d_lightPropList, g_lightList.size());
+ }
+
+void
+Raytracer::startCuda(float *renderedScene, int xRes, int yRes)
+{
+    // RAY TRACING:
+    dim3 block(32, 16, 1);
+    dim3 grid(xRes/ block.x, yRes / block.y, 1);
+    startCudaKernel<<<grid,block>>>(d_renderedScene, xRes, yRes,
+                                    g_scene.view.eyepoint, g_scene.view.up, g_scene.view.lookat, g_scene.view.aspect, g_scene.view.fovy, g_scene.picture.background,
+                                    m_antialiasing, d_objList, g_objectList.size(), d_lightList, g_lightList.size());
+}

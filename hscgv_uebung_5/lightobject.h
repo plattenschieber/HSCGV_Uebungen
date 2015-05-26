@@ -31,6 +31,9 @@ class LightObject
       // access methods
       Color __device__ __host__ color() const;
       Vec3d __device__ __host__ direction() const;
+      void __host__ __device__ setProperties(LightObjectProperties *p);
+
+   protected:
       LightObjectProperties *m_properties;
 };
 

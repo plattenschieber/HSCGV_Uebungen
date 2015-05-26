@@ -48,3 +48,10 @@ LightObject::direction() const
 //      std::cerr<<"WARNING: properties not set"<<std::endl;
    return Vec3d(0.0);
 }
+
+inline void __host__ __device__
+LightObject::setProperties(LightObjectProperties *p)
+{
+   m_properties = p;
+}
+
