@@ -48,14 +48,12 @@ inline Ray::Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoO
 
 // Description:
 // Constructor with explicit parameters
-inline __device__ Ray::Ray(const Vec3d o, const Vec3d d, unsigned int i, GeoObject *ol, LightObject *ll)
+inline __device__ Ray::Ray(const Vec3d o, const Vec3d d, unsigned int i)
 {
    // copy it ! initialization is not enough !
    m_origin    = o;
    m_direction = d;
    m_depth     = i;
-   d_objList   = ol;
-   d_lightList = ll;
 }
 
 // Description:
@@ -196,13 +194,13 @@ inline const Color __device__ Ray::shade(Ray *thisRay, Vec3d d_origin, Vec3d d_d
             Vec3d normal(closest->getNormal(intersectionPosition));
             Ray reflectedRay(intersectionPosition,
                              d_direction.getReflectedAt(normal).getNormalized(),
-                             i+1,d_objList,d_lightList);
+                             i+1);
 
             // calculate lighting
             for (int j=0; j<lightListSize; j++) {
 
                 // where is the lightsource ?
-                Ray rayoflight(intersectionPosition, d_lightList[j].direction(), 0, d_objList, d_lightList);
+                Ray rayoflight(intersectionPosition, d_lightList[j].direction(), 0);
                 bool something_intersected = false;
 
                 // where are the objects ?

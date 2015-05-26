@@ -167,11 +167,11 @@ startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d 
     Vec3d dir = point - eyepoint;
 
     // create ray from view.eyepoint to view.lookat
-    Ray theRay(eyepoint,dir.getNormalized(),0,d_objectList,d_lightList);
+    Ray theRay(eyepoint,dir.getNormalized(),0);
 
     // compute the color
     Color col;
-    theRay.shade(&theRay, eyepoint, point, d_objectList, objListSize, d_lightList, lightListSize, backgroundCol);
+    theRay.shade(&theRay, eyepoint, point, d_objList, d_objListSize, d_lightList, d_lightListSize, backgroundCol);
 
     // in case we are using antialiasing, calculate the color of this pixel by averaging
     if (d_antialiasing) {
@@ -192,8 +192,8 @@ startCudaKernel(float *renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d 
                 Vec3d superSampleDir = superSamplePoint - eyepoint;
 
                 // create ray from view.eyepoint to view.lookat
-                Ray theRay(eyepoint,superSampleDir.getNormalized(),0,d_objectList,d_lightList);
-                col += theRay.shade(&theRay,eyepoint,superSamplePoint, d_objectList, objListSize, d_lightList, lightListSize, backgroundCol)*0.2;
+                Ray theRay(eyepoint,superSampleDir.getNormalized(),0);
+                col += theRay.shade(&theRay,eyepoint,superSamplePoint, d_objList, d_objListSize, d_lightList, d_lightListSize, backgroundCol)*0.2;
                 //color, recursive_ray_trace(eye, ray, 0));
             }
         }
