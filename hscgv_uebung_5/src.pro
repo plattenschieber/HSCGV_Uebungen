@@ -25,16 +25,16 @@ DEFINES         *= TRACE VERBOSE
 CONFIG          += debug
 CONFIG          -= release
 
-QMAKE_CXXFLAGS += -W -Wall -fopenmp
-QMAKE_LFLAGS += -fopenmp
 
 FORMS += \
     ApplicationWindow.ui
 
 unix:!macx:{
 LIBS *= -lGLEW -lglut -lGLU
-include(cuda.pri)
+QMAKE_CXXFLAGS += -W -Wall -fopenmp
+QMAKE_LFLAGS += -fopenmp
 }
+include(cuda.pri)
 
 macx {
 LIBS *= -lGLEW -L/usr/local/opt/glew/lib

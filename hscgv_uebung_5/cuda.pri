@@ -11,12 +11,18 @@ win32 {
     cuda.commands = $(CUDA_BIN_DIR)/nvcc.exe -c -Xcompiler $$join(QMAKE_CXXFLAGS,",") $$join(INCLUDEPATH,'" -I "','-I "','"') ${QMAKE_FILE_NAME} -o ${QMAKE_FILE_OUT}
 }
 
+
+unix:!macx:{
+    CUDA_DIR = /usr/local/cuda-5.5
+    QMAKE_LIBDIR += $$CUDA_DIR/lib64
+}
+macx:{
+    CUDA_DIR = /Developer/NVIDIA/CUDA-7.0
+    QMAKE_LIBDIR += $$CUDA_DIR/lib
+}
 unix {
 # auto-detect CUDA path
-    CUDA_DIR = $$system(which nvcc | sed 's,/bin/nvcc$,,')
-    CUDA_DIR = /usr/local/cuda-5.5
     INCLUDEPATH += $$CUDA_DIR/include
-    QMAKE_LIBDIR += $$CUDA_DIR/lib64
     LIBS += -lcudart
     NVCCFLAGS="-use_fast_math --ptxas-options=-v"
     NVCCFLAGS+="-Xptxas -fastimul -arch=sm_20" # 24 bit integer multiplication should be sufficient

@@ -5,7 +5,9 @@
  */
 
 #include "raytracer.h"
+#ifndef __APPLE__
 #include "omp.h"
+#endif
 
 //! get scene description from the parser
 /*!
