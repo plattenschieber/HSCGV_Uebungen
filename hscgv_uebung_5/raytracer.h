@@ -27,8 +27,8 @@ public:
     Raytracer(bool antialiasing);
     Raytracer(const char* filename, bool antialiasing);
     ~Raytracer();
-    void start(float* renderedScene, int xRes, int yRes);
-    void startCuda(float *renderedScene, int xRes, int yRes);
+    void render(float* renderedScene, int xRes, int yRes);
+    void renderCuda(float *renderedScene, int xRes, int yRes);
     void initCuda();
     bool m_isFileLoaded;
 

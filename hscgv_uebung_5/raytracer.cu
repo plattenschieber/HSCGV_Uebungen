@@ -45,7 +45,7 @@ Raytracer::~Raytracer() {
 }
 
 void
-Raytracer::start(float *renderedScene, int xRes, int yRes) {
+Raytracer::render(float *renderedScene, int xRes, int yRes) {
    // setup viewport, its origin is bottom left
    // setup camera coordsys
    Vec3d eye_dir = (g_scene.view.lookat - g_scene.view.eyepoint).getNormalized();
@@ -130,7 +130,7 @@ initPropertiesKernel(GeoObject* d_objList, GeoObjectProperties* d_objPropList, i
 }
 
 void __global__
-startCudaKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, double fovy, Color backgroundCol, bool antialiasing,
+renderKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, double fovy, Color backgroundCol, bool antialiasing,
                 GeoObject* d_objList, int objListSize, LightObject* d_lightList, int lightListSize)
 {
     // find out id of this thread
@@ -206,7 +206,8 @@ startCudaKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3
 
 
 //! we need some kind of initialization of our device
-void Raytracer::initCuda() {
+void
+Raytracer::initCuda() {
     // get some space for the objects and their properties (
     gpuErrchk (cudaMalloc((void **) &d_objList, sizeof(GeoObject) * g_objectList.size()));
     gpuErrchk (cudaMalloc((void **) &d_objPropList, sizeof(GeoObjectProperties) * g_objectList.size()));
@@ -221,13 +222,14 @@ void Raytracer::initCuda() {
     initPropertiesKernel<<<1,1>>>(d_objList, d_objPropList, g_objectList.size(), d_lightList, d_lightPropList, g_lightList.size());
  }
 
+//! start the rendering routine on the device
 void
-Raytracer::startCuda(float *renderedScene, int xRes, int yRes)
+Raytracer::renderCuda(float *renderedScene, int xRes, int yRes)
 {
     // RAY TRACING:
     dim3 block(32, 16, 1);
     dim3 grid(xRes/ block.x, yRes / block.y, 1);
-    startCudaKernel<<<grid,block>>>(d_renderedScene, xRes, yRes,
+    renderKernel<<<grid,block>>>(d_renderedScene, xRes, yRes,
                                     g_scene.view.eyepoint, g_scene.view.up, g_scene.view.lookat, g_scene.view.aspect, g_scene.view.fovy, g_scene.picture.background,
                                     m_antialiasing, d_objList, g_objectList.size(), d_lightList, g_lightList.size());
 }
