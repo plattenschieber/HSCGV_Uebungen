@@ -17,6 +17,7 @@
 #include <GL/glew.h>
 #include <GL/glu.h>
 #endif
+#include <cuda_gl_interop.h>
 #include <QGLWidget>
 #include <QTime>
 #include <qdebug.h>
@@ -126,13 +127,13 @@ protected:
     void drawLight();
 
     //! draws a quad where we will paint the raytracing scene in a texture
-    void drawFullScreenQuad();
+    void renderDataOnQuad();
 
     //! draw scene
-    void renderScene();
+    void bufferRaytracingData();
 
     //! load current raytracing scene into texture
-    void loadTexture();
+    void initGLBuffers();
 
     // ---- More Drawing and Interaction Handling ----
 
@@ -174,12 +175,10 @@ protected:
 
     // what to draw
     
-    //! the currently used texture cache
+    //! draw the texture cache
     GLuint m_texHandle;
-    //! the currently used VBO
-    GLuint m_currentVBO;
-    //! the currently used VBO in CUDA
-    struct cudaGraphicsResource* m_currentVBO_CUDA;
+    //! the according graphics resource
+    cudaGraphicsResource_t m_cudaTexResult;
 
     //! axes visibility
     bool m_axesVisible;
@@ -189,10 +188,12 @@ protected:
     //! counter for displaying FPS
     unsigned int m_frameCounter;
 
-    //! currently loaded scene
+    //! currently loaded scene with raytracer, and indicator and its data
     Raytracer *m_raytracer;
     bool m_raytracingNeeded;
     float* m_data;
+    float* m_cudaData;
+    int m_sizeTexData;
 
     //! how our model is to be drawn
     RenderMode m_renderMode;

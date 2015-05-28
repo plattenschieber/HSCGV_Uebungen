@@ -114,11 +114,17 @@
    </property>
   </action>
   <action name="actionCPU">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>CPU</string>
    </property>
   </action>
   <action name="actionGPU">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>GPU</string>
    </property>
