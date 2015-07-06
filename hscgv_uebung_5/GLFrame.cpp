@@ -58,6 +58,9 @@ GLFrame::GLFrame(ApplicationWindow *parent)
 GLFrame::~GLFrame()
 {
     glDeleteTextures(1, &m_texHandle);
+    free(m_data);
+    cudaFree(m_cudaData);
+    cudaDeviceReset();
 }
 
 // ---------------------------- Basic OpenGL Widget Methods ------------------
