@@ -439,20 +439,8 @@ void GLFrame::setRenderMode(int mode)
 
     if(mode == CPU) {
         // unset VBO
-        cudaGraphicsUnregisterResource(m_currentVBO_CUDA);
-        glDeleteBuffers(1, &m_currentVBO);
     }
     else if (mode == GPU) {
-        // setup VBO
-        cudaGLSetGLDevice(0);
-        // Create buffer object and register it with CUDA
-        glGenBuffers(1, &m_currentVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, m_currentVBO);
-        unsigned int size = m_width * m_height * 3;//? * sizeof(float);
-        glBufferData(GL_ARRAY_BUFFER, size, 0, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        cudaGraphicsGLRegisterBuffer(&m_currentVBO_CUDA, m_currentVBO, cudaGraphicsMapFlagsWriteDiscard);
-
     }
 
     m_raytracingNeeded = true;
@@ -584,27 +572,6 @@ void GLFrame::renderScene()
             m_raytracingNeeded = false;
             break;
         case GPU:
-            // Map buffer object for writing from CUDA
-            cudaGraphicsMapResources(1, &m_currentVBO_CUDA, 0);
-            size_t num_bytes;
-            cudaGraphicsResourceGetMappedPointer((void**)&m_data,
-                                                 &num_bytes,
-                                                 m_currentVBO_CUDA);
-            // execute rendering on gpu with kernel
-            m_raytracer->renderCuda(m_data, m_width, m_height);
-            // Unmap buffer object
-            cudaGraphicsUnmapResources(1, &m_currentVBO_CUDA, 0);
-            // Render from buffer object
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glBindBuffer(GL_ARRAY_BUFFER, m_currentVBO);
-            glVertexPointer(3, GL_FLOAT, 0, 0);
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glDrawArrays(GL_POINTS, 0, m_width * m_height);
-            glDisableClientState(GL_VERTEX_ARRAY);
-            // Swap buffers
-            swapBuffers();
-            // indicate done job
-            m_raytracingNeeded = false;
             break;
     }
 }
