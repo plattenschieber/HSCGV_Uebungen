@@ -239,6 +239,7 @@ Raytracer::renderCuda(float *cudaData, int xRes, int yRes)
     dim3 block(32, 16, 1);
     dim3 grid(xRes/ block.x, yRes / block.y, 1);
     renderKernel<<<grid,block>>>(d_renderedScene, xRes, yRes,
+    initCuda();
                                     g_scene.view.eyepoint, g_scene.view.up, g_scene.view.lookat, g_scene.view.aspect, g_scene.view.fovy, g_scene.picture.background,
                                     m_antialiasing, d_objList, g_objectList.size(), d_lightList, g_lightList.size());
 }
