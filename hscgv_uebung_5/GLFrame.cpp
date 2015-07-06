@@ -95,12 +95,11 @@ void GLFrame::loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-    // move data into a texture - the last parameter is either host data or
-    // NULL since we only want to allocate memory, not initialize it in case of PBO
-//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT,
-//                 (m_renderMode==CPU)?((GLvoid*)m_data):NULL); CHECKGL;
-    // move data into a texture
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT, (GLvoid*)m_data); CHECKGL;
+
+    if (m_renderMode == GPU) {
+        // register this texture with CUDA
+    }
 
     // free data since its on the texture
     free(m_data);
