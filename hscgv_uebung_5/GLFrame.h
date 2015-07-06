@@ -193,6 +193,7 @@ protected:
     Raytracer *m_raytracer;
     bool m_raytracingNeeded;
     float* m_data;
+    float* m_cudaData;
 
     //! how our model is to be drawn
     RenderMode m_renderMode;
