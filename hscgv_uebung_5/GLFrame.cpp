@@ -101,9 +101,6 @@ void GLFrame::loadTexture()
         // register this texture with CUDA
     }
 
-    // free data since its on the texture
-    free(m_data);
-
 //    cudaGLMapBufferObject((void**)&m_currentDevice, m_currentVBO_CUDA);
     glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -563,10 +560,10 @@ void GLFrame::renderScene()
         return;
     // draw scene
     int sizeTex = sizeof(float) * 3 * m_width * m_height;
-            m_data = (float*)malloc(sizeTex);
     switch(m_renderMode)
     {
         case CPU:
+            m_data = (float*)malloc(sizeTex);
             m_raytracer->render(m_data, m_width, m_height);
             break;
         case GPU:
