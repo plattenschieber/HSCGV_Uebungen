@@ -233,7 +233,7 @@ int div_up(int a, int b)
 
 //! start the rendering routine on the device
 void
-Raytracer::renderCuda(float *renderedScene, int xRes, int yRes)
+Raytracer::renderCuda(float *cudaData, int xRes, int yRes)
 {
     // RAY TRACING:
     dim3 block(32, 16, 1);
