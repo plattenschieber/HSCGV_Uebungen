@@ -222,6 +222,15 @@ Raytracer::initCuda() {
     initPropertiesKernel<<<1,1>>>(d_objList, d_objPropList, g_objectList.size(), d_lightList, d_lightPropList, g_lightList.size());
  }
 
+//-------------------------------------------------------------------------------------------------
+// Round (a) up to the nearest multiple of (b), then divide by (b)
+//
+
+int div_up(int a, int b)
+{
+    return (a + b - 1) / b;
+}
+
 //! start the rendering routine on the device
 void
 Raytracer::renderCuda(float *renderedScene, int xRes, int yRes)
