@@ -134,12 +134,10 @@ renderKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d u
                 GeoObject* d_objList, int objListSize, LightObject* d_lightList, int lightListSize)
 {
     // find out id of this thread
-    unsigned int idx = blockIdx.x*blockDim.x + threadIdx.x;
-    if (idx>=xRes*yRes)
+    unsigned sx = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned sy = blockIdx.y * blockDim.y + threadIdx.y;
+    if (sx >= xRes || sy >= yRes)
         return;
-    // we are handling pixel (x,y) now
-    int sx = idx % xRes;
-    int sy = idx / xRes;
 
     // setup viewport, its origin is bottom left
     // setup camera coordsys
