@@ -561,19 +561,25 @@ void GLFrame::renderScene()
     // only render the scene if there is some intialized raytracer
     if(!m_raytracingNeeded || !m_raytracer || !m_raytracer->m_isFileLoaded)
         return;
-
     // draw scene
+    int sizeTex = sizeof(float) * 3 * m_width * m_height;
+            m_data = (float*)malloc(sizeTex);
     switch(m_renderMode)
     {
         case CPU:
-            m_data = (float*)malloc(sizeof(float) * 3 * m_width * m_height);
             m_raytracer->render(m_data, m_width, m_height);
-            loadTexture();
-            m_raytracingNeeded = false;
             break;
         case GPU:
+            cudaMalloc(&m_cudaData,sizeTex);
+            m_raytracer->renderCuda(m_cudaData, m_width, m_height);
+            cudaGetLastError();
+            cudaMemcpy(m_data,m_cudaData, sizeTex, cudaMemcpyDeviceToHost);
+            cudaFree(m_cudaData);
             break;
     }
+    // load texture onto the cube
+    loadTexture();
+    m_raytracingNeeded = false;
 }
 
 
