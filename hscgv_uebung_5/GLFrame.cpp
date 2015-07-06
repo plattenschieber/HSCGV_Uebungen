@@ -537,7 +537,7 @@ void GLFrame::drawFullScreenQuad()
 
        glBindTexture(GL_TEXTURE_2D, m_texHandle);
 
-       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
        // set to red
        glColor3f(1.0,0.0,.0);
 
