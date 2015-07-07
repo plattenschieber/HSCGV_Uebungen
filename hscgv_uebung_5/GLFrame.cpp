@@ -586,7 +586,7 @@ void GLFrame::renderScene()
     }
     // load texture onto the cube
     loadTexture();
-    m_raytracingNeeded = false;
+    m_raytracingNeeded = true;
 }
 
 
