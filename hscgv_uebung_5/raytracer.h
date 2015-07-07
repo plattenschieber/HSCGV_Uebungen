@@ -11,6 +11,7 @@
 #include <getopt.h>
 #endif
 #include "geoobject.h"
+#include "geoquadric.h"
 #include "lightobject.h"
 #include "ray.h"
 #include "param.h"
@@ -19,6 +20,26 @@
 #ifndef M_PI
 #define M_PI 3.1415927
 #endif
+
+struct QUADRIC {
+    Color  m_ambient;
+    Vec3d  m_reflectance;
+    double m_specular;
+    int    m_specularExp;
+    double m_mirror;
+    double m_a,m_b,m_c,m_d,m_e,m_f,m_g,m_h,m_j,m_k;
+};
+
+struct RAY {
+    Vec3d        m_origin;
+    Vec3d        m_direction;
+    unsigned int m_depth;
+};
+
+struct LIGHT {
+    Color  m_color;
+    Vec3d  m_direction;
+};
 
 class Raytracer
 {
@@ -33,10 +54,9 @@ public:
     bool m_isFileLoaded;
 
     //! CUDA Properties
-    GeoObject* d_objList;
-    GeoObjectProperties* d_objPropList;
-    LightObject* d_lightList;
-    LightObjectProperties* d_lightPropList;
+
+    QUADRIC* d_objList;
+    LIGHT* d_lightList;
 
 private:
     const char *m_filename;

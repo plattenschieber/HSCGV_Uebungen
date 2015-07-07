@@ -8,31 +8,31 @@
 
 /* member access functions for GeoObjectProperties */
 
-inline Color  __host__ __device__
+inline Color
 GeoObjectProperties::ambient() const
 {
    return m_ambient;
 }
 
-inline Vec3d __host__ __device__
+inline Vec3d
 GeoObjectProperties::reflectance() const
 {
    return m_reflectance;
 }
 
-inline double __host__ __device__
+inline double
 GeoObjectProperties::specular() const
 {
    return m_specular;
 }
 
-inline int __host__ __device__
+inline int
 GeoObjectProperties::specularExp() const
 {
    return m_specularExp;
 }
 
-inline double __host__ __device__
+inline double
 GeoObjectProperties::mirror() const
 {
    return m_mirror;
@@ -50,7 +50,7 @@ GeoObject::ambient() const
         return Vec3d(0.0);
 }
 
-inline Vec3d __host__ __device__
+inline Vec3d
 GeoObject::reflectance() const
 {
    if (m_properties)
@@ -60,7 +60,7 @@ GeoObject::reflectance() const
        return Vec3d(0.0);
 }
 
-inline double __host__ __device__
+inline double
 GeoObject::specular() const
 {
    if (m_properties)
@@ -70,7 +70,7 @@ GeoObject::specular() const
        return 0.0;
 }
 
-inline double __host__ __device__
+inline double
 GeoObject::specularExp() const
 {
    if (m_properties)
@@ -80,7 +80,7 @@ GeoObject::specularExp() const
        return 0.0;
 }
 
-inline double __host__ __device__
+inline double
 GeoObject::mirror() const
 {
    if (m_properties)
@@ -90,7 +90,7 @@ GeoObject::mirror() const
        return 0.0;
 }
 
-inline void __host__ __device__
+inline void
 GeoObject::setProperties(GeoObjectProperties *p)
 {
    m_properties = p;

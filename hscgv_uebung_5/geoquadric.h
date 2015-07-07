@@ -34,7 +34,7 @@ class GeoQuadric : public GeoObject
       //! Compute surface normal on the quadric in the point v.
       virtual Vec3d  getNormal(const Vec3d &v) const;
       //! Compute intersection of ray with quadric.
-      virtual double __host__ __device__ intersect(const Ray &r) const;
+      virtual double intersect(const Ray &r) const;
 
    private:
       //! parameters of the equation describing the quadric.

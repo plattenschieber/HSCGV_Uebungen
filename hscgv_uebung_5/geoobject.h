@@ -33,11 +33,11 @@ class GeoObjectProperties
       ~GeoObjectProperties() {}
 
       // access methods
-      Color  __host__ __device__ ambient() const;
-      Vec3d  __host__ __device__ reflectance() const;
-      double __host__ __device__ specular() const;
-      int    __host__ __device__ specularExp() const;
-      double __host__ __device__ mirror() const;
+      Color  ambient() const;
+      Vec3d  reflectance() const;
+      double specular() const;
+      int    specularExp() const;
+      double mirror() const;
 
    protected:
       Color  m_ambient;
@@ -57,19 +57,19 @@ class GeoObject
       // CONSTRUCTORS
       GeoObject() {}
       virtual ~GeoObject() {}
-      virtual Vec3d  __host__ __device__ getNormal(const Vec3d &v) const = 0;
-      virtual double __host__ __device__ intersect(const Ray &r) const = 0;
+      virtual Vec3d  getNormal(const Vec3d &v) const = 0;
+      virtual double intersect(const Ray &r) const = 0;
 
       // access methods
-      virtual Color  __host__ __device__ ambient() const;
-      virtual Vec3d  __host__ __device__ reflectance() const;
-      virtual double __host__ __device__ specular() const;
-      virtual double __host__ __device__ specularExp() const;
+      virtual Color  ambient() const;
+      virtual Vec3d  reflectance() const;
+      virtual double specular() const;
+      virtual double specularExp() const;
 
-      virtual double __host__ __device__ mirror() const;
+      virtual double mirror() const;
 
       // config method
-      virtual void __host__ __device__ setProperties(GeoObjectProperties *p);
+      virtual void setProperties(GeoObjectProperties *p);
 
    protected:
       GeoObjectProperties *m_properties;

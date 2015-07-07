@@ -64,7 +64,7 @@ inline Ray::~Ray( )
 
 // Description:
 // Determine color contribution of a lightsource
-inline Color __device__ __host__
+inline Color
 shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &normal, GeoObject *obj)
 {
    double ldot = light->direction() | normal;
@@ -90,7 +90,7 @@ shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &normal, Ge
 
 // Description:
 // Determine color of this ray by tracing through the scene
-inline const Color __host__
+inline const Color
 Ray::shade() const
 {
    GeoObject *closest = NULL;
@@ -162,79 +162,13 @@ Ray::shade() const
    }
 }
 
-inline const Color __device__ Ray::shade(Ray *thisRay, Vec3d d_origin, Vec3d d_direction, GeoObject *d_objList, int objListSize, LightObject *d_lightList, int lightListSize, Color background)
-{
-    Color currentColor(0.0);
-    for (int i=0; i<5; i++) {
-        GeoObject *closest = NULL;
-        double tMin = DBL_MAX;
-
-        // find closest object that intersects
-        for (int j=0; j<objListSize; j++)
-        {
-            double t = d_objList[j].intersect(*thisRay);
-            if (0.0 < t && t < tMin) {
-                tMin = t;
-                closest = &d_objList[j];
-}
-        }
-
-        // no object hit -> ray goes to infinity
-        if (closest == NULL) {
-            if (i == 0) {
-                return background; // background color
-            }
-            else {
-                return Color(0.0);         // black
-            }
-        }
-        else {
-            // reflection
-            Vec3d intersectionPosition(d_origin + (d_direction * tMin));
-            Vec3d normal(closest->getNormal(intersectionPosition));
-            Ray reflectedRay(intersectionPosition,
-                             d_direction.getReflectedAt(normal).getNormalized(),
-                             i+1);
-
-            // calculate lighting
-            for (int j=0; j<lightListSize; j++) {
-
-                // where is the lightsource ?
-                Ray rayoflight(intersectionPosition, d_lightList[j].direction(), 0);
-                bool something_intersected = false;
-
-                // where are the objects ?
-                for (int k=0; k<objListSize; k++) {
-
-                    double t = d_objList[k].intersect(rayoflight);
-                    if (t > 0.0) {
-                        something_intersected = true;
-                        break;
-                    }
-
-                } // for all obj
-
-                // is it visible ?
-                if (! something_intersected)
-                    currentColor += shadedColor(&d_lightList[j], reflectedRay, normal, closest);
-
-            } // for all lights
-
-            // could be right...
-            currentColor *= closest->mirror();
-        }
-   }
-   return Color(currentColor);
-}
-
-
-inline Vec3d __device__ __host__
+inline Vec3d
 Ray::origin() const
 {
    return Vec3d(m_origin);
 }
 
-inline Vec3d __device__ __host__
+inline Vec3d
 Ray::direction() const
 {
    return Vec3d(m_direction);

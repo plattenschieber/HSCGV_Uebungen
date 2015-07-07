@@ -22,6 +22,149 @@ ReadScene(const char *inputfile)
    closeSceneFile();
 }
 
+// Description:
+// Return the normal vector at point v of this surface
+// TODO this is an object method, update such that the called on object is included
+Vec3d __device__
+cudaGetNormal(const Vec3d &v, const QUADRIC &q)
+{
+   Vec3d tmpvec( (v | Vec3d(2*q.m_a,q.m_b,q.m_c)) + q.m_d,
+         (v | Vec3d(q.m_b,2*q.m_e,q.m_f)) + q.m_g,
+         (v | Vec3d(q.m_c,q.m_f,2*q.m_h)) + q.m_j );
+   return tmpvec.getNormalized();
+}
+// Description:
+// Compute intersection point on this surface
+// return distance to nearest intersection found or -1
+// TODO this is an object method, update such that the called on object is included
+double __device__
+cudaIntersect(const RAY &ray, QUADRIC &q)
+{
+   double t = -1.0, acoef, bcoef, ccoef, root, disc;
+
+   acoef = Vec3d( (ray.m_direction | Vec3d(q.m_a,q.m_b,q.m_c)),
+         q.m_e * ray.m_direction[1] + q.m_f * ray.m_direction[2],
+         q.m_h * ray.m_direction[2])
+      | ray.m_direction;
+
+   bcoef =   (Vec3d(q.m_d,q.m_g,q.m_j) | ray.m_direction)
+      + (ray.m_origin | Vec3d((ray.m_direction | Vec3d(2*q.m_a,q.m_b,q.m_c)),
+               (ray.m_direction | Vec3d(q.m_b,2*q.m_e,q.m_f)),
+               (ray.m_direction | Vec3d(q.m_c,q.m_f,2*q.m_h))));
+
+   ccoef = (ray.m_origin | Vec3d((Vec3d(q.m_a,q.m_b,q.m_c) | ray.m_origin) + q.m_d,
+            q.m_e * ray.m_origin[1] + q.m_f * ray.m_origin[2] + q.m_g,
+            q.m_h * ray.m_origin[2] + q.m_j))
+      + q.m_k;
+
+   if (acoef != 0.0) {
+      disc = bcoef * bcoef - 4.0 * acoef * ccoef;
+      if (disc > -Vec3d::getEpsilon()) {
+         root = sqrt( disc );
+         t = ( -bcoef - root ) / ( acoef + acoef );
+         if (t < 0.0)
+            t = ( -bcoef + root ) / ( acoef + acoef );
+      }
+   }
+   return (((Vec3d::getEpsilon() * 10.0) < t) ? t : -1.0);
+}
+// Description:
+// Determine color contribution of a lightsource
+Color __device__
+cudaShadedColor(LIGHT *light, const RAY &reflectedRay, const Vec3d &normal, QUADRIC *obj)
+{
+   double ldot = light->m_direction | normal;
+   Color reflectedColor = Color(0.0);
+
+   // lambertian reflection model
+   if (ldot > 0.0)
+      reflectedColor += obj->m_reflectance * (light->m_color * ldot);
+
+   // updated with ambient lightning as in:
+   // [GENERALISED AMBIENT REFLECTION MODELS FOR LAMBERTIAN AND PHONG SURFACES, Xiaozheng Zhang and Yongsheng Gao]
+//   reflectedColor += obj->ambient() * g_sceneCuda.ambience;
+
+   // specular part
+   double spec = reflectedRay.m_direction | light->m_direction;
+   if (spec > 0.0) {
+      spec = obj->m_specular * pow(spec, obj->m_specularExp);
+      reflectedColor += light->m_color * spec;
+   }
+
+   return Color(reflectedColor);
+}
+
+
+Color __device__
+cudaShade(RAY *thisRay, Vec3d d_origin, Vec3d d_direction, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList, int lightListSize, Color background)
+{
+    Color currentColor(0.0);
+    for (int i=0; i<5; i++) {
+        QUADRIC *closest = NULL;
+        double tMin = DBL_MAX;
+
+        // find closest object that intersects
+        for (int j=0; j<objListSize; j++)
+        {
+            double t = cudaIntersect(*thisRay, d_objList[j]);
+            if (0.0 < t && t < tMin) {
+                tMin = t;
+                closest = &d_objList[j];
+}
+        }
+
+        // no object hit -> ray goes to infinity
+        if (closest == NULL) {
+            if (i == 0) {
+                return background; // background color
+            }
+            else {
+                return Color(0.0);         // black
+            }
+        }
+        else {
+            // reflection
+            Vec3d intersectionPosition(d_origin + (d_direction * tMin));
+            Vec3d normal(cudaGetNormal(intersectionPosition, *closest));
+            RAY reflectedRay;
+            reflectedRay.m_origin = intersectionPosition;
+            reflectedRay.m_direction = d_direction.getReflectedAt(normal).getNormalized();
+            reflectedRay.m_depth = i+1;
+
+            // calculate lighting
+            for (int j=0; j<lightListSize; j++) {
+
+                // where is the lightsource ?
+                RAY rayoflight;
+                rayoflight.m_origin = intersectionPosition;
+                rayoflight.m_direction = d_lightList[j].m_direction;
+                rayoflight.m_depth = 0;
+                bool something_intersected = false;
+
+                // where are the objects ?
+                for (int k=0; k<objListSize; k++) {
+
+                    double t = cudaIntersect(rayoflight, d_objList[k]);
+                    if (t > 0.0) {
+                        something_intersected = true;
+                        break;
+                    }
+
+                } // for all obj
+
+                // is it visible ?
+                if (! something_intersected)
+                    currentColor += cudaShadedColor(&d_lightList[j], reflectedRay, normal, closest);
+
+            } // for all lights
+
+            // could be right...
+            currentColor *= closest->m_mirror;
+        }
+   }
+   return Color(currentColor);
+}
+
 
 Raytracer::Raytracer():
     m_isFileLoaded(false),
@@ -121,17 +264,8 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 }
 
 void __global__
-initPropertiesKernel(GeoObject* d_objList, GeoObjectProperties* d_objPropList, int d_objListSize, LightObject* d_lightList, LightObjectProperties* d_lightPropList, int d_lightListSize) {
-    // setup the objects properties one by one, since we needed to copy them by hand into different lists (objPropList and lightPropList)
-    for (int i=0; i<d_objListSize; i++)
-        d_objList[i].setProperties(&d_objPropList[i]);
-    for (int i=0; i<d_lightListSize; i++)
-        d_lightList[i].setProperties(&d_lightPropList[i]);
-}
-
-void __global__
 renderKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, double fovy, Color backgroundCol, bool antialiasing,
-                GeoObject* d_objList, int objListSize, LightObject* d_lightList, int lightListSize)
+                QUADRIC* d_objList, int objListSize, LIGHT* d_lightList, int lightListSize)
 {
     // find out id of this thread
     unsigned sx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -163,11 +297,14 @@ renderKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d u
     Vec3d dir = point - eyepoint;
 
     // create ray from view.eyepoint to view.lookat
-    Ray theRay(eyepoint,dir.getNormalized(),0);
+    RAY theRay;
+    theRay.m_origin = eyepoint;
+    theRay.m_direction = dir.getNormalized();
+    theRay.m_depth = 0;
 
     // compute the color
     Color col;
-    theRay.shade(&theRay, eyepoint, point, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
+    cudaShade(&theRay, eyepoint, point, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
 
     // in case we are using antialiasing, calculate the color of this pixel by averaging
     if (antialiasing) {
@@ -188,8 +325,11 @@ renderKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d u
                 Vec3d superSampleDir = superSamplePoint - eyepoint;
 
                 // create ray from view.eyepoint to view.lookat
-                Ray theRay(eyepoint,superSampleDir.getNormalized(),0);
-                col += theRay.shade(&theRay,eyepoint,superSamplePoint, d_objList, objListSize, d_lightList, lightListSize, backgroundCol)*0.2;
+                RAY theRayA;
+                theRayA.m_origin = eyepoint;
+                theRayA.m_direction = superSampleDir.getNormalized();
+                theRayA.m_depth = 0;
+                col += cudaShade(&theRay,eyepoint,superSamplePoint, d_objList, objListSize, d_lightList, lightListSize, backgroundCol)*0.2;
                 //color, recursive_ray_trace(eye, ray, 0));
             }
         }
