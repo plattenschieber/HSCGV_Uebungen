@@ -347,17 +347,15 @@ renderKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d u
 void
 Raytracer::initCuda() {
     // get some space for the objects and their properties (
-    gpuErrchk (cudaMalloc((void **) &d_objList, sizeof(GeoObject) * g_objectList.size()));
-    gpuErrchk (cudaMalloc((void **) &d_objPropList, sizeof(GeoObjectProperties) * g_objectList.size()));
-    gpuErrchk (cudaMalloc((void **) &d_lightList, sizeof(LightObject) * g_lightList.size()));
-    gpuErrchk (cudaMalloc((void **) &d_lightPropList, sizeof(LightObjectProperties) * g_lightList.size()));
-
     gpuErrchk (cudaMemcpy(d_objList, g_objectList.data(), sizeof(GeoObject) * g_objectList.size(), cudaMemcpyHostToDevice));
     gpuErrchk (cudaMemcpy(d_objPropList, g_objectList.data(), sizeof(GeoObjectProperties) * g_objectList.size(), cudaMemcpyHostToDevice));
     gpuErrchk (cudaMemcpy(d_lightList, g_objectList.data(), sizeof(LightObject) * g_lightList.size(), cudaMemcpyHostToDevice));
     gpuErrchk (cudaMemcpy(d_lightPropList, g_objectList.data(), sizeof(LightObjectProperties) * g_lightList.size(), cudaMemcpyHostToDevice));
 
     initPropertiesKernel<<<1,1>>>(d_objList, d_objPropList, g_objectList.size(), d_lightList, d_lightPropList, g_lightList.size());
+    gpuErrchk (cudaMalloc((void **) &d_objList, sizeof(QUADRIC) * g_objectList.size()));
+    gpuErrchk (cudaMalloc((void **) &d_lightList, sizeof(LIGHT) * g_lightList.size()));
+
  }
 
 //-------------------------------------------------------------------------------------------------
