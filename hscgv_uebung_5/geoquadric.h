@@ -36,7 +36,6 @@ class GeoQuadric : public GeoObject
       //! Compute intersection of ray with quadric.
       virtual double intersect(const Ray &r) const;
 
-   private:
       //! parameters of the equation describing the quadric.
       double m_a,m_b,m_c,m_d,m_e,m_f,m_g,m_h,m_j,m_k;
 };
