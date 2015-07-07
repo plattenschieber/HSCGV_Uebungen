@@ -396,7 +396,6 @@ void
 Raytracer::renderCuda(float *cudaData, int xRes, int yRes)
 {
     // RAY TRACING:
-    initCuda();
     dim3 block(16, 16);
     dim3 grid(div_up(xRes, block.x), div_up(yRes, block.y));
 
