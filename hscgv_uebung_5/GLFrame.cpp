@@ -250,6 +250,20 @@ static void matMult(GLfloat *out, const GLfloat *a, const GLfloat *b)
 
     memcpy(out, n, sizeof(n));
 }
+static Vec3d operator *(const GLfloat *a, const Vec3d &b)
+{
+    // handle case of out==a or out==b
+    Vec3d n;
+
+    for(int i=0; i<3; i++) {
+        n[i] = 0.0;
+        for(int j=0; j<3; j++) {
+            n[i] += a[i*4+j]*b[j];
+        }
+    }
+
+    return n;
+}
 
 static void matRot(GLfloat *out, const GLfloat *a, const GLfloat rad)
 {
@@ -395,16 +409,12 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
         if(d > 0.0001)
         {
             float a[4] = {dy/d, -dx/d, 0.0, 0.0}; // rotation axis
-            GLfloat inc[16];
-            matRot(inc, a, d*5);
+            GLfloat rot[16];
+            matRot(rot, a, d*5);
 
             // multiply transformation matrix with eyepoint to get new perspective
-            Vec3d eyeg = Vec3d(g_scene.view.eyepoint);
-            GLfloat eye[4] = {eyeg[0],eyeg[1],eyeg[2],.0};
-            matMult(eye, inc, eye);
-            for (int i=0;i<3;i++)
-                g_scene.view.eyepoint[i] = eye[i];
-
+            Vec3d eyeg = g_scene.view.eyepoint;
+            g_scene.view.eyepoint = rot * eyeg;
         }
     }
     else if(middleButton)
