@@ -350,30 +350,32 @@ Raytracer::initCuda() {
     gpuErrchk (cudaMalloc((void **) &d_objList, sizeof(QUADRIC) * g_objectList.size()));
     gpuErrchk (cudaMalloc((void **) &d_lightList, sizeof(LIGHT) * g_lightList.size()));
 
-    std::vector<QUADRIC *>quads;
-    std::vector<LIGHT *>lights;
+    std::vector<QUADRIC> quads;
+    std::vector<LIGHT> lights;
     // prepare the light- and geoobjects for transfer to GPU
     for (unsigned int i=0; i<g_objectList.size(); i++) {
-        QUADRIC *tmp;
+        QUADRIC tmp;
         GeoQuadric *gq = (GeoQuadric *)g_objectList.at(i);
-        tmp->m_a = gq->m_a;
-        tmp->m_b = gq->m_b;
-        tmp->m_c = gq->m_c;
-        tmp->m_d = gq->m_d;
-        tmp->m_e = gq->m_e;
-        tmp->m_f = gq->m_f;
-        tmp->m_g = gq->m_g;
-        tmp->m_h = gq->m_h;
-        tmp->m_ambient = gq->ambient();
-        tmp->m_mirror = gq->mirror();
-        tmp->m_reflectance = gq->reflectance();
-        tmp->m_specular = gq->specular();
-        tmp->m_specularExp = gq->specularExp();
+        tmp.m_a = gq->m_a;
+        tmp.m_b = gq->m_b;
+        tmp.m_c = gq->m_c;
+        tmp.m_d = gq->m_d;
+        tmp.m_e = gq->m_e;
+        tmp.m_f = gq->m_f;
+        tmp.m_g = gq->m_g;
+        tmp.m_h = gq->m_h;
+        tmp.m_ambient = gq->ambient();
+        tmp.m_mirror = gq->mirror();
+        tmp.m_reflectance = gq->reflectance();
+        tmp.m_specular = gq->specular();
+        tmp.m_specularExp = gq->specularExp();
         quads.push_back(tmp);
-        LIGHT *tmp2;
+    }
+    for (unsigned int i=0; i<g_lightList.size(); i++) {
+        LIGHT tmp2;
         LightObject *lo = g_lightList.at(i);
-        tmp2->m_color = lo->color();
-        tmp2->m_direction = lo->direction();
+        tmp2.m_color = lo->color();
+        tmp2.m_direction = lo->direction();
         lights.push_back(tmp2);
     }
     gpuErrchk (cudaMemcpy(d_objList, quads.data(), sizeof(QUADRIC) * g_objectList.size(), cudaMemcpyHostToDevice));
