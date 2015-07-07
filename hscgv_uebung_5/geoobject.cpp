@@ -8,31 +8,31 @@
 
 /* member access functions for GeoObjectProperties */
 
-inline Color
+Color
 GeoObjectProperties::ambient() const
 {
    return m_ambient;
 }
 
-inline Vec3d
+Vec3d
 GeoObjectProperties::reflectance() const
 {
    return m_reflectance;
 }
 
-inline double
+double
 GeoObjectProperties::specular() const
 {
    return m_specular;
 }
 
-inline int
+int
 GeoObjectProperties::specularExp() const
 {
    return m_specularExp;
 }
 
-inline double
+double
 GeoObjectProperties::mirror() const
 {
    return m_mirror;
@@ -40,7 +40,7 @@ GeoObjectProperties::mirror() const
 
 /* access functions for the properties of a GeoObject */
 
-inline Color __host__
+Color
 GeoObject::ambient() const
 {
     if (m_properties)
@@ -50,7 +50,7 @@ GeoObject::ambient() const
         return Vec3d(0.0);
 }
 
-inline Vec3d
+Vec3d
 GeoObject::reflectance() const
 {
    if (m_properties)
@@ -60,7 +60,7 @@ GeoObject::reflectance() const
        return Vec3d(0.0);
 }
 
-inline double
+double
 GeoObject::specular() const
 {
    if (m_properties)
@@ -70,7 +70,7 @@ GeoObject::specular() const
        return 0.0;
 }
 
-inline double
+double
 GeoObject::specularExp() const
 {
    if (m_properties)
@@ -80,7 +80,7 @@ GeoObject::specularExp() const
        return 0.0;
 }
 
-inline double
+double
 GeoObject::mirror() const
 {
    if (m_properties)
@@ -90,7 +90,7 @@ GeoObject::mirror() const
        return 0.0;
 }
 
-inline void
+void
 GeoObject::setProperties(GeoObjectProperties *p)
 {
    m_properties = p;

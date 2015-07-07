@@ -23,18 +23,18 @@ class Ray
 {
    public:
       // CONSTRUCTORS
-      __host__ __device__ Ray();
-      __host__ __device__ Ray(const Ray &r);
-      __host__ Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll);
-      __device__ Ray(const Vec3d o, const Vec3d d, unsigned int i);
-      __host__ __device__ ~Ray();
+      Ray();
+      Ray(const Ray &r);
+      Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll);
+      Ray(const Vec3d o, const Vec3d d, unsigned int i);
+      ~Ray();
 
-      const Color __host__ shade() const;
-      const Color __device__ shade(Ray *thisRay, Vec3d d_origin, Vec3d d_direction, GeoObject *d_objList, int objListSize, LightObject *d_lightList, int lightListSize, Color background) ;
+      const Color shade() const;
+      const Color shade(Ray *thisRay, Vec3d d_origin, Vec3d d_direction, GeoObject *d_objList, int objListSize, LightObject *d_lightList, int lightListSize, Color background) ;
 
       // access methods
-      Vec3d __host__ __device__ origin() const;
-      Vec3d __host__ __device__ direction() const;
+      Vec3d origin() const;
+      Vec3d direction() const;
 
    private:
       Vec3d        m_origin;
@@ -44,6 +44,5 @@ class Ray
       std::vector<GeoObject*>   *m_objList;
       std::vector<LightObject*> *m_lightList;
 };
-#include "ray.inl"
 
 #endif /* RAY_HH */

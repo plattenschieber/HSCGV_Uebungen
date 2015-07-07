@@ -8,14 +8,14 @@
 
 // Description:
 // Constructor.
-inline LightObject::LightObject()
+LightObject::LightObject()
 : m_properties(NULL)
 {
 }
 
 // Description:
 // explicit parametrization
-inline LightObject::LightObject(const Vec3d& dir, const Color& col)
+LightObject::LightObject(const Vec3d& dir, const Color& col)
 {
    m_properties = new LightObjectProperties();
    m_properties->direction = dir.getNormalized();
@@ -24,12 +24,12 @@ inline LightObject::LightObject(const Vec3d& dir, const Color& col)
 
 // Description:
 // Destructor.
-inline LightObject::~LightObject()
+LightObject::~LightObject()
 {
    delete m_properties;
 }
 
-inline __device__ __host__ Color
+Color
 LightObject::color() const
 {
    if (m_properties)
@@ -39,7 +39,7 @@ LightObject::color() const
    return Color(0.0);
 }
 
-inline __device__ __host__ Vec3d
+Vec3d
 LightObject::direction() const
 {
    if (m_properties)
@@ -49,7 +49,7 @@ LightObject::direction() const
    return Vec3d(0.0);
 }
 
-inline void __host__ __device__
+void
 LightObject::setProperties(LightObjectProperties *p)
 {
    m_properties = p;

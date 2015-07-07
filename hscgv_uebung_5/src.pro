@@ -8,10 +8,10 @@ HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h pa
 SOURCES=        main.cpp \
     ApplicationWindow.cpp \
     GLFrame.cpp \
-    ray.inl \
-    geoobject.inl \
-    geoquadric.inl \
-    lightobject.inl
+    geoquadric.cpp \
+    lightobject.cpp \
+    ray.cpp \
+    geoobject.cpp
 win32:SOURCES*= xgetopt.cpp
 YACCSOURCES=    input.y
 CUDA_SOURCES += \

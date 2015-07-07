@@ -13,7 +13,7 @@
 
 // Description:
 // Constructor.
-inline Ray::Ray( )
+Ray::Ray( )
 : m_origin()
 , m_direction()
 , m_depth(0)
@@ -24,7 +24,7 @@ inline Ray::Ray( )
 
 // Description:
 // Copy-Constructor.
-inline Ray::Ray( const Ray &r )
+Ray::Ray( const Ray &r )
 {
    // copy it ! initialization is not enough !
    m_origin    = r.m_origin;
@@ -36,7 +36,7 @@ inline Ray::Ray( const Ray &r )
 
 // Description:
 // Constructor with explicit parameters
-inline Ray::Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll)
+Ray::Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll)
 {
    // copy it ! initialization is not enough !
    m_origin    = o;
@@ -48,7 +48,7 @@ inline Ray::Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoO
 
 // Description:
 // Constructor with explicit parameters
-inline __device__ Ray::Ray(const Vec3d o, const Vec3d d, unsigned int i)
+Ray::Ray(const Vec3d o, const Vec3d d, unsigned int i)
 {
    // copy it ! initialization is not enough !
    m_origin    = o;
@@ -58,13 +58,13 @@ inline __device__ Ray::Ray(const Vec3d o, const Vec3d d, unsigned int i)
 
 // Description:
 // Destructor.
-inline Ray::~Ray( )
+Ray::~Ray( )
 {
 }
 
 // Description:
 // Determine color contribution of a lightsource
-inline Color
+Color
 shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &normal, GeoObject *obj)
 {
    double ldot = light->direction() | normal;
@@ -90,7 +90,7 @@ shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &normal, Ge
 
 // Description:
 // Determine color of this ray by tracing through the scene
-inline const Color
+const Color
 Ray::shade() const
 {
    GeoObject *closest = NULL;
@@ -162,13 +162,13 @@ Ray::shade() const
    }
 }
 
-inline Vec3d
+Vec3d
 Ray::origin() const
 {
    return Vec3d(m_origin);
 }
 
-inline Vec3d
+Vec3d
 Ray::direction() const
 {
    return Vec3d(m_direction);

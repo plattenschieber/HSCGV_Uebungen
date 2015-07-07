@@ -74,6 +74,5 @@ class GeoObject
    protected:
       GeoObjectProperties *m_properties;
 };
-#include "geoobject.inl"
 
 #endif /* GEOOBJECT_HH */

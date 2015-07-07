@@ -29,14 +29,13 @@ class LightObject
       virtual ~LightObject();
 
       // access methods
-      Color __device__ __host__ color() const;
-      Vec3d __device__ __host__ direction() const;
-      void __host__ __device__ setProperties(LightObjectProperties *p);
+      Color color() const;
+      Vec3d direction() const;
+      void setProperties(LightObjectProperties *p);
 
    protected:
       LightObjectProperties *m_properties;
 };
 
-#include "lightobject.inl"
 
 #endif /* LIGHTOBJECT_HH */
