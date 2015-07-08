@@ -99,6 +99,8 @@ Color __device__
 cudaShade(RAY *thisRay, Vec3d d_origin, Vec3d d_direction, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList, int lightListSize, Color background)
 {
     Color currentColor(0.0);
+    Color::value_type currentMirror(1.0);
+    // iterate at most 5 times or until the ray hits the background
     for (int i=0; i<5; i++) {
         QUADRIC *closest = NULL;
         double tMin = DBL_MAX;
@@ -153,13 +155,14 @@ cudaShade(RAY *thisRay, Vec3d d_origin, Vec3d d_direction, QUADRIC *d_objList, i
                 } // for all obj
 
                 // is it visible ?
-                if (! something_intersected)
-                    currentColor += cudaShadedColor(&d_lightList[j], reflectedRay, normal, closest);
+                if (!something_intersected)
+                    currentColor += cudaShadedColor(&d_lightList[j], reflectedRay, normal, closest)*currentMirror;
+
 
             } // for all lights
 
             // could be right...
-            currentColor *= closest->m_mirror;
+            currentMirror *= closest->m_mirror;
         }
    }
    return Color(currentColor);

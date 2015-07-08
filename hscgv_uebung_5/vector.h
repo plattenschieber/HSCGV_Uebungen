@@ -41,6 +41,9 @@ operator>>( std::istream& is, Vector<Scalar>& i );
 template<class Scalar>
 class Vector
 {
+    public:
+        typedef Scalar value_type;
+
    public:
       //! Constructor
       __host__ __device__ Vector(void );
