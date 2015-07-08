@@ -60,12 +60,9 @@ class ApplicationWindow : public QMainWindow
         void openFile(const QString &filename) const;
 
         //! render mode was changed
-        void renderMode(int mode) const;
+        void renderMode(bool mode) const;
 
     protected:
-        //! initialize application state
-        void initState() const;
-
         //! our main widget in the application is a OGLCanvas
         GLFrame *m_frame;
 
@@ -93,17 +90,9 @@ class ApplicationWindow : public QMainWindow
         //! update FPS display
         void updateFps();
 
-        //! start and stop render timer
-        void animate(bool on);
-
-        //! deduce render mode from menu state
-        int getRenderMode() const;
-
-        //! make sure that render mode signal is triggerd
-        void renderModeChanged() const;
-
         //! we want to have some nice output
-        void antialiasingChanged() const;
+        void antialiasing(bool on);
+
 
     private:
        //! store status bar message

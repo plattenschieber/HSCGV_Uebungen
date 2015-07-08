@@ -14,20 +14,25 @@
 #include <QDebug>
 
 #include <GL/glew.h>
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <cuda_gl_interop.h>
 
 #include "GLFrame.h"
 
 
 GLFrame::GLFrame(ApplicationWindow *parent)
 : QGLWidget(parent)
+, m_antialiasing(false)
 , m_axesVisible(true)
 , m_modelVisible(true)
 , m_frameCounter(0)
 , m_raytracer(NULL)
+, m_raytracingNeeded(false)
 , m_renderMode(CPU)
 {
     // set minium size of rendering area
-    setMinimumSize(300,300);
+    setMinimumSize(150,150);
 
     // setup OpenGL buffers
     QGLFormat format;
@@ -53,6 +58,8 @@ GLFrame::GLFrame(ApplicationWindow *parent)
 GLFrame::~GLFrame()
 {
     glDeleteTextures(1, &m_texHandle);
+    cudaFree(m_cudaData);
+    cudaDeviceReset();
 }
 
 // ---------------------------- Basic OpenGL Widget Methods ------------------
@@ -69,6 +76,7 @@ void GLFrame::initializeGL()
     glEnable(GL_DEPTH_TEST);
     // allocate a texture name
     glGenTextures( 1, &m_texHandle );CHECKGL;
+    g_scene.view.aspect = m_aspect;
 }
 
 void GLFrame::loadTexture()
@@ -87,9 +95,13 @@ void GLFrame::loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-    // TODO adaptive size
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 600 , 600, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)m_data);CHECKGL;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT, (GLvoid*)m_data.data()); CHECKGL;
 
+    if (m_renderMode == GPU) {
+        // register this texture with CUDA
+    }
+
+//    cudaGLMapBufferObject((void**)&m_currentDevice, m_currentVBO_CUDA);
     glBindTexture(GL_TEXTURE_2D, 0);
 
 }
@@ -99,10 +111,14 @@ void GLFrame::loadTexture()
 void GLFrame::resizeGL(int w, int h)
 {
     m_aspect = (GLdouble)w / (GLdouble)h;
+    g_scene.view.aspect = m_aspect;
     m_width = w;
     m_height = h;
 
+    m_sizeTex = sizeof(float) * 3 * m_width * m_height;
+    m_data.resize(m_sizeTex);
     glViewport(0, 0, (GLint)w, (GLint)h);
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -149,17 +165,7 @@ void GLFrame::paintGL()
     if(m_axesVisible)
         drawCoordSys();
 
-    switch(m_renderMode)
-    {
-    case CPU:
-        drawScene(m_renderMode);
-        break;
-    case GPU:
-        drawScene(m_renderMode);
-        break;
-    }
-
-    loadTexture();
+    renderScene();
     drawFullScreenQuad();
 
     // draw transparent light source last
@@ -206,6 +212,7 @@ void GLFrame::mouseMoveEvent(QMouseEvent *m)
     m_lastMouseY = mouseY;
 
     // force openGL to redraw the changes
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -217,6 +224,7 @@ void GLFrame::wheelEvent(QWheelEvent *ev)
     else
         adjustCam(false, false, true, 0, -0.001*ev->delta());
 
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -243,6 +251,20 @@ static void matMult(GLfloat *out, const GLfloat *a, const GLfloat *b)
     }
 
     memcpy(out, n, sizeof(n));
+}
+static Vec3d operator *(const GLfloat *a, const Vec3d &b)
+{
+    // handle case of out==a or out==b
+    Vec3d n;
+
+    for(int i=0; i<3; i++) {
+        n[i] = 0.0;
+        for(int j=0; j<3; j++) {
+            n[i] += a[i*4+j]*b[j];
+        }
+    }
+
+    return n;
 }
 
 static void matRot(GLfloat *out, const GLfloat *a, const GLfloat rad)
@@ -366,6 +388,7 @@ void GLFrame::adjustLight(bool leftButton, bool middleButton, bool rightButton,
         matMult(inc, invCam, inc);
         matMult(m_lightRot, inc, m_lightRot);
     }
+    m_raytracingNeeded = true;
 }
 
 // interpret mouse movement in order to move the camera or adjust
@@ -388,12 +411,12 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
         if(d > 0.0001)
         {
             float a[4] = {dy/d, -dx/d, 0.0, 0.0}; // rotation axis
-            GLfloat inc[16];
-            matRot(inc, a, d*10);
+            GLfloat rot[16];
+            matRot(rot, a, d*5);
 
-            // multiply viewing transformation with incremental transformation
-            // to become the new viewing transformation
-            matMult(m_camRot, inc, m_camRot);
+            // multiply transformation matrix with eyepoint to get new perspective
+            Vec3d eyeg = g_scene.view.eyepoint;
+            g_scene.view.eyepoint = rot * eyeg;
         }
     }
     else if(middleButton)
@@ -403,26 +426,39 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
     }
     else if(rightButton)
     {
+
         // prevent negative fieldOfView
         if(dy < -0.5)
             dy = 0.5;
+
+        // move eyepoint into scrolling direction
+        g_scene.view.eyepoint += Vec3d(.0,.0,dy*1000);
 
         m_fieldOfView *= 1.0+dy;
         if(m_fieldOfView > 160.0)
             m_fieldOfView = 160.0;
     }
+    m_raytracingNeeded = true;
 }
 
 // notify when the drawMode should be changed
-void GLFrame::setRenderMode(int mode)
+void GLFrame::setRenderMode(bool mode)
 {
-    m_renderMode = (RenderMode)mode;
+    m_renderMode = mode ? GPU : CPU;//(RenderMode)mode;
+    m_raytracingNeeded = true;
     updateGL();
 }
 
 void GLFrame::setAxesVisibility(bool on)
 {
     m_axesVisible = on;
+    updateGL();
+}
+
+void GLFrame::setAntialiasing(bool on)
+{
+    m_antialiasing = on;
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -433,6 +469,7 @@ void GLFrame::resetLight()
 
     matIdent(m_lightRot);
 
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -444,6 +481,7 @@ void GLFrame::resetCam()
     matIdent(m_camRot);
 
     m_fieldOfView = 15.0;
+    m_raytracingNeeded = true;
     updateGL();
 }
 
@@ -501,7 +539,7 @@ void GLFrame::drawFullScreenQuad()
 
        glBindTexture(GL_TEXTURE_2D, m_texHandle);
 
-       glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
        // set to red
        glColor3f(1.0,0.0,.0);
 
@@ -519,32 +557,43 @@ void GLFrame::drawFullScreenQuad()
 
 }
 
-// draw model
-void GLFrame::drawScene(RenderMode mode)
+// render scene and save it into a texture
+void GLFrame::renderScene()
 {
-    if(!m_raytracer || !m_raytracer->m_isFileLoaded)
+    // only render the scene if there is some intialized raytracer
+    if(!m_raytracingNeeded || !m_raytracer || !m_raytracer->m_isFileLoaded)
         return;
-
-    // Draw Model/Scene
-    switch(mode)
+    // draw scene
+    switch(m_renderMode)
     {
         case CPU:
-            m_data = (float*)malloc(sizeof(float) * 3 * m_height * m_width);
-            m_raytracer->start(m_data);
-            free(m_data);
+            m_raytracer->render(m_data.data(), m_width, m_height);
             break;
         case GPU:
+            cudaMalloc(&m_cudaData,m_sizeTex);
+            m_raytracer->renderCuda(m_cudaData, m_width, m_height);
+            cudaMemcpy(m_data.data(),m_cudaData, m_sizeTex, cudaMemcpyDeviceToHost);
+            cudaFree(m_cudaData);
             break;
     }
+    // load texture onto the cube
+    loadTexture();
+    m_raytracingNeeded = true;
 }
+
 
 void GLFrame::loadScene(const QString &filename)
 {
+    // create a new raytracer
     delete m_raytracer;
-
-    m_raytracer = new Raytracer(filename.toStdString().c_str(),false);
+    m_raytracer = new Raytracer(filename.toStdString().c_str(), m_antialiasing);
+    // initialize the cuda structure
+    m_raytracer->initCuda();
+    // and beg for drawing
+    m_raytracingNeeded = true;
     updateGL();
 }
+
 
 int GLFrame::frameCounter() const
 {

@@ -29,10 +29,9 @@ ApplicationWindow::ApplicationWindow()
     m_frame = new GLFrame(this);
     setCentralWidget(m_frame);
 
-    QActionGroup *renderModeActions = new QActionGroup(this);
-    renderModeActions->addAction(ui.actionCPU);
+/*    QActionGroup *renderModeActions = new QActionGroup(this);
     renderModeActions->addAction(ui.actionGPU);
-    renderModeActions->addAction(ui.actionAntialiasing);
+    renderModeActions->addAction(ui.actionAntialiasing);*/
 
     // connect actions
     connect(ui.actionQuit, SIGNAL(triggered()), this, SLOT(fileQuit()));
@@ -40,11 +39,9 @@ ApplicationWindow::ApplicationWindow()
     connect(ui.actionResetCamera, SIGNAL(triggered()), this, SIGNAL(resetCam()));
     connect(ui.actionResetLight, SIGNAL(triggered()), this, SIGNAL(resetLight()));
 
-    connect(ui.actionAnimate, SIGNAL(toggled(bool)), this, SLOT(animate(bool)));
+    connect(ui.actionAntialiasing, SIGNAL(toggled(bool)), SLOT(antialiasing(bool)));
 
-    connect(ui.actionCPU, SIGNAL(toggled(bool)), SLOT(renderModeChanged()));
-    connect(ui.actionGPU, SIGNAL(toggled(bool)), SLOT(renderModeChanged()));
-    connect(ui.actionAntialiasing, SIGNAL(toggled(bool)), SLOT(antialiasingChanged()));
+    connect(ui.actionGPU, SIGNAL(toggled(bool)), m_frame, SLOT(setRenderMode(bool)));
 
     // ----- SIGNALS -----
 
@@ -57,7 +54,7 @@ ApplicationWindow::ApplicationWindow()
     connect(ui.actionLoadFile, SIGNAL(triggered()), this, SLOT(loadFile()));
     connect(this, SIGNAL(openFile(const QString&)), m_frame, SLOT(loadScene(const QString&)));
 
-    connect(this, SIGNAL(renderMode(int)), m_frame, SLOT(setRenderMode(int)));
+    connect(this, SIGNAL(renderMode(bool)), m_frame, SLOT(setRenderMode(bool)));
 
     // timer for updating fps display
     QTimer *timer = new QTimer(this);
@@ -67,10 +64,8 @@ ApplicationWindow::ApplicationWindow()
 
     // timer for continuous rendering
     m_trigger = new QTimer(this);
-    m_trigger->setInterval(1); // every ms
     connect(m_trigger, SIGNAL(timeout()), m_frame, SLOT(updateGL()));
-
-    initState();
+    m_trigger->start();
 
     // load standard scene
 //    if(qApp->argc() > 1)
@@ -78,17 +73,6 @@ ApplicationWindow::ApplicationWindow()
 //    else
 //        loadFile("REF1.data");
 }
-
-void ApplicationWindow::initState() const
-{
-    // trigger toggles the action's state
-
-    ui.actionAnimate->setChecked(true);
-    ui.actionAnimate->trigger();
-
-    ui.actionCPU->trigger();
-}
-
 
 // destroy the application window
 ApplicationWindow::~ApplicationWindow()
@@ -112,19 +96,14 @@ void ApplicationWindow::updateMessage(const QString& message)
     statusBar()->showMessage(message);
 }
 
+
 void ApplicationWindow::updateFps()
 {
     static int oldFrames = 0;
-    m_secondsToDisplay--;
     int frames = m_frame->frameCounter() - oldFrames;
     oldFrames = m_frame->frameCounter();
 
-    if(m_secondsToDisplay >= 0)
-        statusBar()->showMessage(m_message);
-    else if(frames > 0)
-        statusBar()->showMessage(QString::number(frames) + " f/s");
-    else
-        statusBar()->showMessage("Use mouse buttons and wheel to move camera, hold shift to move light");
+    statusBar()->showMessage(QString::number(frames) + " f/s");
 }
 
 void ApplicationWindow::loadFile()
@@ -148,30 +127,9 @@ void ApplicationWindow::loadFile(QString filename)
         emit openFile(filename);
 }
 
-void ApplicationWindow::animate(bool on)
+void ApplicationWindow::antialiasing(bool on)
 {
-    if(on)
-        m_trigger->start();
-    else
-        m_trigger->stop();
+    m_frame->m_antialiasing = on;
 }
 
 
-int ApplicationWindow::getRenderMode() const
-{
-    if(ui.actionCPU->isChecked())
-        return GLFrame::CPU;
-    else //if(ui.actionGPU->isChecked())
-        return GLFrame::GPU;
-}
-
-void ApplicationWindow::renderModeChanged() const
-{
-    emit renderMode(getRenderMode());
-}
-
-void ApplicationWindow::antialiasingChanged() const
-{
-    // TODO: change to appropriate antialiasing set method
-    emit renderMode(getRenderMode());
-}

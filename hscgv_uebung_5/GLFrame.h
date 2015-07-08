@@ -10,12 +10,18 @@
 #ifndef GLFRAME_H
 #define GLFRAME_H
 
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#else
 #include <GL/glew.h>
 #include <GL/glu.h>
+#endif
 #include <QGLWidget>
 #include <QTime>
 #include <qdebug.h>
 #include "raytracer.h"
+#include "param.h"
 
 Q_DECLARE_METATYPE(unsigned char *)
 
@@ -68,6 +74,9 @@ public:
     //! accessor for frame counter
     int frameCounter() const;
 
+    //! antialiasing
+    bool m_antialiasing;
+
     // (Some Slots and Signals)
 signals:
     //! show some information to the user
@@ -75,9 +84,11 @@ signals:
 
 public slots:
     //! change render mode (wireframe, ...)
-    void setRenderMode(int mode);
+    void setRenderMode(bool mode);
     //! set visibility of coordinate axes
     void setAxesVisibility(bool on);
+    //! set antialising
+    void setAntialiasing(bool on);
     //! reset camera to default values
     void resetCam();
     //! reset light to default values
@@ -118,7 +129,7 @@ protected:
     void drawFullScreenQuad();
 
     //! draw scene
-    void drawScene(RenderMode mode);
+    void renderScene();
 
     //! load current raytracing scene into texture
     void loadTexture();
@@ -140,6 +151,8 @@ protected:
     int m_width;
     //! viewport height
     int m_height;
+    //! size of data
+    int m_sizeTex;
     //! viewport aspect ratio (determined by window size)
     GLfloat m_aspect;
     //! field of view
@@ -165,6 +178,11 @@ protected:
     
     //! the currently used texture cache
     GLuint m_texHandle;
+    //! the currently used VBO
+    GLuint m_currentVBO;
+    //! the currently used VBO in CUDA
+    struct cudaGraphicsResource* m_currentVBO_CUDA;
+
     //! axes visibility
     bool m_axesVisible;
     //! model visibility
@@ -175,7 +193,9 @@ protected:
 
     //! currently loaded scene
     Raytracer *m_raytracer;
-    float* m_data;
+    bool m_raytracingNeeded;
+    std::vector<float> m_data;
+    float* m_cudaData;
 
     //! how our model is to be drawn
     RenderMode m_renderMode;

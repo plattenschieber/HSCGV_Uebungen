@@ -13,7 +13,7 @@
 #include <iostream>
 #include <cmath>
 
-#include <types.h>
+#include "types.h"
 
 //! should we initialize with zero ?
 /*!
@@ -41,131 +41,134 @@ operator>>( std::istream& is, Vector<Scalar>& i );
 template<class Scalar>
 class Vector
 {
+    public:
+        typedef Scalar value_type;
+
    public:
       //! Constructor
-      Vector(void );
+      __host__ __device__ Vector(void );
 
       //! Copy-Constructor
-      Vector(const Vector<Scalar> &v );
+      __host__ __device__ Vector(const Vector<Scalar> &v );
 
       //! construct a Vector from one Scalar
-      Vector(Scalar);
+      __host__ __device__ Vector(Scalar);
 
       //! construct a Vector from three Scalars
-      Vector(Scalar, Scalar, Scalar);
+      __host__ __device__ Vector(Scalar, Scalar, Scalar);
 
       //! Assignment operator
-      const Vector<Scalar>& operator=  (const Vector<Scalar>& v);
+      __host__ __device__ const Vector<Scalar>& operator=  (const Vector<Scalar>& v);
 
       //! Assignment operator
-      const Vector<Scalar>& operator=  (Scalar s);
+       __device__ __host__ const Vector<Scalar>& operator=  (Scalar s);
 
       //! Assign and add operator
-      const Vector<Scalar>& operator+= (const Vector<Scalar>& v);
+       __device__ __host__ const Vector<Scalar>& operator+= (const Vector<Scalar>& v);
 
       //! Assign and add operator
-      const Vector<Scalar>& operator+= (Scalar s);
+       __device__ __host__ const Vector<Scalar>& operator+= (Scalar s);
 
       //! Assign and sub operator
-      const Vector<Scalar>& operator-= (const Vector<Scalar>& v);
+       __device__ __host__ const Vector<Scalar>& operator-= (const Vector<Scalar>& v);
 
       //! Assign and sub operator
-      const Vector<Scalar>& operator-= (Scalar s);
+       __device__ __host__ const Vector<Scalar>& operator-= (Scalar s);
 
       //! Assign and mult operator
-      const Vector<Scalar>& operator*= (const Vector<Scalar>& v);
+       __device__ __host__ const Vector<Scalar>& operator*= (const Vector<Scalar>& v);
 
       //! Assign and mult operator
-      const Vector<Scalar>& operator*= (Scalar s);
+       __device__ __host__ const Vector<Scalar>& operator*= (Scalar s);
 
       //! Assign and div operator
-      const Vector<Scalar>& operator/= (const Vector<Scalar>& v);
+       __device__ __host__ const Vector<Scalar>& operator/= (const Vector<Scalar>& v);
 
       //! Assign and div operator
-      const Vector<Scalar>& operator/= (Scalar s);
+       __device__ __host__ const Vector<Scalar>& operator/= (Scalar s);
 
       //! output operator
-         friend std::ostream& operator<< <>( std::ostream& os, const Vector<Scalar>& inst );
+          __device__ __host__ friend std::ostream& operator<< <>( std::ostream& os, const Vector<Scalar>& inst );
 
       //! input operator
          friend std::istream& operator>> <>( std::istream& is, Vector<Scalar>& inst );
 
       //! unary operator
-      Vector<Scalar> operator- () const;
+      __host__ __device__ Vector<Scalar> operator- () const;
 
       //! binary operator add
-      Vector<Scalar> operator+ (const Vector<Scalar>&) const;
+      __host__ __device__ Vector<Scalar> operator+ (const Vector<Scalar>&) const;
 
       //! binary operator add
-      Vector<Scalar> operator+ (Scalar) const;
+      __host__ __device__ Vector<Scalar> operator+ (Scalar) const;
 
       //! binary operator sub
-      Vector<Scalar> operator- (const Vector<Scalar>&) const;
+      __host__ __device__ Vector<Scalar> operator- (const Vector<Scalar>&) const;
 
       //! binary operator sub
-      Vector<Scalar> operator- (Scalar) const;
+      __host__ __device__ Vector<Scalar> operator- (Scalar) const;
 
       //! binary operator mult
-      Vector<Scalar> operator* (const Vector<Scalar>&) const;
+      __host__ __device__ Vector<Scalar> operator* (const Vector<Scalar>&) const;
 
       //! binary operator mult
-      Vector<Scalar> operator* (Scalar) const;
+      __host__ __device__ Vector<Scalar> operator* (Scalar) const;
 
       //! binary operator div
-      Vector<Scalar> operator/ (const Vector<Scalar>&) const;
+      __host__ __device__ Vector<Scalar> operator/ (const Vector<Scalar>&) const;
 
       //! binary operator div
-      Vector<Scalar> operator/ (Scalar) const;
+      __host__ __device__ Vector<Scalar> operator/ (Scalar) const;
 
       //! equality test operator
-      bool operator== (const Vector<Scalar>&) const;
+      __host__ __device__ bool operator== (const Vector<Scalar>&) const;
 
       //! inequality test operator
-      bool operator!= (const Vector<Scalar>&) const;
+      __host__ __device__ bool operator!= (const Vector<Scalar>&) const;
 
       //! scalar product
-      Scalar operator|( const Vector<Scalar> &v ) const;
+      __host__ __device__ Scalar operator|( const Vector<Scalar> &v ) const;
 
       //! norm
-      Scalar getNorm() const;
+      __host__ __device__ Scalar getNorm() const;
 
       //! normalize
-      Vector<Scalar> getNormalized() const;
+      __host__ __device__ Vector<Scalar> getNormalized() const;
 
       //! normalize and norm
-      Scalar normalize();
+      __host__ __device__ Scalar normalize();
 
       //! Vector product
-      Vector<Scalar> operator^( const Vector<Scalar> &v ) const;
+      __host__ __device__ Vector<Scalar> operator^( const Vector<Scalar> &v ) const;
 
       //! Projection normal to a vector
-      Vector<Scalar>	  getOrthogonalVector() const;
+      __host__ __device__ Vector<Scalar>	  getOrthogonalVector() const;
 
       //! Project into a plane
-      const Vector<Scalar>& projectNormalTo(const Vector<Scalar> &v);
+      __host__ __device__ const Vector<Scalar>& projectNormalTo(const Vector<Scalar> &v);
 
       //! Reflect at normal
-      Vector<Scalar>	  getReflectedAt(const Vector<Scalar>& n) const;
+      __host__ __device__ Vector<Scalar>	  getReflectedAt(const Vector<Scalar>& n) const;
 
       //! Refract at normal
-      Vector<Scalar>	  getRefractedAt(const Vector<Scalar>& n,
+      __host__ __device__ Vector<Scalar>	  getRefractedAt(const Vector<Scalar>& n,
             double index,
             bool& totalReflection) const;
 
       //! minimize
-      const Vector<Scalar> &minimize(const Vector<Scalar> &);
+      __host__ __device__ const Vector<Scalar> &minimize(const Vector<Scalar> &);
 
       //! maximize
-      const Vector<Scalar> &maximize(const Vector<Scalar> &);
+      __host__ __device__ const Vector<Scalar> &maximize(const Vector<Scalar> &);
 
       //! access operator
-      Scalar& operator[](unsigned int i);
+      __host__ __device__ Scalar& operator[](unsigned int i);
 
       //! access operator
-      const Scalar& operator[](unsigned int i) const;
+      __host__ __device__ const Scalar& operator[](unsigned int i) const;
 
       //! Get minimal vector length
-      static Scalar getEpsilon( );
+      __host__ __device__ static Scalar getEpsilon( );
 
    protected:
 
@@ -252,7 +255,7 @@ typedef Vector<double> Color;
 /*!
   Constructor.
  */
-template<class Scalar>
+template<class Scalar> __device__ __host__
 Vector<Scalar>::Vector( void )
 {
 #ifdef VECTOR_INIT_ZERO
@@ -265,7 +268,7 @@ Vector<Scalar>::Vector( void )
 /*!
   Copy-Constructor.
  */
-template<class Scalar>
+template<class Scalar> __device__ __host__
 Vector<Scalar>::Vector( const Vector<Scalar> &v )
 {
    m_value[0] = v.m_value[0];
@@ -281,7 +284,7 @@ Vector<Scalar>::Vector( const Vector<Scalar> &v )
   \param s The m_value to set
   \return The new Vector
  */
-template<class Scalar>
+template<class Scalar> __device__ __host__
 Vector<Scalar>::Vector(Scalar s )
 {
    m_value[0]= s;
@@ -297,7 +300,7 @@ Vector<Scalar>::Vector(Scalar s )
   \param s3 The value for the third Vector component
   \return The new Vector
  */
-template<class Scalar>
+template<class Scalar> __device__ __host__
 Vector<Scalar>::Vector(Scalar s1, Scalar s2, Scalar s3)
 {
    m_value[0]= s1;
@@ -311,7 +314,7 @@ Vector<Scalar>::Vector(Scalar s1, Scalar s2, Scalar s3)
   \param v Second vector to compute the product with
   \return A new Vector with the product values
  */
-template<class Scalar>
+template<class Scalar> __device__ __host__
 Vector<Scalar> 
 Vector<Scalar>::operator^( const Vector<Scalar> &v ) const
 {
@@ -326,7 +329,7 @@ Vector<Scalar>::operator^( const Vector<Scalar> &v ) const
   \param v Vector with values to be copied
   \return Reference to self
  */
-template<class Scalar>
+template<class Scalar> __device__ __host__
 const Vector<Scalar>&
 Vector<Scalar>::operator=( const Vector<Scalar> &v )
 {
@@ -342,7 +345,7 @@ Vector<Scalar>::operator=( const Vector<Scalar> &v )
   \param s The value to copy
   \return Reference to self
  */
-template<class Scalar>
+template<class Scalar> __device__ __host__
 const Vector<Scalar>&
 Vector<Scalar>::operator=(Scalar s)
 {

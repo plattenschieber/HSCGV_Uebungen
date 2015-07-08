@@ -33,7 +33,7 @@ GeoQuadric::GeoQuadric(double na, double nb, double nc, double nd, double ne,
 
 // Description:
 // Destructor.
-GeoQuadric::~GeoQuadric()
+ GeoQuadric::~GeoQuadric()
 {
 }
 

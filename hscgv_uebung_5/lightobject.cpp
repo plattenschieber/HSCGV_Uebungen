@@ -34,8 +34,8 @@ LightObject::color() const
 {
    if (m_properties)
       return Color(m_properties->color);
-   else
-      std::cerr<<"WARNING: properties not set"<<std::endl;
+//   else
+//      std::cerr<<"WARNING: properties not set"<<std::endl;
    return Color(0.0);
 }
 
@@ -44,7 +44,14 @@ LightObject::direction() const
 {
    if (m_properties)
       return Vec3d(m_properties->direction);
-   else
-      std::cerr<<"WARNING: properties not set"<<std::endl;
+//   else
+//      std::cerr<<"WARNING: properties not set"<<std::endl;
    return Vec3d(0.0);
 }
+
+void
+LightObject::setProperties(LightObjectProperties *p)
+{
+   m_properties = p;
+}
+

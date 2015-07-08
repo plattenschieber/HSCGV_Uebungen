@@ -8,7 +8,8 @@
 
 /* member access functions for GeoObjectProperties */
 
-Color GeoObjectProperties::ambient() const
+Color
+GeoObjectProperties::ambient() const
 {
    return m_ambient;
 }
@@ -39,13 +40,14 @@ GeoObjectProperties::mirror() const
 
 /* access functions for the properties of a GeoObject */
 
-Color GeoObject::ambient() const
+Color
+GeoObject::ambient() const
 {
     if (m_properties)
         return m_properties->ambient();
     else
-        std::cerr<<"WARNING: properties not set"<<std::endl;
-   return Vec3d(0.0);
+//        std::cerr<<"WARNING: properties not set"<<std::endl;
+        return Vec3d(0.0);
 }
 
 Vec3d
@@ -54,8 +56,8 @@ GeoObject::reflectance() const
    if (m_properties)
       return m_properties->reflectance();
    else
-      std::cerr<<"WARNING: properties not set"<<std::endl;
-   return Vec3d(0.0);
+//      std::cerr<<"WARNING: properties not set"<<std::endl;
+       return Vec3d(0.0);
 }
 
 double
@@ -64,8 +66,8 @@ GeoObject::specular() const
    if (m_properties)
       return m_properties->specular();
    else
-      std::cerr<<"WARNING: properties not set"<<std::endl;
-   return 0.0;
+//      std::cerr<<"WARNING: properties not set"<<std::endl;
+       return 0.0;
 }
 
 double
@@ -74,8 +76,8 @@ GeoObject::specularExp() const
    if (m_properties)
       return m_properties->specularExp();
    else
-      std::cerr<<"WARNING: properties not set"<<std::endl;
-   return 0.0;
+//      std::cerr<<"WARNING: properties not set"<<std::endl;
+       return 0.0;
 }
 
 double
@@ -84,8 +86,8 @@ GeoObject::mirror() const
    if (m_properties)
       return m_properties->mirror();
    else
-      std::cerr<<"WARNING: properties not set"<<std::endl;
-   return 0.0;
+//      std::cerr<<"WARNING: properties not set"<<std::endl;
+       return 0.0;
 }
 
 void

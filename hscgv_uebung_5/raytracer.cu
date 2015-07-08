@@ -1,0 +1,407 @@
+/* ******** Programmierpraktikum Computergrafik (CGP) **************
+ * Aufgabe 1 - "Lichtblick"
+ * Created by Peter Kipfer <kipfer@informatik.uni-erlangen.de>
+ * Changed by Martin Aumueller <aumueller@uni-koeln.de>
+ */
+
+#include "raytracer.h"
+#ifndef __APPLE__
+#include "omp.h"
+#endif
+
+//! get scene description from the parser
+/*!
+  Get the scene description from the parser.
+  \param inputfile Filename of the scene
+ */
+void
+ReadScene(const char *inputfile)
+{
+   openSceneFile(inputfile);
+   inputparse();
+   closeSceneFile();
+}
+
+// Description:
+// Return the normal vector at point v of this surface
+// TODO this is an object method, update such that the called on object is included
+Vec3d __device__
+cudaGetNormal(const Vec3d &v, const QUADRIC &q)
+{
+   Vec3d tmpvec( (v | Vec3d(2*q.m_a,q.m_b,q.m_c)) + q.m_d,
+         (v | Vec3d(q.m_b,2*q.m_e,q.m_f)) + q.m_g,
+         (v | Vec3d(q.m_c,q.m_f,2*q.m_h)) + q.m_j );
+   return tmpvec.getNormalized();
+}
+// Description:
+// Compute intersection point on this surface
+// return distance to nearest intersection found or -1
+// TODO this is an object method, update such that the called on object is included
+double __device__
+cudaIntersect(const RAY &ray, QUADRIC &q)
+{
+   double t = -1.0, acoef, bcoef, ccoef, root, disc;
+
+   acoef = Vec3d( (ray.m_direction | Vec3d(q.m_a,q.m_b,q.m_c)),
+         q.m_e * ray.m_direction[1] + q.m_f * ray.m_direction[2],
+         q.m_h * ray.m_direction[2])
+      | ray.m_direction;
+
+   bcoef =   (Vec3d(q.m_d,q.m_g,q.m_j) | ray.m_direction)
+      + (ray.m_origin | Vec3d((ray.m_direction | Vec3d(2*q.m_a,q.m_b,q.m_c)),
+               (ray.m_direction | Vec3d(q.m_b,2*q.m_e,q.m_f)),
+               (ray.m_direction | Vec3d(q.m_c,q.m_f,2*q.m_h))));
+
+   ccoef = (ray.m_origin | Vec3d((Vec3d(q.m_a,q.m_b,q.m_c) | ray.m_origin) + q.m_d,
+            q.m_e * ray.m_origin[1] + q.m_f * ray.m_origin[2] + q.m_g,
+            q.m_h * ray.m_origin[2] + q.m_j))
+      + q.m_k;
+
+   if (acoef != 0.0) {
+      disc = bcoef * bcoef - 4.0 * acoef * ccoef;
+      if (disc > -Vec3d::getEpsilon()) {
+         root = sqrt( disc );
+         t = ( -bcoef - root ) / ( acoef + acoef );
+         if (t < 0.0)
+            t = ( -bcoef + root ) / ( acoef + acoef );
+      }
+   }
+   return (((Vec3d::getEpsilon() * 10.0) < t) ? t : -1.0);
+}
+// Description:
+// Determine color contribution of a lightsource
+Color __device__
+cudaShadedColor(LIGHT *light, const RAY &reflectedRay, const Vec3d &normal, QUADRIC *obj)
+{
+   double ldot = light->m_direction | normal;
+   Color reflectedColor = Color(0.0);
+
+   // lambertian reflection model
+   if (ldot > 0.0)
+      reflectedColor += obj->m_reflectance * (light->m_color * ldot);
+
+
+   // specular part
+   double spec = reflectedRay.m_direction | light->m_direction;
+   if (spec > 0.0) {
+      spec = obj->m_specular * pow(spec, obj->m_specularExp);
+      reflectedColor += light->m_color * spec;
+   }
+
+   return Color(reflectedColor);
+}
+
+
+// Determine color of this ray by tracing through the scene
+Color __device__
+cudaShade(RAY *thisRay, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList, int lightListSize, Color background)
+{
+    Color currentColor(0.0);
+    Color::value_type currentMirror(1.0);
+    // iterate at most 5 times or until the ray hits the background
+    for (int i=0; i<5; i++) {
+        QUADRIC *closest = NULL;
+        double tMin = DBL_MAX;
+
+        // find closest object that intersects
+        for (int j=0; j<objListSize; j++)
+        {
+            double t = cudaIntersect(*thisRay, d_objList[j]);
+            if (0.0 < t && t < tMin) {
+                tMin = t;
+                closest = &d_objList[j];
+}
+        }
+
+        // no object hit -> ray goes to infinity
+        if (closest == NULL) {
+            if (i == 0) {
+                return background; // background color
+            }
+        }
+        else {
+            // reflection
+            Vec3d intersectionPosition(thisRay->m_origin + (thisRay->m_direction * tMin));
+            Vec3d normal(cudaGetNormal(intersectionPosition, *closest));
+            RAY reflectedRay;
+            reflectedRay.m_origin = intersectionPosition;
+            reflectedRay.m_direction = thisRay->m_direction.getReflectedAt(normal).getNormalized();
+
+            // calculate lighting
+            for (int j=0; j<lightListSize; j++) {
+
+                // where is the lightsource ?
+                RAY rayoflight;
+                rayoflight.m_origin = intersectionPosition;
+                rayoflight.m_direction = d_lightList[j].m_direction;
+                bool something_intersected = false;
+
+                // where are the objects ?
+                for (int k=0; k<objListSize; k++) {
+
+                    double t = cudaIntersect(rayoflight, d_objList[k]);
+                    if (t > 0.0) {
+                        something_intersected = true;
+                        break;
+                    }
+
+                } // for all obj
+
+                // is it visible ?
+                if (!something_intersected)
+                    currentColor += cudaShadedColor(&d_lightList[j], reflectedRay, normal, closest)*currentMirror;
+
+
+            } // for all lights
+
+            // could be right...
+            currentMirror *= closest->m_mirror;
+            // update thisRay to new point
+            *thisRay = reflectedRay;
+
+        }
+   }
+   return Color(currentColor);
+}
+
+
+Raytracer::Raytracer():
+    m_isFileLoaded(false),
+    m_filename(0),
+    m_antialiasing(false) {}
+Raytracer::Raytracer(bool antialiasing):
+    m_isFileLoaded(false),
+    m_filename(0),
+    m_antialiasing(antialiasing) {}
+Raytracer::Raytracer(const char *filename, bool antialiasing):
+    m_filename(filename),
+    m_antialiasing(antialiasing)
+{
+   // parse the input file
+   ReadScene(m_filename);
+   m_isFileLoaded = true;
+}
+Raytracer::~Raytracer() {
+   // clean up
+   cleanUp();
+}
+
+void
+Raytracer::render(float *renderedScene, int xRes, int yRes) {
+   // setup viewport, its origin is bottom left
+   // setup camera coordsys
+   Vec3d eye_dir = (g_scene.view.lookat - g_scene.view.eyepoint).getNormalized();
+   Vec3d eye_right = (eye_dir^g_scene.view.up).getNormalized();
+   Vec3d eye_up = eye_dir^eye_right*-1;
+
+    // calculatehe dimensions of the viewport using the scene's camera
+    float height = 2 * tan(M_PI/180 * .5 * g_scene.view.fovy);
+    float width = height * g_scene.view.aspect;
+
+    // compute delta steps in each direction
+    Vec3d deltaX = eye_right * (width / xRes);
+    Vec3d deltaY = eye_up * (height / yRes);
+
+    // this should be bottom left
+    Vec3d bottomLeft = g_scene.view.eyepoint + eye_dir - deltaX*xRes/2 - deltaY*yRes/2;
+
+   // normal ray tracing: the color of the center of a pixel is computed
+   #pragma omp parallel for schedule(dynamic) collapse(2)
+   for (int sy=yRes ; sy > 0 ; --sy) {
+      for (int sx=0 ; sx < xRes ; ++sx) {
+         // the center of the pixel we are looking at right now
+         Vec3d point = bottomLeft + deltaX*sx + deltaY*sy + deltaX/2 + deltaY/2;
+
+         // the direction of our look
+         Vec3d dir = point - g_scene.view.eyepoint;
+
+         // create ray from view.eyepoint to view.lookat
+         Ray theRay(g_scene.view.eyepoint,dir.getNormalized(),0,g_objectList,g_lightList);
+
+         // compute the color
+         Color col = theRay.shade();
+
+         // in case we are using antialiasing, calculate the color of this pixel by averaging
+         if (m_antialiasing) {
+               // scale the midpoint color since we are going to use 5 points to average our color
+               col *= 0.2;
+
+               // besides taking shooting a ray through the midpoint 'o', we calculate
+               // the pixels color by shooting 4 more rays  through the points 'x'
+               // and averaging their values
+               //  -------
+               // | x   x |
+               // |   o   |
+               // | x   x |
+               //  --------
+               for(float dx = -1/4.; dx <= 1/4.; dx+=1/2.) {
+                   for(float dy = -1/4.; dy <= 1/4.; dy+=1/2.) {
+                       Vec3d superSamplePoint = point + deltaX*dx + deltaY*dy;
+                       Vec3d superSampleDir = superSamplePoint - g_scene.view.eyepoint;
+
+                       // create ray from view.eyepoint to view.lookat
+                       Ray theRay(g_scene.view.eyepoint,superSampleDir.getNormalized(),0,g_objectList,g_lightList);
+                       col += theRay.shade()*0.2;//color, recursive_ray_trace(eye, ray, 0));
+                   }
+               }
+         }
+
+         int index = 3*((sy-1) * xRes + sx);
+         renderedScene[index + 0] = col[0];
+         renderedScene[index + 1] = col[1];
+         renderedScene[index + 2] = col[2];
+      } // foreach x
+   } // foreach y
+}
+
+#define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true) {
+   if (code != cudaSuccess) {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
+
+void __global__
+renderKernel(float *d_cudaData, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, double fovy, Color backgroundCol, bool antialiasing,
+                QUADRIC* d_objList, int objListSize, LIGHT* d_lightList, int lightListSize)
+{
+    // find out id of this thread
+    unsigned sx = blockIdx.x * blockDim.x + threadIdx.x;
+    unsigned sy = blockIdx.y * blockDim.y + threadIdx.y;
+    if (sx >= xRes || sy >= yRes)
+        return;
+
+    // setup viewport, its origin is bottom left
+    // setup camera coordsys
+    Vec3d eye_dir = (lookat - eyepoint).getNormalized();
+    Vec3d eye_right = (eye_dir^up).getNormalized();
+    Vec3d eye_up = eye_dir^eye_right*-1;
+
+    // calculatehe dimensions of the viewport using the scene's camera
+    float height = 2 * tan(M_PI/180 * .5 * fovy);
+    float width = height * aspect;
+
+    // compute delta steps in each direction
+    Vec3d deltaX = eye_right * (width / xRes);
+    Vec3d deltaY = eye_up * (height / yRes);
+
+    // this should be bottom left
+    Vec3d bottomLeft = eyepoint + eye_dir - deltaX*xRes/2 - deltaY*yRes/2;
+
+    // the center of the pixel we are looking at right now
+    Vec3d point = bottomLeft + deltaX*sx + deltaY*sy + deltaX/2 + deltaY/2;
+
+    // the direction of our look
+    Vec3d dir = point - eyepoint;
+
+    // create ray from view.eyepoint to view.lookat
+    RAY theRay;
+    theRay.m_origin = eyepoint;
+    theRay.m_direction = dir.getNormalized();
+    theRay.m_depth = 0;
+
+    // compute the color
+    Color col = cudaShade(&theRay, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
+
+    // in case we are using antialiasing, calculate the color of this pixel by averaging
+    if (antialiasing) {
+        // scale the midpoint color since we are going to use 5 points to average our color
+        col *= 0.2;
+
+        // besides taking shooting a ray through the midpoint 'o', we calculate
+        // the pixels color by shooting 4 more rays  through the points 'x'
+        // and averaging their values
+        //  -------
+        // | x   x |
+        // |   o   |
+        // | x   x |
+        //  --------
+        for(float dx = -1/4.; dx <= 1/4.; dx+=1/2.) {
+            for(float dy = -1/4.; dy <= 1/4.; dy+=1/2.) {
+                Vec3d superSamplePoint = point + deltaX*dx + deltaY*dy;
+                Vec3d superSampleDir = superSamplePoint - eyepoint;
+
+                // create ray from view.eyepoint to view.lookat
+                RAY theRayA;
+                theRayA.m_origin = eyepoint;
+                theRayA.m_direction = superSampleDir.getNormalized();
+                theRayA.m_depth = 0;
+                col += cudaShade(&theRay, d_objList, objListSize, d_lightList, lightListSize, backgroundCol)*0.2;
+                //color, recursive_ray_trace(eye, ray, 0));
+            }
+        }
+    }
+
+    int index = 3*((sy-1) * xRes + sx);
+    d_cudaData[index + 0] = col[0];
+    d_cudaData[index + 1] = col[1];
+    d_cudaData[index + 2] = col[2];
+    return;
+}
+
+
+
+//! we need some kind of initialization of our device
+void
+Raytracer::initCuda() {
+    // get some space for the objects and their properties (
+    gpuErrchk (cudaMalloc((void **) &d_objList, sizeof(QUADRIC) * g_objectList.size()));
+    gpuErrchk (cudaMalloc((void **) &d_lightList, sizeof(LIGHT) * g_lightList.size()));
+
+    std::vector<QUADRIC> quads;
+    std::vector<LIGHT> lights;
+    // prepare the light- and geoobjects for transfer to GPU
+    for (unsigned int i=0; i<g_objectList.size(); i++) {
+        QUADRIC tmp;
+        GeoQuadric *gq = (GeoQuadric *)g_objectList.at(i);
+        tmp.m_a = gq->m_a;
+        tmp.m_b = gq->m_b;
+        tmp.m_c = gq->m_c;
+        tmp.m_d = gq->m_d;
+        tmp.m_e = gq->m_e;
+        tmp.m_f = gq->m_f;
+        tmp.m_g = gq->m_g;
+        tmp.m_h = gq->m_h;
+        tmp.m_j = gq->m_j;
+        tmp.m_k = gq->m_k;
+        tmp.m_ambient = gq->ambient();
+        tmp.m_mirror = gq->mirror();
+        tmp.m_reflectance = gq->reflectance();
+        tmp.m_specular = gq->specular();
+        tmp.m_specularExp = gq->specularExp();
+        quads.push_back(tmp);
+    }
+    for (unsigned int i=0; i<g_lightList.size(); i++) {
+        LIGHT tmp2;
+        LightObject *lo = g_lightList.at(i);
+        tmp2.m_color = lo->color();
+        tmp2.m_direction = lo->direction();
+        lights.push_back(tmp2);
+    }
+    // copy objects and lights to GPU
+    gpuErrchk (cudaMemcpy(d_objList, quads.data(), sizeof(QUADRIC) * g_objectList.size(), cudaMemcpyHostToDevice));
+    gpuErrchk (cudaMemcpy(d_lightList, lights.data(), sizeof(LIGHT) * g_lightList.size(), cudaMemcpyHostToDevice));
+ }
+
+//-------------------------------------------------------------------------------------------------
+// Round (a) up to the nearest multiple of (b), then divide by (b)
+//
+
+int div_up(int a, int b)
+{
+    return (a + b - 1) / b;
+}
+
+//! start the rendering routine on the device
+void
+Raytracer::renderCuda(float *cudaData, int xRes, int yRes)
+{
+    // RAY TRACING:
+    dim3 block(16, 16);
+    dim3 grid(div_up(xRes, block.x), div_up(yRes, block.y));
+
+    renderKernel<<<grid,block>>>(cudaData, xRes, yRes,
+                                    g_scene.view.eyepoint, g_scene.view.up, g_scene.view.lookat, g_scene.view.aspect, g_scene.view.fovy, g_scene.picture.background,
+                                    m_antialiasing, d_objList, g_objectList.size(), d_lightList, g_lightList.size());
+}

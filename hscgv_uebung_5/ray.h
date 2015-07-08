@@ -26,16 +26,15 @@ class Ray
       Ray();
       Ray(const Ray &r);
       Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*> &ol, std::vector<LightObject*> &ll);
+      Ray(const Vec3d o, const Vec3d d, unsigned int i);
       ~Ray();
 
       const Color shade() const;
+      const Color shade(Ray *thisRay, Vec3d d_origin, Vec3d d_direction, GeoObject *d_objList, int objListSize, LightObject *d_lightList, int lightListSize, Color background) ;
 
       // access methods
       Vec3d origin() const;
       Vec3d direction() const;
-
-   protected:
-      const Color shadedColor(LightObject *light, const Ray &reflectedray, const Vec3d &normal, GeoObject *obj) const;
 
    private:
       Vec3d        m_origin;

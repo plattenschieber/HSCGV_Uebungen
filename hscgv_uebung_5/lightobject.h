@@ -12,6 +12,11 @@
 #include "vector.h"
 
 
+typedef struct {
+    Color  color;
+    Vec3d  direction;
+} LightObjectProperties;
+
 //! A light source
 /*! This class describes light sources positioned at infinity.
  */
@@ -26,15 +31,11 @@ class LightObject
       // access methods
       Color color() const;
       Vec3d direction() const;
+      void setProperties(LightObjectProperties *p);
 
    protected:
-      typedef struct {
-         Color  color;
-         Vec3d  direction;
-      } LightObjectProperties;
-
-   private:
       LightObjectProperties *m_properties;
 };
+
 
 #endif /* LIGHTOBJECT_HH */

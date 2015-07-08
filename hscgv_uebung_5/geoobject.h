@@ -22,15 +22,15 @@ class GeoObjectProperties
 {
    public:
       // CONSTRUCTORS
-      GeoObjectProperties() {};
+      GeoObjectProperties() {}
       GeoObjectProperties(const Vec3d& a,const Vec3d& r, double s, int e, double m) {
          m_ambient     = a;
          m_reflectance = r;
          m_specular    = s;
          m_specularExp = e;
          m_mirror      = m;
-      };
-      ~GeoObjectProperties() {};
+      }
+      ~GeoObjectProperties() {}
 
       // access methods
       Color  ambient() const;
@@ -55,8 +55,8 @@ class GeoObject
 {
    public:
       // CONSTRUCTORS
-      GeoObject() {};
-      virtual ~GeoObject() {};
+      GeoObject() {}
+      virtual ~GeoObject() {}
       virtual Vec3d  getNormal(const Vec3d &v) const = 0;
       virtual double intersect(const Ray &r) const = 0;
 

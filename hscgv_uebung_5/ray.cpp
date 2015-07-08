@@ -20,7 +20,6 @@ Ray::Ray( )
 , m_objList(NULL)
 , m_lightList(NULL)
 {
-   ERR("don't use uninitialized rays !");
 }
 
 // Description:
@@ -48,9 +47,45 @@ Ray::Ray(const Vec3d &o, const Vec3d &d, unsigned int i, std::vector<GeoObject*>
 }
 
 // Description:
+// Constructor with explicit parameters
+Ray::Ray(const Vec3d o, const Vec3d d, unsigned int i)
+{
+   // copy it ! initialization is not enough !
+   m_origin    = o;
+   m_direction = d;
+   m_depth     = i;
+}
+
+// Description:
 // Destructor.
 Ray::~Ray( )
 {
+}
+
+// Description:
+// Determine color contribution of a lightsource
+Color
+shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &normal, GeoObject *obj)
+{
+   double ldot = light->direction() | normal;
+   Color reflectedColor = Color(0.0);
+
+   // lambertian reflection model
+   if (ldot > 0.0)
+      reflectedColor += obj->reflectance() * (light->color() * ldot);
+
+   // updated with ambient lightning as in:
+   // [GENERALISED AMBIENT REFLECTION MODELS FOR LAMBERTIAN AND PHONG SURFACES, Xiaozheng Zhang and Yongsheng Gao]
+//   reflectedColor += obj->ambient() * g_sceneCuda.ambience;
+
+   // specular part
+   double spec = reflectedRay.direction() | light->direction();
+   if (spec > 0.0) {
+      spec = obj->specular() * pow(spec, obj->specularExp());
+      reflectedColor += light->color() * spec;
+   }
+
+   return Color(reflectedColor);
 }
 
 // Description:
@@ -127,32 +162,6 @@ Ray::shade() const
    }
 }
 
-// Description:
-// Determine color contribution of a lightsource
-const Color
-Ray::shadedColor(LightObject *light, const Ray &reflectedRay, const Vec3d &normal, GeoObject *obj) const
-{
-   double ldot = light->direction() | normal;
-   Color reflectedColor = Color(0.0);
-
-   // lambertian reflection model
-   if (ldot > 0.0)
-      reflectedColor += obj->reflectance() * (light->color() * ldot);
-
-   // updated with ambient lightning as in:
-   // [GENERALISED AMBIENT REFLECTION MODELS FOR LAMBERTIAN AND PHONG SURFACES, Xiaozheng Zhang and Yongsheng Gao]
-   reflectedColor += obj->ambient() * g_scene.ambience;
-
-   // specular part
-   double spec = reflectedRay.direction() | light->direction();
-   if (spec > 0.0) {
-      spec = obj->specular() * pow(spec, obj->specularExp());
-      reflectedColor += light->color() * spec;
-   }
-
-   return Color(reflectedColor);
-}
-
 Vec3d
 Ray::origin() const
 {
@@ -164,3 +173,4 @@ Ray::direction() const
 {
    return Vec3d(m_direction);
 }
+

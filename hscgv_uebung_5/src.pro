@@ -2,32 +2,38 @@ TARGET=         raytrace
 QT *=  opengl
 
 HEADERS=        geoobject.h geoquadric.h lightobject.h ray.h types.h vector.h param.h \
-    geopolygon.h \
     ApplicationWindow.h \
     GLFrame.h \
     raytracer.h
-SOURCES=        geoobject.cpp geoquadric.cpp lightobject.cpp main.cpp ray.cpp \
-    geopolygon.cpp \
+SOURCES=        main.cpp \
     ApplicationWindow.cpp \
     GLFrame.cpp \
-    raytracer.cpp
+    geoquadric.cpp \
+    lightobject.cpp \
+    ray.cpp \
+    geoobject.cpp
 win32:SOURCES*= xgetopt.cpp
 YACCSOURCES=    input.y
+CUDA_SOURCES += \
+    raytracer.cu
 
 QMAKE_YACC              = bison
 QMAKE_YACCFLAGS         = -y -d
 
 # comment these for a release version
 DEFINES         *= TRACE VERBOSE
-CONFIG          += debug
-CONFIG          -= release
+CONFIG          += release
 
-QMAKE_CXXFLAGS += -W -Wall
 
 FORMS += \
     ApplicationWindow.ui
 
-unix:LIBS *= -lGLEW -lglut -lGLU
+unix:!macx:{
+LIBS *= -lGLEW -lglut -lGLU
+QMAKE_CXXFLAGS += -W -Wall -fopenmp
+QMAKE_LFLAGS += -fopenmp
+}
+include(cuda.pri)
 
 macx {
 LIBS *= -lGLEW -L/usr/local/opt/glew/lib
@@ -41,3 +47,6 @@ INCLUDEPATH *= $$GLEWDIR/include
 DEFINES *= GLEW_STATIC
 LIBS *= -L$$GLEWDIR/lib -lglew32s
 }
+
+OTHER_FILES +=
+
