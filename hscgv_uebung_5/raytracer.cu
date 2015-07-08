@@ -368,6 +368,8 @@ Raytracer::initCuda() {
         tmp.m_f = gq->m_f;
         tmp.m_g = gq->m_g;
         tmp.m_h = gq->m_h;
+        tmp.m_j = gq->m_j;
+        tmp.m_k = gq->m_k;
         tmp.m_ambient = gq->ambient();
         tmp.m_mirror = gq->mirror();
         tmp.m_reflectance = gq->reflectance();
