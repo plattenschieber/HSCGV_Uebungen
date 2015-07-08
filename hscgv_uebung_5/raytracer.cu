@@ -92,6 +92,7 @@ cudaShadedColor(LIGHT *light, const RAY &reflectedRay, const Vec3d &normal, QUAD
 }
 
 
+// Determine color of this ray by tracing through the scene
 Color __device__
 cudaShade(RAY *thisRay, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList, int lightListSize, Color background)
 {
