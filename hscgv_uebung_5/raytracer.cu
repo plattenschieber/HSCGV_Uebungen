@@ -96,7 +96,7 @@ cudaShadedColor(LIGHT *light, const RAY &reflectedRay, const Vec3d &normal, QUAD
 
 
 Color __device__
-cudaShade(RAY *thisRay, Vec3d d_origin, Vec3d d_direction, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList, int lightListSize, Color background)
+cudaShade(RAY *thisRay, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList, int lightListSize, Color background)
 {
     Color currentColor(0.0);
     Color::value_type currentMirror(1.0);
@@ -312,7 +312,7 @@ renderKernel(float *d_cudaData, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Ve
     return;
 
     // compute the color
-    Color col= cudaShade(&theRay, eyepoint, point, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
+    Color col = cudaShade(&theRay, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
 
     // in case we are using antialiasing, calculate the color of this pixel by averaging
     if (antialiasing) {
@@ -337,7 +337,7 @@ renderKernel(float *d_cudaData, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Ve
                 theRayA.m_origin = eyepoint;
                 theRayA.m_direction = superSampleDir.getNormalized();
                 theRayA.m_depth = 0;
-                col += cudaShade(&theRay,eyepoint,superSamplePoint, d_objList, objListSize, d_lightList, lightListSize, backgroundCol)*0.2;
+                col += cudaShade(&theRay, d_objList, objListSize, d_lightList, lightListSize, backgroundCol)*0.2;
                 //color, recursive_ray_trace(eye, ray, 0));
             }
         }
