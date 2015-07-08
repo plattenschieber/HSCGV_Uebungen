@@ -123,12 +123,12 @@ cudaShade(RAY *thisRay, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList,
         }
         else {
             // reflection
-            Vec3d intersectionPosition(d_origin + (d_direction * tMin));
+            Vec3d intersectionPosition(thisRay->m_origin + (thisRay->m_direction * tMin));
             Vec3d normal(cudaGetNormal(intersectionPosition, *closest));
             RAY reflectedRay;
             reflectedRay.m_origin = intersectionPosition;
-            reflectedRay.m_direction = d_direction.getReflectedAt(normal).getNormalized();
             reflectedRay.m_depth = i+1;
+            reflectedRay.m_direction = thisRay->m_direction.getReflectedAt(normal).getNormalized();
 
             // calculate lighting
             for (int j=0; j<lightListSize; j++) {
