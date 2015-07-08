@@ -301,12 +301,6 @@ renderKernel(float *d_cudaData, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Ve
     theRay.m_direction = dir.getNormalized();
     theRay.m_depth = 0;
 
-    int index = 3*((sy-1) * xRes + sx);
-    d_cudaData[index + 0] = theRay.m_direction[0];
-    d_cudaData[index + 1] = theRay.m_direction[1];
-    d_cudaData[index + 2] = theRay.m_direction[2];
-    return;
-
     // compute the color
     Color col = cudaShade(&theRay, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
 
@@ -339,10 +333,11 @@ renderKernel(float *d_cudaData, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Ve
         }
     }
 
-//    int index = 3*((sy-1) * xRes + sx);
+    int index = 3*((sy-1) * xRes + sx);
     d_cudaData[index + 0] = col[0];
     d_cudaData[index + 1] = col[1];
     d_cudaData[index + 2] = col[2];
+    return;
 }
 
 
