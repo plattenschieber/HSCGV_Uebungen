@@ -63,9 +63,6 @@ class ApplicationWindow : public QMainWindow
         void renderMode(bool mode) const;
 
     protected:
-        //! initialize application state
-        void initState() const;
-
         //! our main widget in the application is a OGLCanvas
         GLFrame *m_frame;
 
@@ -92,9 +89,6 @@ class ApplicationWindow : public QMainWindow
 
         //! update FPS display
         void updateFps();
-
-        //! start and stop render timer
-        void animate(bool on);
 
         //! we want to have some nice output
         void antialiasing(bool on);
