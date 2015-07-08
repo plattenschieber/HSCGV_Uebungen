@@ -303,8 +303,7 @@ renderKernel(float *d_cudaData, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Ve
     theRay.m_depth = 0;
 
     // compute the color
-    Color col;
-    cudaShade(&theRay, eyepoint, point, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
+    Color col= cudaShade(&theRay, eyepoint, point, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
 
     // in case we are using antialiasing, calculate the color of this pixel by averaging
     if (antialiasing) {
