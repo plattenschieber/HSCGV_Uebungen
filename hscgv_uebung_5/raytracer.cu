@@ -80,9 +80,6 @@ cudaShadedColor(LIGHT *light, const RAY &reflectedRay, const Vec3d &normal, QUAD
    if (ldot > 0.0)
       reflectedColor += obj->m_reflectance * (light->m_color * ldot);
 
-   // updated with ambient lightning as in:
-   // [GENERALISED AMBIENT REFLECTION MODELS FOR LAMBERTIAN AND PHONG SURFACES, Xiaozheng Zhang and Yongsheng Gao]
-//   reflectedColor += obj->ambient() * g_sceneCuda.ambience;
 
    // specular part
    double spec = reflectedRay.m_direction | light->m_direction;
@@ -95,10 +92,13 @@ cudaShadedColor(LIGHT *light, const RAY &reflectedRay, const Vec3d &normal, QUAD
 }
 
 
+// Determine color of this ray by tracing through the scene
 Color __device__
-cudaShade(RAY *thisRay, Vec3d d_origin, Vec3d d_direction, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList, int lightListSize, Color background)
+cudaShade(RAY *thisRay, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList, int lightListSize, Color background)
 {
     Color currentColor(0.0);
+    Color::value_type currentMirror(1.0);
+    // iterate at most 5 times or until the ray hits the background
     for (int i=0; i<5; i++) {
         QUADRIC *closest = NULL;
         double tMin = DBL_MAX;
@@ -118,18 +118,14 @@ cudaShade(RAY *thisRay, Vec3d d_origin, Vec3d d_direction, QUADRIC *d_objList, i
             if (i == 0) {
                 return background; // background color
             }
-            else {
-                return Color(0.0);         // black
-            }
         }
         else {
             // reflection
-            Vec3d intersectionPosition(d_origin + (d_direction * tMin));
+            Vec3d intersectionPosition(thisRay->m_origin + (thisRay->m_direction * tMin));
             Vec3d normal(cudaGetNormal(intersectionPosition, *closest));
             RAY reflectedRay;
             reflectedRay.m_origin = intersectionPosition;
-            reflectedRay.m_direction = d_direction.getReflectedAt(normal).getNormalized();
-            reflectedRay.m_depth = i+1;
+            reflectedRay.m_direction = thisRay->m_direction.getReflectedAt(normal).getNormalized();
 
             // calculate lighting
             for (int j=0; j<lightListSize; j++) {
@@ -138,7 +134,6 @@ cudaShade(RAY *thisRay, Vec3d d_origin, Vec3d d_direction, QUADRIC *d_objList, i
                 RAY rayoflight;
                 rayoflight.m_origin = intersectionPosition;
                 rayoflight.m_direction = d_lightList[j].m_direction;
-                rayoflight.m_depth = 0;
                 bool something_intersected = false;
 
                 // where are the objects ?
@@ -153,13 +148,17 @@ cudaShade(RAY *thisRay, Vec3d d_origin, Vec3d d_direction, QUADRIC *d_objList, i
                 } // for all obj
 
                 // is it visible ?
-                if (! something_intersected)
-                    currentColor += cudaShadedColor(&d_lightList[j], reflectedRay, normal, closest);
+                if (!something_intersected)
+                    currentColor += cudaShadedColor(&d_lightList[j], reflectedRay, normal, closest)*currentMirror;
+
 
             } // for all lights
 
             // could be right...
-            currentColor *= closest->m_mirror;
+            currentMirror *= closest->m_mirror;
+            // update thisRay to new point
+            *thisRay = reflectedRay;
+
         }
    }
    return Color(currentColor);
@@ -303,7 +302,7 @@ renderKernel(float *d_cudaData, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Ve
     theRay.m_depth = 0;
 
     // compute the color
-    Color col= cudaShade(&theRay, eyepoint, point, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
+    Color col = cudaShade(&theRay, d_objList, objListSize, d_lightList, lightListSize, backgroundCol);
 
     // in case we are using antialiasing, calculate the color of this pixel by averaging
     if (antialiasing) {
@@ -328,19 +327,17 @@ renderKernel(float *d_cudaData, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Ve
                 theRayA.m_origin = eyepoint;
                 theRayA.m_direction = superSampleDir.getNormalized();
                 theRayA.m_depth = 0;
-                col += cudaShade(&theRay,eyepoint,superSamplePoint, d_objList, objListSize, d_lightList, lightListSize, backgroundCol)*0.2;
+                col += cudaShade(&theRay, d_objList, objListSize, d_lightList, lightListSize, backgroundCol)*0.2;
                 //color, recursive_ray_trace(eye, ray, 0));
             }
         }
     }
 
     int index = 3*((sy-1) * xRes + sx);
-    d_renderedScene[index + 0] = col[0];
-    d_renderedScene[index + 1] = col[1];
-    d_renderedScene[index + 2] = col[2];
     d_cudaData[index + 0] = col[0];
     d_cudaData[index + 1] = col[1];
     d_cudaData[index + 2] = col[2];
+    return;
 }
 
 
@@ -366,6 +363,8 @@ Raytracer::initCuda() {
         tmp.m_f = gq->m_f;
         tmp.m_g = gq->m_g;
         tmp.m_h = gq->m_h;
+        tmp.m_j = gq->m_j;
+        tmp.m_k = gq->m_k;
         tmp.m_ambient = gq->ambient();
         tmp.m_mirror = gq->mirror();
         tmp.m_reflectance = gq->reflectance();

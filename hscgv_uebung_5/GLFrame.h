@@ -84,7 +84,7 @@ signals:
 
 public slots:
     //! change render mode (wireframe, ...)
-    void setRenderMode(int mode);
+    void setRenderMode(bool mode);
     //! set visibility of coordinate axes
     void setAxesVisibility(bool on);
     //! set antialising

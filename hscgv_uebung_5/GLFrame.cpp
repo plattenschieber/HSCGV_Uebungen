@@ -440,16 +440,9 @@ void GLFrame::adjustCam(bool leftButton, bool middleButton, bool rightButton,
 }
 
 // notify when the drawMode should be changed
-void GLFrame::setRenderMode(int mode)
+void GLFrame::setRenderMode(bool mode)
 {
-    m_renderMode = (RenderMode)mode;
-
-    if(mode == CPU) {
-        // unset VBO
-    }
-    else if (mode == GPU) {
-    }
-
+    m_renderMode = mode ? GPU : CPU;//(RenderMode)mode;
     m_raytracingNeeded = true;
     updateGL();
 }
