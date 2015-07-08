@@ -22,8 +22,7 @@ QMAKE_YACCFLAGS         = -y -d
 
 # comment these for a release version
 DEFINES         *= TRACE VERBOSE
-CONFIG          += debug
-CONFIG          -= release
+CONFIG          += release
 
 
 FORMS += \
