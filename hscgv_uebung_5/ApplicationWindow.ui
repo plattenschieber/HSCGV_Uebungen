@@ -42,9 +42,7 @@
     <property name="title">
      <string>Rendering</string>
     </property>
-    <addaction name="actionCPU"/>
     <addaction name="actionGPU"/>
-    <addaction name="separator"/>
     <addaction name="actionAntialiasing"/>
    </widget>
    <addaction name="menuFile"/>
@@ -113,12 +111,10 @@
     <enum>QAction::TextHeuristicRole</enum>
    </property>
   </action>
-  <action name="actionCPU">
-   <property name="text">
-    <string>CPU</string>
-   </property>
-  </action>
   <action name="actionGPU">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>GPU</string>
    </property>

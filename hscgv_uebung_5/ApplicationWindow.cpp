@@ -29,10 +29,9 @@ ApplicationWindow::ApplicationWindow()
     m_frame = new GLFrame(this);
     setCentralWidget(m_frame);
 
-    QActionGroup *renderModeActions = new QActionGroup(this);
-    renderModeActions->addAction(ui.actionCPU);
+/*    QActionGroup *renderModeActions = new QActionGroup(this);
     renderModeActions->addAction(ui.actionGPU);
-    renderModeActions->addAction(ui.actionAntialiasing);
+    renderModeActions->addAction(ui.actionAntialiasing);*/
 
     // connect actions
     connect(ui.actionQuit, SIGNAL(triggered()), this, SLOT(fileQuit()));
@@ -43,8 +42,7 @@ ApplicationWindow::ApplicationWindow()
     connect(ui.actionAnimate, SIGNAL(toggled(bool)), this, SLOT(animate(bool)));
     connect(ui.actionAntialiasing, SIGNAL(toggled(bool)), SLOT(antialiasing(bool)));
 
-    connect(ui.actionCPU, SIGNAL(toggled(bool)), SLOT(renderModeChanged()));
-    connect(ui.actionGPU, SIGNAL(toggled(bool)), SLOT(renderModeChanged()));
+    connect(ui.actionGPU, SIGNAL(toggled(bool)), m_frame, SLOT(setRenderMode(bool)));
 
     // ----- SIGNALS -----
 
@@ -57,7 +55,7 @@ ApplicationWindow::ApplicationWindow()
     connect(ui.actionLoadFile, SIGNAL(triggered()), this, SLOT(loadFile()));
     connect(this, SIGNAL(openFile(const QString&)), m_frame, SLOT(loadScene(const QString&)));
 
-    connect(this, SIGNAL(renderMode(int)), m_frame, SLOT(setRenderMode(int)));
+    connect(this, SIGNAL(renderMode(bool)), m_frame, SLOT(setRenderMode(bool)));
 
     // timer for updating fps display
     QTimer *timer = new QTimer(this);
@@ -85,8 +83,6 @@ void ApplicationWindow::initState() const
 
     ui.actionAnimate->setChecked(true);
     ui.actionAnimate->trigger();
-
-    ui.actionCPU->trigger();
 }
 
 
@@ -161,16 +157,4 @@ void ApplicationWindow::antialiasing(bool on)
     m_frame->m_antialiasing = on;
 }
 
-int ApplicationWindow::getRenderMode() const
-{
-    if(ui.actionCPU->isChecked())
-        return GLFrame::CPU;
-    else //if(ui.actionGPU->isChecked())
-        return GLFrame::GPU;
-}
-
-void ApplicationWindow::renderModeChanged() const
-{
-    emit renderMode(getRenderMode());
-}
 

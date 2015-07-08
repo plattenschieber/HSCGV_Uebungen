@@ -60,7 +60,7 @@ class ApplicationWindow : public QMainWindow
         void openFile(const QString &filename) const;
 
         //! render mode was changed
-        void renderMode(int mode) const;
+        void renderMode(bool mode) const;
 
     protected:
         //! initialize application state
@@ -98,12 +98,6 @@ class ApplicationWindow : public QMainWindow
 
         //! we want to have some nice output
         void antialiasing(bool on);
-
-        //! deduce render mode from menu state
-        int getRenderMode() const;
-
-        //! make sure that render mode signal is triggerd
-        void renderModeChanged() const;
 
 
     private:
