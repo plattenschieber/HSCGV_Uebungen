@@ -120,9 +120,6 @@ cudaShade(RAY *thisRay, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList,
             if (i == 0) {
                 return background; // background color
             }
-            else {
-                return Color(0.0);         // black
-            }
         }
         else {
             // reflection
