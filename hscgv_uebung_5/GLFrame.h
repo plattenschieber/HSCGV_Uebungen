@@ -151,6 +151,8 @@ protected:
     int m_width;
     //! viewport height
     int m_height;
+    //! size of data
+    int m_sizeTex;
     //! viewport aspect ratio (determined by window size)
     GLfloat m_aspect;
     //! field of view
@@ -192,7 +194,7 @@ protected:
     //! currently loaded scene
     Raytracer *m_raytracer;
     bool m_raytracingNeeded;
-    float* m_data;
+    std::vector<float> m_data;
     float* m_cudaData;
 
     //! how our model is to be drawn

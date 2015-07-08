@@ -58,7 +58,6 @@ GLFrame::GLFrame(ApplicationWindow *parent)
 GLFrame::~GLFrame()
 {
     glDeleteTextures(1, &m_texHandle);
-    free(m_data);
     cudaFree(m_cudaData);
     cudaDeviceReset();
 }
@@ -95,7 +94,7 @@ void GLFrame::loadTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT, (GLvoid*)m_data); CHECKGL;
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_FLOAT, (GLvoid*)m_data.data()); CHECKGL;
 
     if (m_renderMode == GPU) {
         // register this texture with CUDA
@@ -115,6 +114,8 @@ void GLFrame::resizeGL(int w, int h)
     m_width = w;
     m_height = h;
 
+    m_sizeTex = sizeof(float) * 3 * m_width * m_height;
+    m_data.resize(m_sizeTex);
     glViewport(0, 0, (GLint)w, (GLint)h);
     m_raytracingNeeded = true;
     updateGL();
@@ -562,17 +563,15 @@ void GLFrame::renderScene()
     if(!m_raytracingNeeded || !m_raytracer || !m_raytracer->m_isFileLoaded)
         return;
     // draw scene
-    int sizeTex = sizeof(float) * 3 * m_width * m_height;
-    m_data = (float*)malloc(sizeTex);
     switch(m_renderMode)
     {
         case CPU:
-            m_raytracer->render(m_data, m_width, m_height);
+            m_raytracer->render(m_data.data(), m_width, m_height);
             break;
         case GPU:
-            cudaMalloc(&m_cudaData,sizeTex);
+            cudaMalloc(&m_cudaData,m_sizeTex);
             m_raytracer->renderCuda(m_cudaData, m_width, m_height);
-            cudaMemcpy(m_data,m_cudaData, sizeTex, cudaMemcpyDeviceToHost);
+            cudaMemcpy(m_data.data(),m_cudaData, m_sizeTex, cudaMemcpyDeviceToHost);
             cudaFree(m_cudaData);
             break;
     }
@@ -593,6 +592,7 @@ void GLFrame::loadScene(const QString &filename)
     m_raytracingNeeded = true;
     updateGL();
 }
+
 
 int GLFrame::frameCounter() const
 {
