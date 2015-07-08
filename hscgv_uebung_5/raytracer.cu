@@ -264,7 +264,7 @@ inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=t
 }
 
 void __global__
-renderKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, double fovy, Color backgroundCol, bool antialiasing,
+renderKernel(float *d_cudaData, int xRes, int yRes, Vec3d eyepoint, Vec3d up, Vec3d lookat, double aspect, double fovy, Color backgroundCol, bool antialiasing,
                 QUADRIC* d_objList, int objListSize, LIGHT* d_lightList, int lightListSize)
 {
     // find out id of this thread
@@ -339,6 +339,9 @@ renderKernel(float *d_renderedScene, int xRes, int yRes, Vec3d eyepoint, Vec3d u
     d_renderedScene[index + 0] = col[0];
     d_renderedScene[index + 1] = col[1];
     d_renderedScene[index + 2] = col[2];
+    d_cudaData[index + 0] = col[0];
+    d_cudaData[index + 1] = col[1];
+    d_cudaData[index + 2] = col[2];
 }
 
 
