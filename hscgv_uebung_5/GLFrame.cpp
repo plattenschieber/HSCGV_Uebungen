@@ -579,7 +579,6 @@ void GLFrame::renderScene()
         case GPU:
             cudaMalloc(&m_cudaData,sizeTex);
             m_raytracer->renderCuda(m_cudaData, m_width, m_height);
-            cudaGetLastError();
             cudaMemcpy(m_data,m_cudaData, sizeTex, cudaMemcpyDeviceToHost);
             cudaFree(m_cudaData);
             break;
