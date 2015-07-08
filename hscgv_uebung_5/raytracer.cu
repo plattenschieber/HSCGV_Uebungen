@@ -380,6 +380,7 @@ Raytracer::initCuda() {
         tmp2.m_direction = lo->direction();
         lights.push_back(tmp2);
     }
+    // copy objects and lights to GPU
     gpuErrchk (cudaMemcpy(d_objList, quads.data(), sizeof(QUADRIC) * g_objectList.size(), cudaMemcpyHostToDevice));
     gpuErrchk (cudaMemcpy(d_lightList, lights.data(), sizeof(LIGHT) * g_lightList.size(), cudaMemcpyHostToDevice));
  }
