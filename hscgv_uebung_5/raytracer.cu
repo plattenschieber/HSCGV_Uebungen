@@ -80,9 +80,6 @@ cudaShadedColor(LIGHT *light, const RAY &reflectedRay, const Vec3d &normal, QUAD
    if (ldot > 0.0)
       reflectedColor += obj->m_reflectance * (light->m_color * ldot);
 
-   // updated with ambient lightning as in:
-   // [GENERALISED AMBIENT REFLECTION MODELS FOR LAMBERTIAN AND PHONG SURFACES, Xiaozheng Zhang and Yongsheng Gao]
-//   reflectedColor += obj->ambient() * g_sceneCuda.ambience;
 
    // specular part
    double spec = reflectedRay.m_direction | light->m_direction;
@@ -127,7 +124,6 @@ cudaShade(RAY *thisRay, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList,
             Vec3d normal(cudaGetNormal(intersectionPosition, *closest));
             RAY reflectedRay;
             reflectedRay.m_origin = intersectionPosition;
-            reflectedRay.m_depth = i+1;
             reflectedRay.m_direction = thisRay->m_direction.getReflectedAt(normal).getNormalized();
 
             // calculate lighting
@@ -137,7 +133,6 @@ cudaShade(RAY *thisRay, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList,
                 RAY rayoflight;
                 rayoflight.m_origin = intersectionPosition;
                 rayoflight.m_direction = d_lightList[j].m_direction;
-                rayoflight.m_depth = 0;
                 bool something_intersected = false;
 
                 // where are the objects ?
