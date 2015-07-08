@@ -570,10 +570,10 @@ void GLFrame::renderScene()
         return;
     // draw scene
     int sizeTex = sizeof(float) * 3 * m_width * m_height;
+    m_data = (float*)malloc(sizeTex);
     switch(m_renderMode)
     {
         case CPU:
-            m_data = (float*)malloc(sizeTex);
             m_raytracer->render(m_data, m_width, m_height);
             break;
         case GPU:
