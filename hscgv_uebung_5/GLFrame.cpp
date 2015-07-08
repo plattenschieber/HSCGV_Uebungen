@@ -76,6 +76,7 @@ void GLFrame::initializeGL()
     glEnable(GL_DEPTH_TEST);
     // allocate a texture name
     glGenTextures( 1, &m_texHandle );CHECKGL;
+    g_scene.view.aspect = m_aspect;
 }
 
 void GLFrame::loadTexture()
