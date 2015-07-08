@@ -155,6 +155,9 @@ cudaShade(RAY *thisRay, QUADRIC *d_objList, int objListSize, LIGHT *d_lightList,
 
             // could be right...
             currentMirror *= closest->m_mirror;
+            // update thisRay to new point
+            *thisRay = reflectedRay;
+
         }
    }
    return Color(currentColor);
